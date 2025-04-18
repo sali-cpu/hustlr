@@ -1,0 +1,115 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(to right, #dbeafe, #e0f2fe);
+    color: #000000;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .centered-title {
+    text-align: center;
+  margin-top: 1.5rem;
+  font-size: 2.5rem;
+  color: #000000;
+  }
+  
+  header {
+    background-color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid #ccc;
+    position: relative;
+  }
+  
+  nav {
+    position: relative;
+  }
+  
+  nav button.menu {
+    font-size: 1.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-right: 1rem;
+  }
+  
+  nav ul {
+    list-style: none;
+    display: none; /* Controlled by JS */
+    position: absolute;
+    top: 50px;
+    left: 0;
+    background-color: white;
+    padding: 1rem;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    z-index: 999;
+  }
+  
+  nav ul li {
+    margin: 0.5rem 0;
+  }
+  
+  nav ul li button {
+    background: #e0f2fe;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  header button.signout {
+    background: none;
+    border: none;
+    color: red;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1;
+    padding: 2rem;
+  }
+  
+  section.messagebox {
+    position: relative;
+    background: white;
+    border: 2px solid #bae6fd;
+    padding: 2rem;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    max-width: 400px;
+  }
+  
+  section.messagebox img {
+    width: 120px;
+    margin-bottom: 1rem;
+  }
+  
+  section.messagebox p {
+    font-size: 1.1rem;
+    color: #334155;
+  }
+  
+  button.close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #f87171;
+    border: none;
+    color: white;
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  
