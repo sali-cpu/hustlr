@@ -1,0 +1,253 @@
+
+
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: white; /* <-- CHANGE PAGE BACKGROUND COLOR HERE */
+  color: #000000;
+  min-height: 100vh;
+ 
+}
+
+/* === Page Title Styling === */
+.centered-title {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 2.5rem;
+  color: #000000; /* <-- CHANGE TITLE TEXT COLOR HERE */
+}
+
+/* === Header Section === */
+
+/* === Navigation Menu === */
+nav {
+  position: relative;
+}
+
+nav button.menu {
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-right: 1rem;
+}
+
+nav ul {
+  list-style: none;
+  display: none; /* Controlled by JS */
+  position: absolute;
+  top: 50px;
+  left: 0;
+  background-color: white; /* <-- DROPDOWN MENU BACKGROUND */
+  padding: 1rem;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  z-index: 999;
+}
+
+nav ul li {
+  margin: 0.5rem 0;
+}
+
+nav ul li button {
+  background: white; /* <-- MENU BUTTON BACKGROUND */
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* === Sign Out Button === */
+header button.signout {
+  background: none;
+  border: none;
+  color: red; /* <-- SIGN OUT TEXT COLOR */
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* === Main Content === */
+main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+  padding: 2rem;
+}
+
+/* === Welcome Box === */
+section.messagebox {
+  position: relative;
+  background: white; /* <-- WELCOME BOX BACKGROUND */
+  border: 2px solid white;
+  padding: 2rem;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  max-width: 400px;
+}
+
+section.messagebox img {
+  width: 120px;
+  margin-bottom: 1rem;
+}
+
+section.messagebox p {
+  font-size: 1.1rem;
+  color: #334155; /* <-- PARAGRAPH TEXT COLOR */
+}
+
+/* === Close Button (X) === */
+button.close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #f87171; /* <-- CLOSE BUTTON BACKGROUND */
+  border: none;
+  color: white;
+  font-weight: bold;
+  padding: 5px 10px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+/* === Category Section === */
+.categories {
+  padding: 60px 20px;
+  text-align: center;
+  background-color: lightblue; /* <-- CATEGORIES BACKGROUND COLOR */
+}
+
+.categories h2 {
+  font-size: 2.2rem;
+  margin-bottom: 40px;
+  color: #222; /* <-- CATEGORY TITLE COLOR */
+}
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 30px;
+  max-width: 1000px;
+  width: 100%;
+  margin: 0 auto;
+  background: lightblue;
+}
+
+.category-card {
+  background: lightblue; /* <-- CARD BACKGROUND */
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  padding: 30px 20px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.category-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+}
+
+.category-card img {
+  width: 50px;
+  height: 50px;
+  margin-bottom: 20px;
+}
+
+.category-card p {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333; /* <-- CARD TEXT COLOR */
+}
+
+/* === Layout Container === */
+.container {
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+  color: lightblue;
+  padding: 0 1rem;
+}
+
+/* === Search Box Styling === */
+.search-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 400px;
+  margin: 0 auto;
+  background: white; /* <-- SEARCH BAR BACKGROUND */
+  border-radius: 30px;
+  padding: 5px 10px;
+}
+
+.search-box input {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 10px 15px;
+  border-radius: 30px;
+  font-size: 1rem;
+  color: #333; /* <-- INPUT TEXT COLOR */
+}
+
+.search-box input::placeholder {
+  color: grey; /* <-- PLACEHOLDER COLOR */
+}
+
+.search-icon {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  margin-left: 8px;
+}
+/* === Header Layout with Spacing Between Elements === */
+
+/* Title */
+#header-client {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* space between logo, nav, and sign out */
+  padding: 1rem 2rem;
+  background-color: white;
+  border-bottom: 1px solid #ccc;
+  width: 100%; /* full width */
+  box-sizing: border-box;
+}
+
+/* Title (left-aligned) */
+
+
+/* Nav buttons (centered) */
+.nav-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-grow: 1;
+  justify-content: center;
+}
+
+.nav-buttons button {
+  padding: 0.6rem 1.2rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: white;
+  cursor: pointer;
+}
+
+/* Sign out button (right-aligned) */
+.signout {
+  background: none;
+  border: none;
+  color: red;
+  font-weight: bold;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+}
