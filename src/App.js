@@ -7,6 +7,8 @@ import SignUp from "./pages/SignUp";
 import Client from "./pages/Client";
 import Freelancers from "./pages/Freelancer";
 import AdminCorrect from "./pages/AdminCorrect";
+import ClientJobs from "./pages/ClientJobs"; 
+import ClientPayments from "./pages/ClientPayments";
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
@@ -34,6 +36,8 @@ function App() {
           <Route path="/Client" element={<Client />} />
           <Route path="/Freelancer" element={<Freelancers />} />
           <Route path="/Admin" element={<AdminCorrect />} />
+          <Route path="/ClientJobs" element={<ClientJobs />} />
+          <Route path="/ClientPayments" element={<ClientPayments />} />
         </Routes>
       </section>
       
