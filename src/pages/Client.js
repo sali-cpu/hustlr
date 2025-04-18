@@ -2,7 +2,7 @@ import React from "react";
 import '../stylesheets/style.css';
 import cuteWelcome from '../images/cute.jpg';
 import hero1 from '../images/HeroJPG.jpg';
-
+import { Link } from "react-router-dom";
 import HeaderClient from "../components/HeaderClient";
 import FooterClient from "../components/FooterClient";
 
@@ -44,10 +44,12 @@ class Client extends React.Component {
         {!this.state.showWelcomeBox && (
           <section className="categories">
             <div className="category-grid">
+            <Link to= "/ClientJobs">
               <div className="category-card">
                 <img src={hero1} alt="Jobs" />
                 <p>Jobs</p>
               </div>
+              </Link>
               <div className="category-card">
                 <img src={hero1} alt="Contracts & Tasks" />
                 <p>Contracts & Tasks</p>
