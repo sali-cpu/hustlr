@@ -1,0 +1,235 @@
+*
+{
+    margin :0;
+    padding: 0;
+    box-sizing: border-box;
+
+}
+
+
+ul{
+    list-style: none;
+}
+a{
+    text-decoration: none;
+}
+button{
+    cursor: pointer;
+    border: none;
+    background: none;
+}
+
+.head{
+    background: #dbeafe;
+}
+
+.head .nbar{
+    display: flex;
+    padding: 20px;
+    align-items: center;
+    justify-content: space-between;
+
+}
+
+.nbar .nlogo{
+    color: black;
+}
+.nbar .nmenu{
+    display: flex;
+    gap:10px;
+}
+.nbar .nmenu .nlink {
+    padding: 3px 5px;
+    color: black;
+    
+    border-radius: 20px;
+    transition: 0.3s ease;
+}
+
+.nbar .nmenu .nlink:hover{
+    color: black;
+    background:  rgb(98, 186, 216);
+}
+
+
+.nbar :where(#menclose,#menopen)
+{
+    display: none;
+}
+@media screen  and (max-width: 900px){
+
+    body.show-mobile-menu .head::before{
+        content: "";
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 100%;
+        backdrop-filter: blur(5px);
+        background: rgba(0,0,0,0.2);
+    }
+
+    .nbar :where(#menclose,#menopen){
+        display: block;
+            font-size: 18;
+
+    }
+
+    .nbar  #menclose{
+        position: absolute;
+        right: 30px;
+        top: 30px;
+
+    }
+
+    .nbar  #menopen{
+        
+
+    }
+
+
+
+    .nbar .nmenu{
+        display: block;
+        position: fixed;
+        left: -300px;
+        top: 0;
+        width: 250px;
+        height:100%;
+        display: flex;
+        flex-direction: column;
+        padding-top: 100px;
+        align-items: center;
+        background: white;
+        transition: left 0.2s ease;
+    }
+     
+    body.show-mobile-menu .nbar .nmenu{
+        left: 0;
+    }
+
+
+.nbar .nmenu .nlink {
+    color: darkcyan;
+    display: block;
+    margin-top: 17px;
+    font-size: 22px;
+
+}
+
+
+
+}
+
+section.messagebox {
+    position: relative;
+    background: white;
+    border: 2px solid #bae6fd;
+    padding: 2rem;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    max-width: 400px;
+  }
+  
+  section.messagebox img {
+    width: 120px;
+    margin-bottom: 1rem;
+  }
+  
+  section.messagebox p {
+    font-size: 1.1rem;
+    color: #334155;
+  }
+  
+  button.close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #f87171;
+    border: none;
+    color: white;
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  .categories {
+    background: #dbeafe;
+    padding: 60px 20px;
+    text-align: center;
+     /* <-- CATEGORIES BACKGROUND COLOR */
+  }
+  
+  .categories h2 {
+    background: #dbeafe;
+    font-size: 2.2rem;
+    margin-bottom: 40px;
+    color: #222; /* <-- CATEGORY TITLE COLOR */
+  }
+  
+  .category-grid {
+    background: #dbeafe;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 30px;
+    max-width: 1000px;
+    width: 100%;
+    margin: 0 auto;
+    ;
+  }
+  
+  .category-card {
+    /* <-- CARD BACKGROUND */
+    background: #dbeafe;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    padding: 30px 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+  
+  .category-card:hover {
+    background: #dbeafe;
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  }
+  
+  .category-card img {
+    background: #dbeafe;
+    width: 50px;
+    height: 50px;
+    margin-bottom: 20px;
+  }
+  
+  .category-card p {
+    background: #dbeafe;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333; /* <-- CARD TEXT COLOR */
+  }
+
+  .search-box input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 10px 15px;
+    border-radius: 30px;
+    font-size: 1rem;
+    color: #333; /* <-- INPUT TEXT COLOR */
+  }
+  
+  .search-box input::placeholder {
+    color: grey; /* <-- PLACEHOLDER COLOR */
+  }
+  
+  .search-icon {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    margin-left: 8px;
+  }

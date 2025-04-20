@@ -1,0 +1,54 @@
+User Story 1: Sign Up with Role Selection
+User Role: New user
+
+User Capability: Can sign up using a third-party provider and choose a role (Freelancer, Client, Admin)
+
+Business Value: Ensures users are properly categorized for personalized experiences
+
+Acceptance Criteria:
+
+User signs up via “Sign up with Google” button
+
+After authentication, user is prompted to select a role
+
+User must select one role (Freelancer / Client / Admin)
+
+Error messages appear for missing or invalid role selection
+
+Successful signup redirects user to their role-specific dashboard
+
+User Story 2: Sign In Using Third-Party Provider
+User Role: Returning user
+
+User Capability: Can sign in via a third-party identity provider (e.g., Google)
+
+Business Value: Provides secure and seamless login experience without maintaining passwords
+
+Acceptance Criteria:
+
+“Sign in with Google” button initiates OAuth process
+
+User is authenticated and logged into the system
+
+Secure handling of session/token
+
+Successful login redirects to the appropriate dashboard based on their role
+
+User Story 3: Role-Based Redirect After Login
+User Role: Logged-in user (Freelancer, Client, Admin)
+
+User Capability: Automatically redirected to a role-specific dashboard after login
+
+Business Value: Enhances user experience by showing only relevant features
+
+Acceptance Criteria:
+
+After login, user’s role is detected from stored data
+
+Freelancer → Freelancer Dashboard
+
+Client → Client Dashboard
+
+Admin → Admin Panel
+
+No role → prompted to choose one before accessing dashboard
