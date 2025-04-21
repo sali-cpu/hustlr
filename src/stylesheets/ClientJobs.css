@@ -1,0 +1,478 @@
+/* --- Overall Page Layout --- */
+.client-jobs-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  /* Corrected Padding: Top, Right, Bottom, Left */
+  padding: 150px 2rem 2rem 2rem; /* Adjust 150px based on final header height */
+  background-color: #d7e5f4; /* Your background */
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* --- Header Styles --- */
+.client-jobs-header {
+  width: 100%;
+  background-color: #000000; /* Black background */
+  color: white;
+  display: flex;
+  flex-direction: horizontal;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  left: 0;
+  height: 150px;
+  z-index: 1000;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+
+
+
+/* Styles for the top bar - Targets section now */
+.nav_section{
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  height: 60px; /* Fixed height */
+  width: 100%;
+  box-sizing: border-box;
+}
+
+
+
+/* Navigation Styles (Common for main and auth) */
+.main-nav ul {
+  display: flex;
+  list-style: none;
+  margin: 0; /* Reset */
+  padding: 0; /* Reset */
+  align-items: center; /* Vertical alignment */
+  gap: 1.5rem;
+  height: 100%; /* Fill parent height */
+}
+
+.main-nav li,
+.auth-nav li {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.main-nav a,
+.auth-nav a {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  color: #e0e0e0;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.95rem;
+  padding: 0 0.25rem; /* Horizontal padding, no vertical needed due to flex alignment */
+  transition: color 0.2s ease;
+}
+
+.main-nav a:hover{
+  color: #ffffff;
+}
+
+
+
+
+
+/* Title Area Below Top Bar - Targets section now */
+section.header-title-area {
+  background-color: #000000;
+  text-align: center;
+  padding: 1rem 1.5rem 1rem 1rem;
+  
+  height: auto; /* Allow height to adjust based on content */
+}
+
+.main-title {
+  margin-top: 0; /* Remove top margin to move it up */
+  margin-bottom: 0.5rem; /* Adjust bottom margin for spacing below the title */
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: white;
+  
+}
+
+/* --- Posted Jobs Section Specifics --- */
+.posted-jobs-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.posted-jobs-section h2 {
+  text-align: center;
+  color: #333;
+  font-size: 1.6rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 0.8rem;
+}
+
+/* --- Job List (UL) Styling & Reset --- */
+.jobs-list {
+  list-style: none; /* Remove default bullets */
+  padding: 0; /* Remove default padding */
+  margin: 0; /* Remove default margin */
+  flex-grow: 1;
+  overflow-y: auto;
+  max-height: 70vh; /* Or adjust as needed */
+  padding-right: 0.5rem; /* Space for scrollbar */
+}
+
+/* Ensure LI doesn't add extra space */
+.jobs-list li {
+  margin: 0;
+  padding: 0;
+}
+
+/* Style for 'no jobs' message */
+.no-jobs-message p {
+    text-align: center;
+    padding: 2rem;
+    font-style: italic;
+    color: #666;
+}
+
+/* Individual Job Card Styling (ARTICLE) */
+article.job-card { /* Target article tag */
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 1.2rem; /* Margin for spacing between cards */
+  background-color: #fdfdfd;
+  transition: box-shadow 0.2s ease-in-out;
+  display: block; /* Ensure it takes block layout */
+}
+
+article.job-card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* Optional header within article */
+.job-card-header h3 {
+  margin-top: 0;
+  margin-bottom: 0.25rem;
+  color: #0056b3;
+  font-size: 1.2rem;
+}
+.job-card-header p {
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+  color: #666;
+}
+.job-card-header p strong {
+  color: #555;
+}
+
+
+/* Paragraphs within job card */
+article.job-card > p { /* Target direct paragraph children */
+  margin: 0.4rem 0;
+  font-size: 0.95rem;
+  color: #555;
+  line-height: 1.4;
+}
+
+article.job-card > p strong {
+  color: #333;
+  margin-right: 5px;
+}
+
+/* Actions Footer Styling */
+footer.job-actions { /* Target footer tag */
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #eee;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+/* --- Section Styling (Common for posted-jobs and create-job) --- */
+.posted-jobs-section,
+.create-job-section {
+  background: #ffffff;
+  padding: 1.5rem 2rem;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+  flex: 1;
+  min-width: 350px;
+  box-sizing: border-box;
+}
+
+
+/* --- Create Job Form Section Specifics --- */
+.create-job-section header h1 { /* Target h1 inside header */
+  text-align: center;
+  color: #333;
+  font-size: 1.8rem;
+  margin-top: 0; /* Remove potential default margin */
+  margin-bottom: 1.5rem;
+}
+
+.create-job-section form {
+  display: flex;
+  flex-direction: column;
+}
+
+.create-job-section fieldset {
+    border: 1px solid #ddd;
+    padding: 1rem 1.5rem;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+}
+
+.create-job-section legend {
+  font-weight: bold;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  color: #444;
+  padding: 0 0.5rem;
+}
+
+.create-job-section label {
+  margin-top: 0.8rem;
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+  color: #444;
+  font-size: 0.9rem;
+}
+
+.create-job-section input[type="text"],
+.create-job-section input[type="number"],
+.create-job-section input[type="date"],
+.create-job-section textarea,
+.create-job-section select {
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+  width: 100%;
+  transition: border-color 0.2s ease;
+}
+
+.create-job-section input:focus,
+.create-job-section textarea:focus,
+.create-job-section select:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.create-job-section textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* Form Footer Buttons */
+.create-job-section form footer {
+    margin-top: 1rem; /* Add space above footer */
+}
+
+.create-job-section button[type="submit"] {
+  padding: 0.8rem 1.5rem;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+  width: 100%;
+  margin-bottom: 0.75rem; /* Add margin if cancel button exists */
+}
+.create-job-section button[type="submit"]:only-child {
+    margin-bottom: 0; /* No margin if it's the only button */
+}
+
+
+.create-job-section button[type="submit"]:hover {
+  background-color: #218838;
+  transform: translateY(-1px);
+}
+
+.create-job-section button[type="submit"]:active {
+  transform: translateY(0px);
+}
+
+.cancel-btn {
+  /* margin-top: 0.75rem; /* Removed, handled by submit button margin */
+  padding: 0.7rem 1.5rem;
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.cancel-btn:hover {
+  background-color: #5a6268;
+  transform: translateY(-1px);
+}
+.cancel-btn:active {
+  transform: translateY(0px);
+}
+
+/* Error message */
+.error-msg {
+  color: #721c24;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  padding: 0.8rem 1rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+
+/* --- Job Card Action Buttons --- */
+.job-btn {
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.job-btn:hover {
+    transform: translateY(-1px);
+}
+.job-btn:active {
+    transform: translateY(0px);
+}
+
+.edit-btn {
+  background-color: #ffc107;
+  color: #333;
+}
+.edit-btn:hover {
+  background-color: #e0a800;
+}
+
+.delete-btn {
+  background-color: #dc3545;
+  color: white;
+}
+.delete-btn:hover {
+  background-color: #c82333;
+}
+
+.job-btn:focus-visible {
+    outline: 2px solid #007bff;
+    outline-offset: 2px;
+}
+
+/* --- Responsiveness --- */
+@media (max-width: 992px) {
+  .main-nav {
+    /* Example: Hide main nav on smaller screens */
+    /* You would typically replace this with a burger menu toggle */
+     display: none;
+  }
+  section.header-top-bar { /* Target section */
+      padding: 0 1rem;
+  }
+  .auth-nav ul {
+      gap: 1rem;
+  }
+   .main-title {
+      font-size: 2rem;
+  }
+  section.header-title-area { /* Target section */
+      padding: 1.5rem 1rem 2rem 1rem;
+  }
+   .client-jobs-container {
+     padding-top: 130px; /* Adjust top padding based on potentially smaller header */
+     /* Keep other padding */
+     padding-right: 1.5rem;
+     padding-bottom: 1.5rem;
+     padding-left: 1.5rem;
+   }
+}
+
+@media (max-width: 900px) {
+  .client-jobs-container {
+    flex-direction: column; /* Stack main sections */
+    gap: 1.5rem;
+    /* Padding top already adjusted in 992px query */
+  }
+
+  .posted-jobs-section,
+  .create-job-section {
+    min-width: 100%;
+    flex-basis: auto;
+  }
+
+  .jobs-list {
+      max-height: 50vh;
+  }
+}
+
+@media (max-width: 768px) {
+    /* Further refine header/nav for tablets if needed */
+    .main-title {
+        font-size: 1.8rem;
+    }
+    .auth-nav ul {
+        /* Example: Reduce gap further or change display */
+    }
+}
+
+@media (max-width: 480px) {
+    /* Combine rules for 480px */
+    section.header-top-bar {
+         /* Further adjustments if needed */
+         height: 50px; /* Example: Smaller top bar */
+    }
+     .main-title {
+        font-size: 1.6rem; /* Further reduce title size */
+    }
+     section.header-title-area {
+        padding: 1rem 1rem 1.5rem 1rem;
+    }
+     .client-jobs-container {
+        /* Adjust top padding for smallest screens */
+        padding: 100px 1rem 1rem 1rem;
+        gap: 1rem;
+    }
+    .posted-jobs-section,
+    .create-job-section {
+        padding: 1rem 1.2rem;
+    }
+    .posted-jobs-section h2,
+    .create-job-section header h1 { /* Target h1 in header */
+        font-size: 1.4rem;
+    }
+    .create-job-section button[type="submit"] {
+        padding: 0.7rem 1rem;
+    }
+    .job-actions {
+         /* justify-content: center; */ /* Center buttons on small screens? */
+    }
+    .job-btn {
+        padding: 0.5rem 1rem; /* Larger touch targets */
+    }
+     a.logo {
+         gap: 0.4rem; /* Reduce gap */
+     }
+     .logo-icon { font-size: 1.3rem; }
+     .logo-text { font-size: 1rem; }
+     .auth-nav ul { gap: 0.75rem; }
+    
+}

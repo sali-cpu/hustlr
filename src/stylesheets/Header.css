@@ -1,0 +1,53 @@
+/* Dashboard toggle button */
+#dashboard-toggle {
+  position: fixed;
+  top: 50px;
+  left: 20px;
+  font-size: 28px;
+  cursor: pointer;
+  z-index: 1000;
+}
+
+/* Sidebar menu */
+#sidebar {
+  position: fixed;
+  top: 80px;
+  left: 20px;
+  background-color: #d7e5f4;
+  padding: 10px;
+  border-radius: 8px;
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 999;
+}
+
+/* Show class when toggled */
+#sidebar.show {
+  display: flex;
+}
+
+/* Style sidebar buttons */
+#sidebar button {
+  background-color: #d7e5f4;
+  color: #2c3e50;
+  border: none;
+  padding: 10px 16px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#sidebar button:hover {
+  background-color: #1abc9c;
+}
+#h1{
+  font-size: 48px;
+font-weight: bold;
+text-align: center;
+color: #2c3e50;
+margin-top: 40px;
+background-color: lightblue;  
+padding: 10px;                
+border-radius: 10px;   
+}
