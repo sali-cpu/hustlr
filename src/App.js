@@ -6,6 +6,7 @@ import Index from "./pages/Index";
 import SignUp from "./pages/SignUp";
 import Client from "./pages/Client";
 import Freelancers from "./pages/Freelancer";
+import ClientJobs from "./pages/ClientJobs"; 
 import AdminCorrect from "./pages/AdminCorrect";
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
