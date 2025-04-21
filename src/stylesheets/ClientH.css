@@ -1,0 +1,191 @@
+
+  /* === Welcome Box === */
+  section.messagebox {
+    position: relative;
+    background: white; /* <-- WELCOME BOX BACKGROUND */
+    border: 2px solid white;
+    padding: 2rem;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    max-width: 400px;
+  }
+  
+  section.messagebox img {
+    width: 120px;
+    margin-bottom: 1rem;
+  }
+  
+  section.messagebox p {
+    font-size: 1.1rem;
+    color: #334155; /* <-- PARAGRAPH TEXT COLOR */
+  }
+  
+  /* === Close Button (X) === */
+  button.close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #f87171; /* <-- CLOSE BUTTON BACKGROUND */
+    border: none;
+    color: white;
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  
+  /* === Category Section === */
+  .categories {
+    padding: 60px 20px;
+    text-align: center;
+    background-color: #fff; /* <-- CATEGORIES BACKGROUND COLOR */
+  }
+  
+  .categories h2 {
+    font-size: 2.2rem;
+    margin-bottom: 40px;
+    color: #222; /* <-- CATEGORY TITLE COLOR */
+  }
+  
+  .category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 30px;
+    max-width: 1000px;
+    width: 100%;
+    margin: 0 auto;
+  }
+  
+  .category-card {
+    background: #fff; /* <-- CARD BACKGROUND */
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    padding: 30px 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+  
+  .category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  }
+  
+  .category-card img {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 20px;
+  }
+  
+  .category-card p {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333; /* <-- CARD TEXT COLOR */
+  }
+  
+  /* === Layout Container === */
+ /* .container {
+    max-width: 1100px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }*/
+  
+  /* === Search Box Styling === */
+  .search-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-width: 400px;
+    margin: 0 auto;
+    background: white; /* <-- SEARCH BAR BACKGROUND */
+    border-radius: 30px;
+    padding: 5px 10px;
+  }
+  
+  .search-box input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 10px 15px;
+    border-radius: 30px;
+    font-size: 1rem;
+    color: #333; /* <-- INPUT TEXT COLOR */
+  }
+  
+  .search-box input::placeholder {
+    color: grey; /* <-- PLACEHOLDER COLOR */
+  }
+  
+  .search-icon {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    margin-left: 8px;
+  }
+  /* === Header Layout with Spacing Between Elements === */
+  
+  /* Title */
+  .h {
+    font-size: 1.8rem;
+    font-weight: bold;
+    text-align: center;
+    color: black;
+    background-color: white;
+    padding: 8px 12px;
+    border-radius: 10px;
+    margin-right: 1.5rem;
+    white-space: nowrap;
+  }
+  
+  /* Nav buttons with spacing */
+  .nav-buttons {
+    display: flex;
+    gap: 10px; /* space between nav buttons */
+    flex-grow: 1;
+    justify-content: center;
+  }
+  
+  .nav-buttons button {
+    padding: 0.6rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: white;
+    cursor: pointer;
+  }
+  
+  /* Sign out button aligned to right */
+  .signout {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: red;
+    font-weight: bold;
+    padding: 0.6rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .b1{
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: black;
+    font-weight: bold;
+    padding: 0.6rem 1rem;
+    
+    cursor: pointer;
+  }
+  .h {
+    font-size: 1.9rem;
+    font-weight: bold;
+    color: lightblue;
+    background-color: black;
+    padding: 8px 12px;
+    border-radius: 10px;
+    white-space: nowrap;
+    margin-right: 2rem;
+  }

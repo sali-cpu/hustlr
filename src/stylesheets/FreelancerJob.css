@@ -1,0 +1,53 @@
+.freelancer-jobs-main {
+    display: flex;
+    padding: 20px;
+    gap: 30px;
+  }
+  
+  .sidebar {
+    width: 250px;
+    background: #f0f8ff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+  }
+  
+  .sidebar h3 {
+    margin-bottom: 15px;
+  }
+  
+  .sidebar input,
+  .sidebar select {
+    width: 100%;
+    margin: 10px 0;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+  }
+  
+  .job-listings {
+    flex: 1;
+  }
+  
+  .job-card {
+    background: white;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.1);
+  }
+  
+  .job-card h3 {
+    margin-bottom: 10px;
+  }
+  
+  .job-card button {
+    background: #00b894;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    margin-top: 10px;
+    cursor: pointer;
+  }
+  
