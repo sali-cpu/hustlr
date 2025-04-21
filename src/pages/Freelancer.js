@@ -6,6 +6,12 @@ import cuteWelcome from '../images/cute.jpg';
 import HeaderClient from "../components/HeaderClient";
 import FooterClient from "../components/FooterClient";
 import hero1 from '../images/HeroJPG.jpg';
+import job from '../images/Job.png';
+import pay from '../images/Payment.png';
+import stat from '../images/Quick Stats.png';
+import con from '../images/contract.png';
+import rep from '../images/Reports.png';
+import HeaderFreelancer from '../components/HeaderFreelancer';
 
 class Freelancers extends React.Component {
   constructor(props) {
@@ -27,7 +33,7 @@ class Freelancers extends React.Component {
   render() {
     return (
       <>
-        <HeaderClient />
+        <HeaderFreelancer />
          <div className="search-box">
               <input type="text" placeholder="Search for any service..." />
               <button className="search-icon">🔍</button>
@@ -52,24 +58,24 @@ class Freelancers extends React.Component {
             <div className="category-grid">
             <Link to = "/FreelancerJobs">
               <div className="category-card">
-                <img src={hero1} alt="Jobs" />
+                <img src={job} alt="Jobs" />
                 <p>Jobs</p>
               </div>
               </Link>
               <div className="category-card">
-                <img src={hero1} alt="Contracts & Tasks" />
+                <img src={con} alt="Contracts & Tasks" />
                 <p>Contracts & Tasks</p>
               </div>
               <div className="category-card">
-                <img src={hero1} alt="Payments" />
+                <img src={pay} alt="Payments" />
                 <p>Payments</p>
               </div>
               <div className="category-card">
-                <img src={hero1} alt="Reports" />
+                <img src={rep} alt="Reports" />
                 <p>Reports</p>
               </div>
               <div className="category-card">
-                <img src={hero1} alt="Quick Stats" />
+                <img src={stat} alt="Quick Stats" />
                 <p>Quick Stats</p>
               </div>
             </div>

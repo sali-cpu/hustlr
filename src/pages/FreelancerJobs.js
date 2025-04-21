@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import '../stylesheets/FreelancerJob.css';
-import HeaderClient from '../components/HeaderClient'; // Make sure this is the right path
+import HeaderFreelancer from '../components/HeaderFreelancer'; // Make sure this is the right path
 
 const jobData = [
   {
@@ -34,7 +34,7 @@ const FreelancerJobs = () => {
 
   return (
     <>
-      <HeaderClient />
+      <HeaderFreelancer />
 
       {/* --- Header Section --- */}
       <header className="client-jobs-header">
@@ -45,8 +45,8 @@ const FreelancerJobs = () => {
         <section className="nav_section">
           <nav className="main-nav">
             <ul>
-              <li><a href="/freelancer">Home</a></li>
-              <li><a href="/freelancer/jobs" className="active">Jobs</a></li>
+            <li><a href="/freelancer">Home</a></li>
+              
             </ul>
           </nav>
         </section>

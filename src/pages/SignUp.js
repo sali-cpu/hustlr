@@ -4,37 +4,10 @@ import '../stylesheets/signup_style.css';
 import google_icon from '../images/google_icon.png';
 import micro_icon from '../images/micro_icon.png';
 // Import Firebase modules
-import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, OAuthProvider, signInWithPopup } from "firebase/auth";
+import { googleAuth,microsoftAuth } from "../firebaseConfig";
+import { GoogleAuthProvider, OAuthProvider, signInWithPopup } from "firebase/auth";
 import { useNavigate } from 'react-router-dom';
 // Use only one Firebase for google
-const firebaseConfig = {
-  apiKey: "AIzaSyDPrCgc4hTSO8am7LFi6KasGo7vCISXV9U",
-  authDomain: "authenticate-13e26.firebaseapp.com",
-  projectId: "authenticate-13e26",
-  storageBucket: "authenticate-13e26.appspot.com",
-  messagingSenderId: "839678165187",
-  appId: "1:839678165187:web:962a4613e2ad62c81ea276",
-};
-
-//Config for microsoft
-const firebaseConfig1 = {
-  apiKey: "AIzaSyD27cvVjz9oBqf6aysk4Tn8uBzZLxSJFU4",
-  authDomain: "freelancer-771b9.firebaseapp.com",
-  projectId: "freelancer-771b9",
-  storageBucket: "freelancer-771b9.appspot.com",
-  messagingSenderId: "246641148741",
-  appId: "1:246641148741:web:bfe70c74d8b6b684af742c",
-  measurementId: "G-0S2XLNZX08"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
-// Microsoft Firebase (named app)
-const app1 = initializeApp(firebaseConfig1, "microsoftApp");
-const auth1 = getAuth(app1);
-// Google provider
 
 
 const googleProvider = new GoogleAuthProvider();
@@ -48,52 +21,14 @@ microsoftProvider.setCustomParameters({
   prompt: "select_account",
 });
 
+const adminEmails = [
+
+  "2680440@students.wits.ac.za",
+  "1602758@students.wits.ac.za",
+  
+];
 const SignUp = () => {
   const navigate = useNavigate();
-  const handleGoogleSignInClick = () => {
-    const role = document.querySelector('input[name="role"]:checked')?.value;
-
-    if (!role) {
-      alert("Please select a role before logging in.");
-      return;
-    }
-
-    signInWithPopup(auth, googleProvider)
-      .then((result) => {
-        const user = result.user;
-        localStorage.setItem("userUID", user.uid);
-        localStorage.setItem("userName", user.displayName);
-        goToPage(role);
-      })
-      .catch(() => {
-        alert("404 error signing in!");
-      });
-  };
-
-  const handleMicrosoftSignIn = async () => 
-    {
-    const role = document.querySelector('input[name="role"]:checked')?.value;
-
-    if (!role) {
-      alert("Please select a role before signing in.");
-      return;
-    }
-
-    try {
-      const result = await signInWithPopup(auth1, microsoftProvider);
-      const user = result.user;
-
-      localStorage.setItem("userUID", user.uid);
-      localStorage.setItem("userName", user.displayName);
-
-      goToPage(role);
-    } 
-    catch (error) 
-    {
-      console.error("Microsoft sign-in error:", error);
-      alert("Sign-in failed. Please try again.");
-    }
-  };
 
   const goToPage = (role) => {
     switch (role.toLowerCase()) {
@@ -108,8 +43,60 @@ const SignUp = () => {
         break;
       default:
         alert("Unknown role selected.");
-    };
-  }
+    }
+  };
+
+  const handleGoogleSignInClick = () => {
+    signInWithPopup(googleAuth, googleProvider)
+      .then((result) => {
+        const user = result.user;
+
+        localStorage.setItem("userUID", user.uid);
+        localStorage.setItem("userName", user.displayName);
+        localStorage.setItem("userEmail", user.email);
+
+        if (adminEmails.includes(user.email)) {
+          goToPage("admin");
+        } else {
+          const role = document.querySelector('input[name="role"]:checked')?.value;
+          if (!role) {
+            alert("Please select a role before logging in.");
+            return;
+          }
+          goToPage(role);
+        }
+      })
+      .catch((error) => {
+        console.error("Google sign-in error:", error);
+        alert("404 error signing in!");
+      });
+  };
+
+  const handleMicrosoftSignIn = async () => {
+    try {
+      const result = await signInWithPopup(microsoftAuth, microsoftProvider);
+      const user = result.user;
+
+      localStorage.setItem("userUID", user.uid);
+      localStorage.setItem("userName", user.displayName);
+      localStorage.setItem("userEmail", user.email);
+
+      if (adminEmails.includes(user.email)) {
+        goToPage("admin");
+      } else {
+        const role = document.querySelector('input[name="role"]:checked')?.value;
+        if (!role) {
+          alert("Please select a role before signing in.");
+          return;
+        }
+        goToPage(role);
+      }
+    } catch (error) {
+      console.error("Microsoft sign-in error:", error);
+      alert("Sign-in failed. Please try again.");
+    }
+  };
+
 
   return (
     <>
