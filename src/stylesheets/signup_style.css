@@ -1,0 +1,261 @@
+
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, 
+                 Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background-color: var(--primary-color);
+    min-height: 100vh;
+    margin: 0;
+    padding: 1rem;
+    line-height: 1.5;
+    color: #000000;
+    position: relative;
+    display: grid;
+    place-items: center;
+  }
+  
+  /* Utility Classes */
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+  
+  /* Layout Structure */
+  .signup-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+  }
+  
+  /* Hero Section */
+  .hero_sect {
+    position: relative;
+    width: 100%;
+    max-width: 30rem;
+    padding: 2rem;
+    font-size: 3rem;
+    color: black;
+    align-self: center;
+    background: none;
+    font-weight: 800;
+    margin-bottom: 2rem;
+    z-index: 150;
+    text-align: center;
+  }
+
+  .hero_text h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+  }
+  
+  .hero_text p {
+    font-size: 1.25rem;
+    opacity: 0.9;
+  }
+  
+  /* Signup Container */
+  .signup-container {
+    width: 440px;
+    max-width: 24rem;
+    padding: 2rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    background-color: #ffffff;
+    box-shadow: var(--shadow);
+  }
+  .signup-card {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+    height: 100%;
+    background-color: transparent; /* match container bg */
+    padding: 0; /* container already has padding */
+    box-sizing: border-box;
+  }
+  
+  
+  .signup-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  .signup-header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+  
+  .signup-header p {
+    color: var(--secondary-color);
+    font-size: 1rem;
+  }
+  
+  /* Form Elements */
+  .signup-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .form-control {
+    display: grid;
+    grid-template-columns: 1em auto;
+    gap: 0.75em;
+    align-items: center;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+  }
+  
+  .form-control:hover {
+    border-color: var(--primary-color);
+    background-color: rgba(100, 149, 237, 0.05);
+  }
+  
+  input[type="radio"] {
+    appearance: none;
+    width: 1em;
+    height: 1em;
+    border: 2px solid var(--form-control-color);
+    border-radius: 50%;
+    margin: 0;
+    display: grid;
+    place-content: center;
+  }
+  
+  input[type="radio"]::before {
+    content: "";
+    width: 0.5em;
+    height: 0.5em;
+    border-radius: 50%;
+    transform: scale(0);
+    transition: transform 0.2s ease;
+    background-color: var(--form-control-color);
+  }
+  
+  input[type="radio"]:checked::before {
+    transform: scale(1);
+  }
+  
+  /* Button Styles */
+  .googlebtn {
+    background-color: #ffffff;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    color: #3c4043;
+    cursor: pointer;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-size: 0.9375rem;
+    height: 40px;
+    width : 100%;
+    padding: 0 16px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+  }
+  
+  .googlebtn:hover {
+    border-color: #b3b3b3;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+  
+  .googlebtn:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(100, 149, 237, 0.3);
+  }
+  .googlebtn img,
+.msbutton img,
+.icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+  .msbutton {
+    background-color: #ffffff;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    color: #3c4043;
+    cursor: pointer;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-size: 0.9375rem;
+    height: 40px;
+    width : 100%;
+    padding: 0 16px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+  }
+  
+  .msbutton:hover {
+    border-color: #b3b3b3;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+  
+  .msbutton:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(100, 149, 237, 0.3);
+  }
+  
+  /* Footer */
+  .signup-footer {
+    text-align: center;
+    margin-top: 2rem;
+    font-size: 0.875rem;
+    color: var(--secondary-color);
+  }
+  
+  .signup-footer a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  
+  .signup-footer a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Responsive Adjustments */
+  @media (max-width: 768px) {
+    .signup-layout {
+      grid-template-columns: 1fr;
+      padding: 1rem;
+    }
+    
+    .hero_sect {
+      text-align: center;
+      align-items: center;
+      margin-bottom: 2rem;
+      max-width: 100%;
+    }
+    
+    
+    .signup-container {
+      max-width: 100%;
+    }
+  }
+  
