@@ -1,0 +1,21 @@
+{
+  "files": {
+    "main.css": "/static/css/main.53dc718f.css",
+    "main.js": "/static/js/main.8c350b82.js",
+    "static/media/HeroJPG3.jpg": "/static/media/HeroJPG3.ad5eccd5fa1ab300a7b8.jpg",
+    "static/media/HeroJPG.jpg": "/static/media/HeroJPG.73f04e24b962efe54406.jpg",
+    "static/media/payment.jpg": "/static/media/payment.29ebeb7c6428258040da.jpg",
+    "static/media/google-logo.png": "/static/media/google-logo.cc0801d2141731fbe42c.png",
+    "static/media/cute.jpg": "/static/media/cute.4f744746f686c5d83e71.jpg",
+    "static/media/HeroJPG2.jpg": "/static/media/HeroJPG2.4c4cf470bb3c0b74fff3.jpg",
+    "static/media/jobJPG.jpg": "/static/media/jobJPG.22549a06603876e60151.jpg",
+    "static/media/HeroJPG4.jpg": "/static/media/HeroJPG4.7aca90e997dcb878f8c8.jpg",
+    "index.html": "/index.html",
+    "main.53dc718f.css.map": "/static/css/main.53dc718f.css.map",
+    "main.8c350b82.js.map": "/static/js/main.8c350b82.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.53dc718f.css",
+    "static/js/main.8c350b82.js"
+  ]
+}

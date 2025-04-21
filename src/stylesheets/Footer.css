@@ -1,0 +1,28 @@
+footer#about {
+    background-color: #f8f8f8;
+    color: #333;
+    padding: 40px 20px;
+    text-align: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    border-top: 1px solid #e0e0e0;
+    margin-top: 40px;
+  }
+  
+  footer#about header {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #222;
+  }
+  
+  footer#about p {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin: 10px auto;
+    max-width: 700px;
+  }
+  footer#about h1{
+    text-align: center;
+
+  }
+  
