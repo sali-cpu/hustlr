@@ -2,7 +2,7 @@
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Land from "./pages/Land";
-import Home from "./pages/Home";
+import Index from "./pages/Index";
 import SignUp from "./pages/SignUp";
 import Client from "./pages/Client";
 import Freelancers from "./pages/Freelancer";
@@ -24,7 +24,7 @@ function App() {
             element={
               <>
                 <Header/>
-                <Home />
+                <Index />
                 <Footer/>
               </>
             }
