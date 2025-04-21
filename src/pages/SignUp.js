@@ -4,7 +4,8 @@ import '../stylesheets/signup_style.css';
 import google_icon from '../images/google_icon.png';
 import micro_icon from '../images/micro_icon.png';
 // Import Firebase modules
-import { googleAuth,microsoftAuth } from "../firebaseConfig";
+import { googleAuth, google_db, microsoftAuth, microsoft_db} from "../firebaseConfig";
+import { get,ref, set, child} from "firebase/database";
 import { GoogleAuthProvider, OAuthProvider, signInWithPopup } from "firebase/auth";
 import { useNavigate } from 'react-router-dom';
 // Use only one Firebase for google
@@ -33,13 +34,13 @@ const SignUp = () => {
   const goToPage = (role) => {
     switch (role.toLowerCase()) {
       case "client":
-        navigate("/client");
+        navigate("/Client");
         break;
       case "freelancer":
-        navigate("/freelancer");
+        navigate("/Freelancer");
         break;
       case "admin":
-        navigate("/admin");
+        navigate("/Admin");
         break;
       default:
         alert("Unknown role selected.");
@@ -50,6 +51,7 @@ const SignUp = () => {
     signInWithPopup(googleAuth, googleProvider)
       .then((result) => {
         const user = result.user;
+
 
         localStorage.setItem("userUID", user.uid);
         localStorage.setItem("userName", user.displayName);
@@ -64,7 +66,11 @@ const SignUp = () => {
             return;
           }
           goToPage(role);
+          set(ref(google_db, 'users/' + user.uid),{
+            role: role
+          });
         }
+        
       })
       .catch((error) => {
         console.error("Google sign-in error:", error);
@@ -90,6 +96,9 @@ const SignUp = () => {
           return;
         }
         goToPage(role);
+        set(ref(microsoft_db, 'users/' + user.uid),{
+          role: role
+        });
       }
     } catch (error) {
       console.error("Microsoft sign-in error:", error);

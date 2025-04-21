@@ -39,12 +39,14 @@ const dbConfig = {
 // Initialize Google Firebase
 const googleApp = initializeApp(googleConfig);
 const googleAuth = getAuth(googleApp);
+const google_db = getDatabase(googleApp);
 
 // Initialize Microsoft Firebase
 const microsoftApp = initializeApp(microsoftConfig, "microsoftApp");
 const microsoftAuth = getAuth(microsoftApp);
+const microsoft_db = getDatabase(microsoftApp);
 
 const databaseApp = initializeApp(dbConfig, "databaseApp");
 const db = getDatabase(databaseApp);
 
-export {  googleAuth, microsoftAuth,db };
+export {  googleAuth, google_db, microsoftAuth, microsoft_db,db };
