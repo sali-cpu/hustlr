@@ -1,4 +1,3 @@
-
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Land from "./pages/Land";
@@ -32,14 +31,13 @@ function App() {
               </>
             }
           />
-           <Route path="/SignUp" element={<SignUp />} />
+          <Route path="/SignUp" element={<SignUp />} />
           <Route path="/Land" element={<Land />} />
           <Route path="/Client" element={<Client />} />
           <Route path="/Freelancer" element={<Freelancers />} />
           <Route path="/Admin" element={<AdminCorrect />} />
-          <Route path="/ClientJobs" element={<ClientJobs />} />
-          <Route path="/ClientPayments" element={<ClientPayments />} />
-          <Route path="/FreelancerJobs" element={<FreelancerJobs />} />
+         
+
         </Routes>
       </section>
       
@@ -47,5 +45,3 @@ function App() {
   );
 
 }
-
-export default App;
