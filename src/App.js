@@ -1,3 +1,4 @@
+
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Land from "./pages/Land";
@@ -33,8 +34,6 @@ function App() {
           <Route path="/Client" element={<Client />} />
           <Route path="/Freelancer" element={<Freelancers />} />
           <Route path="/Admin" element={<AdminCorrect />} />
-         
-
         </Routes>
       </section>
       
@@ -42,3 +41,5 @@ function App() {
   );
 
 }
+
+export default App;
