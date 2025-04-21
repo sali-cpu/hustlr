@@ -1,0 +1,14 @@
+{
+    "routes": [
+      {
+        "route": "/auth/*",
+        "allowedRoles": ["anonymous", "authenticated"],
+        "rewrite": "/index.html"
+      },
+      {
+        "route": "/*",
+        "rewrite": "/index.html"
+      }
+    ]
+  }
+  

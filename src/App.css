@@ -1,0 +1,21 @@
+/* Base & Reset Styles */
+:root {
+  /*--primary-color: #6495ED;*/
+  --secondary-color: #495057;
+  --border-color: #ced4da;
+  --shadow: 0 0 1.5rem rgba(0, 0, 0, 0.15);
+  --form-control-color: #000000;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+/*
+* {
+  box-sizing: border-box;
+}
+*/
