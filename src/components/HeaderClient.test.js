@@ -1,4 +1,5 @@
 import { render, screen, fireEvent } from "@testing-library/react";
+import '@testing-library/jest-dom';
 import HeaderClient from "./HeaderClient";
 
 test("menu toggle opens and closes mobile menu", () => {
