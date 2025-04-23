@@ -1,0 +1,26 @@
+{
+  "files": {
+    "main.css": "/static/css/main.5301a98f.css",
+    "main.js": "/static/js/main.a7fc662a.js",
+    "static/media/HeroJPG3.jpg": "/static/media/HeroJPG3.ad5eccd5fa1ab300a7b8.jpg",
+    "static/media/HeroJPG.jpg": "/static/media/HeroJPG.73f04e24b962efe54406.jpg",
+    "static/media/Payment.png": "/static/media/Payment.ad09ad52d5b6b4bdcf9a.png",
+    "static/media/payment.jpg": "/static/media/payment.29ebeb7c6428258040da.jpg",
+    "static/media/Quick Stats.png": "/static/media/Quick Stats.9e7055b5b94271e9df7a.png",
+    "static/media/contract.png": "/static/media/contract.3effb07753be5d49f061.png",
+    "static/media/google-logo.png": "/static/media/google-logo.cc0801d2141731fbe42c.png",
+    "static/media/Reports.png": "/static/media/Reports.0db7adb515ce74e8ce22.png",
+    "static/media/Job.png": "/static/media/Job.6fb14d15f23b7bd9e7dd.png",
+    "static/media/cute.jpg": "/static/media/cute.4f744746f686c5d83e71.jpg",
+    "static/media/HeroJPG2.jpg": "/static/media/HeroJPG2.4c4cf470bb3c0b74fff3.jpg",
+    "static/media/jobJPG.jpg": "/static/media/jobJPG.22549a06603876e60151.jpg",
+    "static/media/HeroJPG4.jpg": "/static/media/HeroJPG4.7aca90e997dcb878f8c8.jpg",
+    "index.html": "/index.html",
+    "main.5301a98f.css.map": "/static/css/main.5301a98f.css.map",
+    "main.a7fc662a.js.map": "/static/js/main.a7fc662a.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.5301a98f.css",
+    "static/js/main.a7fc662a.js"
+  ]
+}

@@ -1,0 +1,14 @@
+{
+    "navigationFallback": {
+      "rewrite": "/index.html",
+      "exclude": ["/static/*", "/favicon.ico", "/manifest.json", "/logo192.png"]
+    },
+    "routes": [
+      {
+        "route": "/auth/*",
+        "allowedRoles": ["anonymous", "authenticated"],
+        "rewrite": "/index.html"
+      }
+    ]
+  }
+  
