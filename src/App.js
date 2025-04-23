@@ -4,6 +4,7 @@ import Footer from "./components/Footer";
 import Land from "./pages/Land";
 import Home from "./pages/Home";
 import SignUp from "./pages/SignUp";
+import SignIn from './pages/SignIn'
 import Client from "./pages/Client";
 import Freelancers from "./pages/Freelancer";
 import AdminCorrect from "./pages/AdminCorrect";
@@ -33,6 +34,7 @@ function App() {
             }
           />
           <Route path="/SignUp" element={<SignUp />} />
+          <Route path="/SignIn" element={<SignIn />} />
           <Route path="/Land" element={<Land />} />
           <Route path="/Client" element={<Client />} />
           <Route path="/Freelancer" element={<Freelancers />} />
