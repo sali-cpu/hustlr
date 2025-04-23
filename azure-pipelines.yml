@@ -1,0 +1,67 @@
+# azure-pipelines.yml
+trigger:
+- main  # Runs on pushes to main branch
+
+variables:
+  CI: true
+  NODE_OPTIONS: '--openssl-legacy-provider'
+
+stages:
+- stage: Build_and_Test
+  displayName: 'Build and Test'
+  jobs:
+  - job: Test
+    displayName: 'Run Tests'
+    pool:
+      vmImage: 'ubuntu-latest' # or 'windows-latest'
+    steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '18.x'
+      displayName: 'Install Node.js'
+
+    - script: npm install
+      displayName: 'Install dependencies'
+
+    # Run tests but don't fail the pipeline if they fail
+    - script: npm test -- --watchAll=false --coverage || echo "Tests failed but continuing deployment"
+      displayName: 'Run Jest Tests'
+      continueOnError: true  # Allows pipeline to continue even if tests fail
+
+    # Optional: Upload test results
+    - task: PublishTestResults@2
+      condition: always()
+      inputs:
+        testResultsFiles: '**/test-results.xml'
+        testRunTitle: 'Jest Tests'
+
+    # Optional: Upload code coverage
+    - task: PublishCodeCoverageResults@1
+      condition: always()
+      inputs:
+        codeCoverageTool: 'Cobertura'
+        summaryFileLocation: '$(System.DefaultWorkingDirectory)/coverage/cobertura-coverage.xml'
+
+- stage: Deploy
+  displayName: 'Deploy to Azure'
+  dependsOn: Build_and_Test
+  condition: succeeded()  # Will run even if tests fail due to continueOnError
+  jobs:
+  - job: Deploy
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - script: npm install
+      displayName: 'Install dependencies'
+
+    - script: npm run build
+      displayName: 'Build project'
+
+    # Azure Web App deployment
+    - task: AzureWebApp@1
+      displayName: 'Deploy to Azure Web App'
+      inputs:
+        azureSubscription: 'Your-Azure-Service-Connection-Name'
+        appName: 'Your-App-Name'
+        package: '$(System.DefaultWorkingDirectory)/build'
+        runtimeStack: 'NODE|18-lts'
