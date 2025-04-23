@@ -61,8 +61,8 @@ const FreelancerJobs = () => {
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
           />
-          <label htmlFor="category-select">Category</label>
-          <select id="category-select" onChange={e => setCategoryFilter(e.target.value)} value={categoryFilter}>
+          <label>Category</label>
+          <select onChange={e => setCategoryFilter(e.target.value)} value={categoryFilter}>
             <option value="All">All</option>
             <option value="Web Design">Web Design</option>
             <option value="App Development">App Development</option>
