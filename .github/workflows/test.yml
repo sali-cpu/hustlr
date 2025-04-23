@@ -32,5 +32,10 @@ jobs:
 
     - name: Run tests with coverage
       run: npm run test:coverage || true
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        files: ./coverage/lcov.info
+        fail_ci_if_error: true
 
 
