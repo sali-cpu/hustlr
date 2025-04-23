@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for Header.js</title>
+    <title>Code coverage report for HeaderClient.js</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="prettify.css" />
     <link rel="stylesheet" href="base.css" />
@@ -19,13 +19,13 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="index.html">All files</a> Header.js</h1>
+        <h1><a href="index.html">All files</a> HeaderClient.js</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">44.44% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/6</span>
+                <span class='fraction'>4/9</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">40% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/4</span>
+                <span class='fraction'>2/5</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">50% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/5</span>
+                <span class='fraction'>4/8</span>
             </div>
         
             
@@ -122,26 +122,26 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -172,59 +172,59 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React from "react";
-import { Link } from "react-router-dom";
-import '../stylesheets/Header.css';
-class Header extends React.Component {
-<span class="fstat-no" title="function not covered" >  co</span>nstructor(props) {
-<span class="cstat-no" title="statement not covered" >    super(props);</span>
-<span class="cstat-no" title="statement not covered" >    this.state = {</span>
-      showSidebar: false,
+import "../stylesheets/Final.css";
+&nbsp;
+class HeaderClient extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isMobileMenuOpen: false,
     };
   }
 &nbsp;
-  toggleSidebar = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >()</span> =&gt; {</span>
+  toggleMenu = <span class="fstat-no" title="function not covered" >()</span> =&gt; {
 <span class="cstat-no" title="statement not covered" >    this.setState(<span class="fstat-no" title="function not covered" >(p</span>revState) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
-      showSidebar: !prevState.showSidebar,
-    }));
+      isMobileMenuOpen: !prevState.isMobileMenuOpen,
+    }), <span class="fstat-no" title="function not covered" >()</span> =&gt; {
+<span class="cstat-no" title="statement not covered" >      if (this.state.isMobileMenuOpen) {</span>
+<span class="cstat-no" title="statement not covered" >        document.body.classList.add("show-mobile-menu");</span>
+      } else {
+<span class="cstat-no" title="statement not covered" >        document.body.classList.remove("show-mobile-menu");</span>
+      }
+    });
   };
 &nbsp;
-<span class="fstat-no" title="function not covered" >  re</span>nder() {
-<span class="cstat-no" title="statement not covered" >    return (</span>
-      &lt;&gt;
-  &lt;div className="h1"&gt;Hustlr.&lt;/div&gt;
-&lt;div className="header-buttons"&gt;
-          &lt;Link to="/SignUp" className="header-btn"&gt;Join&lt;/Link&gt;
-          &lt;Link to="/SignIn" className="header-btn"&gt;Sign In&lt;/Link&gt;
-        &lt;/div&gt;
-        
-&nbsp;
-&nbsp;
-&nbsp;
-        
-        &lt;div id="dashboard-toggle" onClick={this.toggleSidebar}&gt;☰&lt;/div&gt;
-&nbsp;
-        &lt;div id="sidebar" className={this.state.showSidebar ? "show" : ""}&gt;
-          &lt;Link to="/SignUp"&gt;
-          &lt;button&gt;Sign Up&lt;/button&gt;
-        &lt;/Link&gt;
-          
-        &lt;Link to="/"&gt;
-          &lt;button&gt;Home&lt;/button&gt;
-        &lt;/Link&gt;
-        &lt;a href="#about"&gt;
-     &lt;button&gt;About&lt;/button&gt;
-  &lt;/a&gt;
-&lt;/div&gt;
-&nbsp;
-        
-&lt;/&gt;
-&nbsp;
-    
+  render() {
+    return (
+      &lt;header className="head"&gt;
+        &lt;nav className="nbar"&gt;
+          &lt;a href="#" className="nlogo"&gt;
+            &lt;h2 className="logo-text"&gt;Hustlr.&lt;/h2&gt;
+          &lt;/a&gt;
+          &lt;ul className="nmenu"&gt;
+            &lt;button
+              id="menclose"
+              className="fas fa-times"
+              onClick={this.toggleMenu}
+            &gt;&lt;/button&gt;
+            &lt;li className="nitem"&gt;&lt;a href="#" className="nlink"&gt;Ongoing Projects&lt;/a&gt;&lt;/li&gt;
+            &lt;li className="nitem"&gt;&lt;a href="/ClientPayments" className="nlink"&gt;Earnings&lt;/a&gt;&lt;/li&gt;
+            &lt;li className="nitem"&gt;&lt;a href="#" className="nlink"&gt;Settings&lt;/a&gt;&lt;/li&gt;
+            &lt;li className="nitem"&gt;&lt;a href="#" className="nlink"&gt;Recent Activities&lt;/a&gt;&lt;/li&gt;
+            &lt;li className="nitem"&gt;&lt;a href="/" className="nlink"&gt;Sign Out&lt;/a&gt;&lt;/li&gt;
+          &lt;/ul&gt;
+          &lt;button
+            id="menopen"
+            className="fas fa-bars"
+            onClick={this.toggleMenu}
+          &gt;&lt;/button&gt;
+        &lt;/nav&gt;
+      &lt;/header&gt;
     );
   }
 }
 &nbsp;
-export default Header;
+export default HeaderClient;
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->

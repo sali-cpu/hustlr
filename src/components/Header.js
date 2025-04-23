@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import '../stylesheets/Header.css';
+//const Link = require("react-router-dom").Link;
 class Header extends React.Component {
   constructor(props) {
     super(props);

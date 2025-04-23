@@ -3,15 +3,15 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for Header.js</title>
+    <title>Code coverage report for src/App.js</title>
     <meta charset="utf-8" />
-    <link rel="stylesheet" href="prettify.css" />
-    <link rel="stylesheet" href="base.css" />
-    <link rel="shortcut icon" type="image/x-icon" href="favicon.png" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style type='text/css'>
         .coverage-summary .sorter {
-            background-image: url(sort-arrow-sprite.png);
+            background-image: url(../sort-arrow-sprite.png);
         }
     </style>
 </head>
@@ -19,34 +19,34 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="index.html">All files</a> Header.js</h1>
+        <h1><a href="../index.html">All files</a> / <a href="index.html">src</a> App.js</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/6</span>
+                <span class='fraction'>0/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/2</span>
+                <span class='fraction'>0/0</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/4</span>
+                <span class='fraction'>0/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/5</span>
+                <span class='fraction'>0/1</span>
             </div>
         
             
@@ -122,20 +122,21 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -170,61 +171,60 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React from "react";
-import { Link } from "react-router-dom";
-import '../stylesheets/Header.css';
-class Header extends React.Component {
-<span class="fstat-no" title="function not covered" >  co</span>nstructor(props) {
-<span class="cstat-no" title="statement not covered" >    super(props);</span>
-<span class="cstat-no" title="statement not covered" >    this.state = {</span>
-      showSidebar: false,
-    };
-  }
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">&nbsp;
+import Header from "./components/Header";
+import Footer from "./components/Footer";
+import Land from "./pages/Land";
+import Home from "./pages/Home";
+import SignUp from "./pages/SignUp";
+import SignIn from './pages/SignIn'
+import Client from "./pages/Client";
+import Freelancers from "./pages/Freelancer";
+import AdminCorrect from "./pages/AdminCorrect";
+import ClientJobs from "./pages/ClientJobs"; 
+import ClientPayments from "./pages/ClientPayments";
+import FreelancerJobs from "./pages/FreelancerJobs";
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 &nbsp;
-  toggleSidebar = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >()</span> =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    this.setState(<span class="fstat-no" title="function not covered" >(p</span>revState) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
-      showSidebar: !prevState.showSidebar,
-    }));
-  };
+import './App.css';
 &nbsp;
-<span class="fstat-no" title="function not covered" >  re</span>nder() {
-<span class="cstat-no" title="statement not covered" >    return (</span>
-      &lt;&gt;
-  &lt;div className="h1"&gt;Hustlr.&lt;/div&gt;
-&lt;div className="header-buttons"&gt;
-          &lt;Link to="/SignUp" className="header-btn"&gt;Join&lt;/Link&gt;
-          &lt;Link to="/SignIn" className="header-btn"&gt;Sign In&lt;/Link&gt;
-        &lt;/div&gt;
-        
-&nbsp;
-&nbsp;
-&nbsp;
-        
-        &lt;div id="dashboard-toggle" onClick={this.toggleSidebar}&gt;☰&lt;/div&gt;
-&nbsp;
-        &lt;div id="sidebar" className={this.state.showSidebar ? "show" : ""}&gt;
-          &lt;Link to="/SignUp"&gt;
-          &lt;button&gt;Sign Up&lt;/button&gt;
-        &lt;/Link&gt;
+function <span class="fstat-no" title="function not covered" >App(</span>) {
+<span class="cstat-no" title="statement not covered" >  return (</span>
+    &lt;Router&gt;
+      
+      &lt;section className="App"&gt;
+        &lt;Routes&gt;
           
-        &lt;Link to="/"&gt;
-          &lt;button&gt;Home&lt;/button&gt;
-        &lt;/Link&gt;
-        &lt;a href="#about"&gt;
-     &lt;button&gt;About&lt;/button&gt;
-  &lt;/a&gt;
-&lt;/div&gt;
+        &lt;Route
+            path="/"
+            element={
+              &lt;&gt;
+                &lt;Header/&gt;
+                &lt;Home /&gt;
+                &lt;Footer/&gt;
+              &lt;/&gt;
+            }
+          /&gt;
+          &lt;Route path="/SignUp" element={&lt;SignUp /&gt;} /&gt;
+          &lt;Route path="/SignIn" element={&lt;SignIn /&gt;} /&gt;
+          &lt;Route path="/Land" element={&lt;Land /&gt;} /&gt;
+          &lt;Route path="/Client" element={&lt;Client /&gt;} /&gt;
+          &lt;Route path="/Freelancer" element={&lt;Freelancers /&gt;} /&gt;
+          &lt;Route path="/Admin" element={&lt;AdminCorrect /&gt;} /&gt;
+          &lt;Route path="/ClientJobs" element={&lt;ClientJobs /&gt;} /&gt;
+          &lt;Route path="/ClientPayments" element={&lt;ClientPayments /&gt;} /&gt;
+          &lt;Route path="/FreelancerJobs" element={&lt;FreelancerJobs /&gt;} /&gt;
 &nbsp;
-        
-&lt;/&gt;
+        &lt;/Routes&gt;
+      &lt;/section&gt;
+      
+    &lt;/Router&gt;
+  );
 &nbsp;
-    
-    );
-  }
 }
 &nbsp;
-export default Header;
+export default App;
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -232,16 +232,16 @@ export default Header;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-04-23T17:14:32.228Z
+                at 2025-04-23T20:55:56.342Z
             </div>
-        <script src="prettify.js"></script>
+        <script src="../prettify.js"></script>
         <script>
             window.onload = function () {
                 prettyPrint();
             };
         </script>
-        <script src="sorter.js"></script>
-        <script src="block-navigation.js"></script>
+        <script src="../sorter.js"></script>
+        <script src="../block-navigation.js"></script>
     </body>
 </html>
     

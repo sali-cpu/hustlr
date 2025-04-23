@@ -1,8 +1,7 @@
 
 import React, { useEffect } from 'react';
 import '../stylesheets/Landing.css';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
+
 
 
 import hero1 from '../images/HeroJPG.jpg';
