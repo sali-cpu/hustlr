@@ -21,7 +21,7 @@
     "start": "NODE_OPTIONS=--openssl-legacy-provider react-scripts start",
     "build": "CI=false react-scripts build",
     "test": "react-scripts test",
-    "test:coverage": "react-scripts test --coverage",
+    "test:coverage": "react-scripts test --coverage --watchAll=false --runInBand --silent",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
