@@ -19,11 +19,20 @@ jobs:
       with:
         node-version: '18'
 
+    # Optional: clean npm cache if you've had weird install issues
+    - name: Clean npm cache (optional)
+      run: npm cache clean --force
+
     - name: Install dependencies
       run: npm install
 
+    # Make sure react-scripts (and others) are executable
+    - name: Fix permissions (optional but helpful on Linux)
+      run: chmod +x ./node_modules/.bin/*
+
     - name: Run tests with coverage
       run: npm run test:coverage
+
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
       with:
