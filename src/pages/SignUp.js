@@ -51,61 +51,86 @@ const SignUp = () => {
     signInWithPopup(googleAuth, googleProvider)
       .then((result) => {
         const user = result.user;
-
-
+        const userRef = ref(google_db, 'users/' + user.uid);
+  
         localStorage.setItem("userUID", user.uid);
         localStorage.setItem("userName", user.displayName);
         localStorage.setItem("userEmail", user.email);
-
-        if (adminEmails.includes(user.email)) {
-          goToPage("admin");
-        } else {
-          const role = document.querySelector('input[name="role"]:checked')?.value;
-          if (!role) {
-            alert("Please select a role before logging in.");
+  
+        // Check if user already exists
+        get(userRef).then((snapshot) => {
+          if (snapshot.exists()) {
+            alert("User already exists. Redirecting you to Sign In...");
+            navigate("/SignIn"); // Adjust this route to match your sign-in page
             return;
           }
-          goToPage(role);
-          set(ref(google_db, 'users/' + user.uid),{
-            role: role
-          });
-        }
-        
+  
+          if (adminEmails.includes(user.email)) {
+            goToPage("admin");
+          } else {
+            const role = document.querySelector('input[name="role"]:checked')?.value;
+            if (!role) {
+              alert("Please select a role before signing up.");
+              return;
+            }
+  
+            // Save new user only if they don't already exist
+            set(userRef, {
+              role: role
+            });
+  
+            goToPage(role);
+          }
+        });
       })
       .catch((error) => {
         console.error("Google sign-in error:", error);
         alert("404 error signing in!");
       });
   };
+  
 
   const handleMicrosoftSignIn = async () => {
     try {
       const result = await signInWithPopup(microsoftAuth, microsoftProvider);
       const user = result.user;
-
+      const userRef = ref(microsoft_db, 'users/' + user.uid);
+  
       localStorage.setItem("userUID", user.uid);
       localStorage.setItem("userName", user.displayName);
       localStorage.setItem("userEmail", user.email);
-
+  
+      // Check if user already exists
+      const snapshot = await get(userRef);
+      if (snapshot.exists()) {
+        alert("User already exists. Redirecting you to Sign In...");
+        navigate("/SignIn"); // Adjust this route to match your sign-in page
+        return;
+      }
+  
       if (adminEmails.includes(user.email)) {
         goToPage("admin");
       } else {
         const role = document.querySelector('input[name="role"]:checked')?.value;
         if (!role) {
-          alert("Please select a role before signing in.");
+          alert("Please select a role before signing up.");
           return;
         }
-        goToPage(role);
-        set(ref(microsoft_db, 'users/' + user.uid),{
+  
+        // Save new user only if they don't already exist
+        await set(userRef, {
           role: role
         });
+  
+        goToPage(role);
       }
+  
     } catch (error) {
       console.error("Microsoft sign-in error:", error);
       alert("Sign-in failed. Please try again.");
     }
   };
-
+  
 
   return (
     <>
