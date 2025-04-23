@@ -17,7 +17,8 @@
   "scripts": {
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
-    "start": "cross-env NODE_OPTIONS=--openssl-legacy-provider  react-scripts start",
+    
+    "start": "NODE_OPTIONS=--openssl-legacy-provider react-scripts start",
     "build": "CI=false react-scripts build",
     "test": "react-scripts test",
     "test:coverage": "react-scripts test --coverage",
