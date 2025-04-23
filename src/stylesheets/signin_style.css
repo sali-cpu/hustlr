@@ -1,0 +1,39 @@
+/* signin_style.css */
+.signup-container {
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+  }
+  
+  .signup-card {
+    width: 100%;
+    max-width: 400px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    padding: 2rem;
+  }
+  
+  .googlebtn,
+  .msbutton {
+    width: 100%;
+    margin-top: 1rem;
+    padding: 0.75rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  
+  .googlebtn {
+    background: #fff;
+    border: 1px solid #ddd;
+  }
+  
+  .msbutton {
+    background: #222;
+    color: white;
+  }
