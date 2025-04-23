@@ -1,0 +1,13 @@
+# dependencies
+/node_modules
+
+# testing
+/coverage
+
+# env files
+.env
+.env.local
+
+# system
+.DS_Store
+Thumbs.db
