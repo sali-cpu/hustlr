@@ -35,18 +35,41 @@ const dbConfig = {
   appId: "1:128973874970:web:5e3a03ff3aae804b6c6ea3"
 };
 
+  // Your web app's Firebase configuration
+  const applicationsConfig = {
+    apiKey: "AIzaSyBx-MGrWqHDQer4MV7n9KLqh_Tjg86kzRk",
+    authDomain: "applications-65151.firebaseapp.com",
+    databaseURL: "https://applications-65151-default-rtdb.firebaseio.com",
+    projectId: "applications-65151",
+    storageBucket: "applications-65151.firebasestorage.app",
+    messagingSenderId: "505122559159",
+    appId: "1:505122559159:web:e02ec1484f09239b7c6932"
+
+  };
+
+
+  // Initialize Firebase
+
+  
+
+
 
 // Initialize Google Firebase
 const googleApp = initializeApp(googleConfig);
 const googleAuth = getAuth(googleApp);
 const google_db = getDatabase(googleApp);
 
+
 // Initialize Microsoft Firebase
 const microsoftApp = initializeApp(microsoftConfig, "microsoftApp");
 const microsoftAuth = getAuth(microsoftApp);
 const microsoft_db = getDatabase(microsoftApp);
 
+const appliactions_app = initializeApp(applicationsConfig, "applications_app");
+const applications_db = getDatabase(appliactions_app);
+
+
 const databaseApp = initializeApp(dbConfig, "databaseApp");
 const db = getDatabase(databaseApp);
 
-export {  googleAuth, google_db, microsoftAuth, microsoft_db,db };
+export {  googleAuth, google_db, microsoftAuth, microsoft_db,db, applications_db };
