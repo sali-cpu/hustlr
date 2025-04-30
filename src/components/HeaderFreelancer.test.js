@@ -24,7 +24,7 @@ describe('HeaderFreelancer Component', () => {
 
   test('opens mobile menu and adds class to body', () => {
     render(<HeaderFreelancer />);
-    const openButton = screen.getByRole('button', { name: '' }); // grabs first button with no label (your fa-bars)
+    const openButton = screen.getByRole('button', { name: /Open menu/i }); // Use 'aria-label' for more specific selection
 
     fireEvent.click(openButton);
     expect(document.body.classList.contains('show-mobile-menu')).toBe(true);
@@ -32,9 +32,10 @@ describe('HeaderFreelancer Component', () => {
 
   test('closes mobile menu and removes class from body', () => {
     render(<HeaderFreelancer />);
-    const openButton = screen.getByRole('button', { name: '' });
-    fireEvent.click(openButton); // open
-    const closeButton = screen.getByRole('button', { name: '' });
+    const openButton = screen.getByRole('button', { name: /Open menu/i }); // open
+    fireEvent.click(openButton);
+
+    const closeButton = screen.getByRole('button', { name: /Close menu/i }); // Use 'aria-label' for more specific selection
     fireEvent.click(closeButton); // close
     expect(document.body.classList.contains('show-mobile-menu')).toBe(false);
   });
