@@ -33,6 +33,7 @@ class HeaderFreelancer extends React.Component {
               id="menclose"
               className="fas fa-times"
               onClick={this.toggleMenu}
+              aria-label="Close menu" // Added aria-label for better accessibility
             ></button>
             <li className="nitem"><a href="#" className="nlink">Ongoing Projects</a></li>
             <li className="nitem"><a href="#" className="nlink">Earnings</a></li>
@@ -44,6 +45,7 @@ class HeaderFreelancer extends React.Component {
             id="menopen"
             className="fas fa-bars"
             onClick={this.toggleMenu}
+            aria-label="Open menu" // Added aria-label for better accessibility
           ></button>
         </nav>
       </header>
