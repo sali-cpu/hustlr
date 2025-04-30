@@ -1,7 +1,7 @@
 import React from "react";
 import "../stylesheets/Final.css";
 
-class HeaderClient extends React.Component {
+class HeaderFreelancer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -51,4 +51,4 @@ class HeaderClient extends React.Component {
   }
 }
 
-export default HeaderClient;
+export default HeaderFreelancer;
