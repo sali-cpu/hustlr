@@ -2,16 +2,38 @@ import React, { useEffect, useState } from 'react';
 import '../stylesheets/FreelancerJob.css';
 import HeaderFreelancer from '../components/HeaderFreelancer';
 
-import { get, ref } from "firebase/database";
-import { db } from '../firebaseConfig';
+import { get, push, ref } from "firebase/database";
+import { db, applications_db } from '../firebaseConfig';
 
 const FreelancerJobs = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [jobs, setjobs] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [appliedJobs, setAppliedJobs] = useState([]);
+
+  const [applicationData, setApplicationData] = useState({
+    name: '',
+    surname: '',
+    skills: '',
+    motivation: '',
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setApplicationData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
   useEffect(() => {
+    const userUID = localStorage.getItem("userUID");
     const jobsRef = ref(db, 'jobs');
+    const applicationsRef = ref(applications_db, 'applications');
+
+    // Fetch jobs
     get(jobsRef).then((snapshot) => {
       if (snapshot.exists()) {
         const jobsArray = Object.entries(snapshot.val()).map(([id, data]) => ({
@@ -20,7 +42,27 @@ const FreelancerJobs = () => {
         }));
         setjobs(jobsArray);
       } else {
-        console.log('No data available');
+        console.log('No job data available');
+      }
+    }).catch((error) => {
+      console.error(error);
+    });
+
+    // Fetch applications for this user
+    get(applicationsRef).then((snapshot) => {
+      if (snapshot.exists()) {
+        const applicationsData = snapshot.val();
+        const userAppliedJobIds = [];
+
+        Object.entries(applicationsData).forEach(([jobId, jobApplications]) => {
+          Object.values(jobApplications).forEach((application) => {
+            if (application.applicant_userUID === userUID) {
+              userAppliedJobIds.push(jobId);
+            }
+          });
+        });
+
+        setAppliedJobs(userAppliedJobIds);
       }
     }).catch((error) => {
       console.error(error);
@@ -33,11 +75,42 @@ const FreelancerJobs = () => {
     return matchesSearch && matchesCategory;
   });
 
+  const openModal = (job) => {
+    setSelectedJob(job);
+    setShowModal(true);
+    setApplicationData({
+      name: '',
+      surname: '',
+      skills: '',
+      motivation: '',
+    });
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setSelectedJob(null);
+  };
+
+  const handleSubmit = () => {
+    const applicationsRef = ref(applications_db, `applications/${selectedJob.id}`);
+    push(applicationsRef, {
+      ...applicationData,
+      applicant_userUID: localStorage.getItem("userUID"),
+      jobTitle: selectedJob.title,
+      timestamp: Date.now(),
+    }).then(() => {
+      alert("✅ Thank you for applying. You will hear a response soon.");
+      setAppliedJobs(prev => [...prev, selectedJob.id]);
+      closeModal();
+    }).catch((error) => {
+      alert("❌ Failed to submit application: " + error.message);
+    });
+  };
+
   return (
     <>
       <HeaderFreelancer />
 
-      {/* --- Header Section --- */}
       <header className="client-jobs-header">
         <section className="header-title-area">
           <h1 className="main-title">Freelancer Job Board</h1>
@@ -81,7 +154,12 @@ const FreelancerJobs = () => {
                 <p><strong>Category:</strong> {job.category}</p>
                 <p><strong>Budget:</strong> ${job.budget}</p>
                 <p><strong>Deadline:</strong> {job.deadline}</p>
-                <button>Apply</button>
+                <button
+                  onClick={() => openModal(job)}
+                  disabled={appliedJobs.includes(job.id)}
+                >
+                  {appliedJobs.includes(job.id) ? "Pending" : "Apply"}
+                </button>
               </div>
             ))
           ) : (
@@ -89,6 +167,58 @@ const FreelancerJobs = () => {
           )}
         </section>
       </main>
+
+      {showModal && selectedJob && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h2>Apply for {selectedJob.title}</h2>
+            <form>
+              <label>Name:</label>
+              <input
+                type="text"
+                name="name"
+                placeholder="Enter your name"
+                value={applicationData.name}
+                onChange={handleChange}
+              />
+
+              <label>Surname:</label>
+              <input
+                type="text"
+                name="surname"
+                placeholder="Enter your surname"
+                value={applicationData.surname}
+                onChange={handleChange}
+              />
+
+              <label>Skills (comma separated):</label>
+              <input
+                type="text"
+                name="skills"
+                placeholder="e.g., JavaScript, React, Firebase"
+                value={applicationData.skills}
+                onChange={handleChange}
+              />
+
+              <label>Motivation:</label>
+              <textarea
+                name="motivation"
+                placeholder="Write your motivation here..."
+                rows={5}
+                value={applicationData.motivation}
+                onChange={handleChange}
+              ></textarea>
+
+              <div className="modal-buttons">
+                <button type="button" onClick={closeModal}>Cancel</button>
+                <button type="button" className="submit-button" onClick={handleSubmit}>
+                  Submit
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </>
   );
 };
