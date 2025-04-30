@@ -9,6 +9,26 @@ const FreelancerJobs = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [jobs, setjobs] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [appliedJobs, setAppliedJobs] = useState([]);
+
+  // 🆕 Application form state
+  const [applicationData, setApplicationData] = useState({
+    name: '',
+    surname: '',
+    skills: '',
+    motivation: '',
+  });
+
+  // 🆕 Handle input changes
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setApplicationData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
   useEffect(() => {
     const jobsRef = ref(db, 'jobs');
@@ -33,11 +53,32 @@ const FreelancerJobs = () => {
     return matchesSearch && matchesCategory;
   });
 
+  const openModal = (job) => {
+    setSelectedJob(job);
+    setShowModal(true);
+    setApplicationData({
+      name: '',
+      surname: '',
+      skills: '',
+      motivation: '',
+    });
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setSelectedJob(null);
+  };
+
+  const handleSubmit = () => {
+    alert("Thank you for applying. You will hear a response soon.");
+    setAppliedJobs([...appliedJobs, selectedJob.id]);
+    closeModal();
+  };
+
   return (
     <>
       <HeaderFreelancer />
 
-      {/* --- Header Section --- */}
       <header className="client-jobs-header">
         <section className="header-title-area">
           <h1 className="main-title">Freelancer Job Board</h1>
@@ -81,7 +122,9 @@ const FreelancerJobs = () => {
                 <p><strong>Category:</strong> {job.category}</p>
                 <p><strong>Budget:</strong> ${job.budget}</p>
                 <p><strong>Deadline:</strong> {job.deadline}</p>
-                <button>Apply</button>
+                <button onClick={() => openModal(job)}>
+                  {appliedJobs.includes(job.id) ? "Submit" : "Apply"}
+                </button>
               </div>
             ))
           ) : (
@@ -89,6 +132,58 @@ const FreelancerJobs = () => {
           )}
         </section>
       </main>
+
+      {showModal && selectedJob && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h2>Apply for {selectedJob.title}</h2>
+            <form>
+              <label>Name:</label>
+              <input
+                type="text"
+                name="name"
+                placeholder="Enter your name"
+                value={applicationData.name}
+                onChange={handleChange}
+              />
+
+              <label>Surname:</label>
+              <input
+                type="text"
+                name="surname"
+                placeholder="Enter your surname"
+                value={applicationData.surname}
+                onChange={handleChange}
+              />
+
+              <label>Skills (comma separated):</label>
+              <input
+                type="text"
+                name="skills"
+                placeholder="e.g., JavaScript, React, Firebase"
+                value={applicationData.skills}
+                onChange={handleChange}
+              />
+
+              <label>Motivation:</label>
+              <textarea
+                name="motivation"
+                placeholder="Write your motivation here..."
+                rows={5}
+                value={applicationData.motivation}
+                onChange={handleChange}
+              ></textarea>
+
+              <div className="modal-buttons">
+                <button type="button" onClick={closeModal}>Cancel</button>
+                <button type="button" className="submit-button" onClick={handleSubmit}>
+                  Submit
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </>
   );
 };
