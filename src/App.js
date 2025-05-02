@@ -11,6 +11,8 @@ import AdminCorrect from "./pages/AdminCorrect";
 import ClientJobs from "./pages/ClientJobs"; 
 import ClientPayments from "./pages/ClientPayments";
 import FreelancerJobs from "./pages/FreelancerJobs";
+import AdminJobs from "./pages/AdminJobs";
+
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
@@ -42,6 +44,8 @@ function App() {
           <Route path="/ClientJobs" element={<ClientJobs />} />
           <Route path="/ClientPayments" element={<ClientPayments />} />
           <Route path="/FreelancerJobs" element={<FreelancerJobs />} />
+          <Route path="/AdminJobs" element={<AdminJobs />} />
+
 
         </Routes>
       </section>
