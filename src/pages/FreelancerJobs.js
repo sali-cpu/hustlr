@@ -154,6 +154,21 @@ const FreelancerJobs = () => {
                 <p><strong>Category:</strong> {job.category}</p>
                 <p><strong>Budget:</strong> ${job.budget}</p>
                 <p><strong>Deadline:</strong> {job.deadline}</p>
+
+                {/* Display Milestones */}
+                {job.milestones && job.milestones.length > 0 && (
+                  <div className="milestones-section">
+                  <h4>Milestones:</h4>
+                  <ul>
+                      {job.milestones.map((milestone, index) => (
+                      <li key={index}>
+                         <p><strong>Milestone {index + 1}:</strong> {milestone.description}</p>
+                        <p><strong>Amount:</strong> ${milestone.amount}</p>
+                        </li>
+                      ))}
+                  </ul>
+                </div>
+              )}
                 <button
                   onClick={() => openModal(job)}
                   disabled={appliedJobs.includes(job.id)}
