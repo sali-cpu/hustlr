@@ -1,0 +1,60 @@
+.admin-jobs-container {
+    padding: 2rem;
+    background-color: #f0f2f5;
+    min-height: 100vh;
+  }
+  
+  .admin-title {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 2rem;
+    color: #333;
+    text-align: center;
+  }
+  
+  .admin-job-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .admin-job-card {
+    background-color: #fff;
+    border-left: 6px solid #3498db;
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+  
+  .admin-job-card h3 {
+    margin-top: 0;
+    color: #2c3e50;
+  }
+  
+  .admin-job-card p {
+    margin: 0.4rem 0;
+    color: #555;
+  }
+  
+  .delete-button {
+    margin-top: 1rem;
+    padding: 0.6rem 1.2rem;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+  }
+  
+  .delete-button:hover {
+    background-color: #c0392b;
+  }
+  
+  .no-jobs-message {
+    text-align: center;
+    color: #888;
+    font-style: italic;
+  }
+  
