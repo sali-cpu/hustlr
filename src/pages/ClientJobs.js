@@ -12,6 +12,11 @@ const initialFormData = {
   category: '',
   budget: '',
   deadline: '',
+  milestones: [
+    { description: '', amount: '' },
+    { description: '', amount: '' },
+    { description: '', amount: '' }
+  ] //newly added 
 };
 
 const userUID = localStorage.getItem("userUID");
@@ -31,7 +36,13 @@ const ClientJobs = () => {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
+  //newly added 
+  const handleMilestoneChange = (index, field, value) => {
+    const updatedMilestones = [...formData.milestones];
+    updatedMilestones[index][field] = value;
+    setFormData({ ...formData, milestones: updatedMilestones });
+  };
+  
   const handleEditClick = (jobToEdit) => {
     setEditingJobId(jobToEdit.id);
     setFormData({
@@ -40,6 +51,11 @@ const ClientJobs = () => {
       category: jobToEdit.category,
       budget: jobToEdit.budget,
       deadline: jobToEdit.deadline,
+      milestones: jobToEdit.milestones ?? [
+        { description: '', amount: '' },
+        { description: '', amount: '' },
+        { description: '', amount: '' }
+      ]
     });
     formSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -123,7 +139,7 @@ const ClientJobs = () => {
         await set(newJobRef, {
           ...formData,
           budget: parseFloat(formData.budget),
-          clientUID: userUID,
+          clientUID: localStorage.getItem("userUID"),
         });
         //alert("✅ Job added to Firebase");
       }
@@ -190,6 +206,24 @@ const ClientJobs = () => {
                     <p><strong>Budget:</strong> ${job.budget ? job.budget.toLocaleString() : 'N/A'}</p>
                     <p><strong>Deadline:</strong> {job.deadline ? new Date(job.deadline + 'T00:00:00').toLocaleDateString() : 'N/A'}</p>
                     <p className="job-description"><strong>Description:</strong> {job.description}</p>
+                    
+                    {/* Display Milestones */}
+                    {job.milestones && job.milestones.length > 0 && (
+                  <section className="milestones">
+                  <h4>Milestones:</h4>
+                  <ul>
+                    {job.milestones.map((milestone, index) => (
+                        <li key={index}>
+                        <p><strong>Milestone {index + 1}:</strong></p>
+                         <p>{milestone.description}</p>
+                        <p><strong>Amount:</strong> ${milestone.amount}</p>
+                      </li>
+                    ))}
+                 </ul>
+                 </section>
+                )}
+
+
                     <footer className="job-actions">
                       <button onClick={() => handleViewApplicants(job.id, job.title)} className="job-btn view-btn">View</button>
                       <button onClick={() => handleEditClick(job)} className="job-btn edit-btn">Edit</button>
@@ -262,6 +296,34 @@ const ClientJobs = () => {
         <label htmlFor="deadline">Deadline</label>
         <input id="deadline" type="date" name="deadline" value={formData.deadline} onChange={handleChange} required />
       </fieldset>
+      <fieldset>
+  <legend>Milestone Payments (Optional)</legend>
+
+  {formData.milestones?.map((milestone, index) => (
+    <div className="milestone-group" key={index}>
+      <label htmlFor={`milestone-description-${index}`}>Milestone {index + 1} Description</label>
+      <input
+        id={`milestone-description-${index}`}
+        type="text"
+        value={milestone.description}
+        onChange={(e) => handleMilestoneChange(index, 'description', e.target.value)}
+        placeholder={`Describe milestone ${index + 1}`}
+      />
+
+      <label htmlFor={`milestone-amount-${index}`}>Milestone {index + 1} Amount (USD)</label>
+      <input
+        id={`milestone-amount-${index}`}
+        type="number"
+        value={milestone.amount}
+        onChange={(e) => handleMilestoneChange(index, 'amount', e.target.value)}
+        min="0"
+        step="any"
+        placeholder="Amount"
+      />
+    </div>
+  ))}
+</fieldset>
+
 
       <footer>
         <button type="submit">{editingJobId ? 'Save Changes' : 'Create Job'}</button>
