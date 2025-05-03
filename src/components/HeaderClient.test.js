@@ -4,6 +4,7 @@ import HeaderClient from "./HeaderClient";
 import React from "react"; // 👈 Required for JSX in some test environments
 
 
+
 test("menu toggle opens and closes mobile menu", () => {
   render(<HeaderClient />);
 
