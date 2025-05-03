@@ -13,6 +13,13 @@ googleProvider.setCustomParameters({ prompt: "select_account" });
 const microsoftProvider = new OAuthProvider("microsoft.com");
 microsoftProvider.setCustomParameters({ prompt: "select_account" });
 
+const adminEmails = [
+
+  "2680440@students.wits.ac.za",
+  "1602758@students.wits.ac.za",
+  
+];
+
 const SignIn = () => {
   const navigate = useNavigate();
 
@@ -42,6 +49,11 @@ const SignIn = () => {
       localStorage.setItem("userUID", user.uid);
       localStorage.setItem("userName", user.displayName);
       localStorage.setItem("userEmail", user.email);
+
+      if (adminEmails.includes(user.email)) {
+        navigate("/Admin");
+        return;
+      }
 
       // Check if user exists in DB
       const snapshot = await get(userRef);
