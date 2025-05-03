@@ -64,10 +64,7 @@ const SignUp = () => {
             navigate("/SignIn"); // Adjust this route to match your sign-in page
             return;
           }
-  
-          if (adminEmails.includes(user.email)) {
-            goToPage("admin");
-          } else {
+         
             const role = document.querySelector('input[name="role"]:checked')?.value;
             if (!role) {
               alert("Please select a role before signing up.");
@@ -80,7 +77,7 @@ const SignUp = () => {
             });
   
             goToPage(role);
-          }
+          
         });
       })
       .catch((error) => {
@@ -108,9 +105,7 @@ const SignUp = () => {
         return;
       }
   
-      if (adminEmails.includes(user.email)) {
-        goToPage("admin");
-      } else {
+     
         const role = document.querySelector('input[name="role"]:checked')?.value;
         if (!role) {
           alert("Please select a role before signing up.");
@@ -123,7 +118,7 @@ const SignUp = () => {
         });
   
         goToPage(role);
-      }
+      
   
     } catch (error) {
       console.error("Microsoft sign-in error:", error);
