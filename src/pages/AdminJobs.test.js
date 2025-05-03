@@ -4,12 +4,13 @@ import AdminJobs from './AdminJobs';
 import { get, remove } from 'firebase/database';
 import { MemoryRouter } from 'react-router-dom';
 
-// Mock Firebase
 jest.mock('firebase/database', () => ({
-  ref: jest.fn(),
-  get: jest.fn(),
-  remove: jest.fn(),
-}));
+    getDatabase: jest.fn(),  // ✅ Add this line
+    ref: jest.fn(),
+    get: jest.fn(),
+    remove: jest.fn(),
+  }));
+  
 
 describe('AdminJobs Component', () => {
   beforeEach(() => {
