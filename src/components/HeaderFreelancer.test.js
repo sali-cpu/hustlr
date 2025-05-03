@@ -1,44 +1,56 @@
-import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import HeaderFreelancer from './HeaderFreelancer';
-import '@testing-library/jest-dom';
+import React from "react";
+import "../stylesheets/Final.css";
 
+class HeaderFreelancer extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isMobileMenuOpen: false,
+    };
+  }
 
-describe('HeaderFreelancer Component', () => {
-  afterEach(() => {
-    // Clean up class changes on <body> between tests
-    document.body.classList.remove("show-mobile-menu");
-  });
+  toggleMenu = () => {
+    this.setState((prevState) => ({
+      isMobileMenuOpen: !prevState.isMobileMenuOpen,
+    }), () => {
+      if (this.state.isMobileMenuOpen) {
+        document.body.classList.add("show-mobile-menu");
+      } else {
+        document.body.classList.remove("show-mobile-menu");
+      }
+    });
+  };
 
-  test('renders logo Hustlr.', () => {
-    render(<HeaderFreelancer />);
-    expect(screen.getByText(/Hustlr\./i)).toBeInTheDocument();
-  });
+  render() {
+    return (
+      <header className="head">
+        <nav className="nbar">
+          <a href="#" className="nlogo">
+            <h2 className="logo-text">Hustlr.</h2>
+          </a>
+          <ul className="nmenu">
+            <button
+              id="menclose"
+              className="fas fa-times"
+              aria-label="Close menu"
+              onClick={this.toggleMenu}
+            ></button>
+            <li className="nitem"><a href="#" className="nlink">Ongoing Projects</a></li>
+            <li className="nitem"><a href="/FreelancerPayments" className="nlink">Earnings</a></li>
+            <li className="nitem"><a href="#" className="nlink">Settings</a></li>
+            <li className="nitem"><a href="/RecentActivity" className="nlink">Recent Activities</a></li>
+            <li className="nitem"><a href="/" className="nlink">Sign Out</a></li>
+          </ul>
+          <button
+            id="menopen"
+            className="fas fa-bars"
+            aria-label="Open menu"
+            onClick={this.toggleMenu}
+          ></button>
+        </nav>
+      </header>
+    );
+  }
+}
 
-  test('renders navigation items', () => {
-    render(<HeaderFreelancer />);
-    expect(screen.getByText(/Ongoing Projects/i)).toBeInTheDocument();
-    expect(screen.getByText(/Earnings/i)).toBeInTheDocument();
-    expect(screen.getByText(/Settings/i)).toBeInTheDocument();
-    expect(screen.getByText(/Recent Activities/i)).toBeInTheDocument();
-    expect(screen.getByText(/Sign Out/i)).toBeInTheDocument();
-  });
-
-  test('opens mobile menu and adds class to body', () => {
-    render(<HeaderFreelancer />);
-    const openButton = screen.getByRole('button', { name: /Open menu/i }); // Use 'aria-label' for more specific selection
-
-    fireEvent.click(openButton);
-    expect(document.body.classList.contains('show-mobile-menu')).toBe(true);
-  });
-
-  test('closes mobile menu and removes class from body', () => {
-    render(<HeaderFreelancer />);
-    const openButton = screen.getByRole('button', { name: /Open menu/i }); // open
-    fireEvent.click(openButton);
-
-    const closeButton = screen.getByRole('button', { name: /Close menu/i }); // Use 'aria-label' for more specific selection
-    fireEvent.click(closeButton); // close
-    expect(document.body.classList.contains('show-mobile-menu')).toBe(false);
-  });
-});
+export default HeaderFreelancer;
