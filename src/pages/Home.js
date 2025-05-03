@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import '../stylesheets/Landing.css';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import { Link } from "react-router-dom";
 
 
 import hero1 from '../images/HeroJPG.jpg';
@@ -68,18 +69,25 @@ function Home() {
         <section className="categories">
           <h2>Explore Categories</h2>
           <div className="category-grid">
+            <Link to="/SignUp">
             <div className="category-card">
               <img src={job} alt="Job Icon" />
               <p>Post and Apply for Jobs</p>
             </div>
+            </Link>
+
+            <Link to="/SignUp">
             <div className="category-card">
               <img src={task} alt="Tasks Icon" />
               <p>Manage Tasks & Milestones</p>
             </div>
+            </Link>
+            <Link to="/SignUp">
             <div className="category-card">
               <img src={payment} alt="Payment Icon" />
               <p>Secure Milestone-Based Payment</p>
             </div>
+            </Link>
           </div>
         </section>
       </div>
