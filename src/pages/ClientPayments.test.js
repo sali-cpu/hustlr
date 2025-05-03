@@ -8,6 +8,7 @@ import { getDatabase } from 'firebase/database';
 
 // Mock Firebase
 jest.mock('firebase/database', () => ({
+  getDatabase: jest.fn(),  // Mock getDatabase
   ref: jest.fn(),
   set: jest.fn(),
   push: jest.fn(),
