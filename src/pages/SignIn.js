@@ -1,7 +1,7 @@
 import React from "react";
 import '../stylesheets/signin_style.css';
 import google_icon from '../images/google_icon.png';
-import micro_icon from '../images/micro_icon.png';
+import micro_icon from '../images/micro_icon.svg';
 import { googleAuth, google_db, microsoftAuth, microsoft_db } from "../firebaseConfig";
 import { ref, get } from "firebase/database";
 import { GoogleAuthProvider, OAuthProvider, signInWithPopup } from "firebase/auth";
@@ -77,7 +77,7 @@ const SignIn = () => {
           <header className="signup-header">
             <h1>Sign in to Hustlr</h1>
           </header>
-
+          <p> <b>Pick Preffered Method</b> </p>
           <section className="signup-form">
             <button className="googlebtn" onClick={handleGoogleSignInClick}>
               <img src={google_icon} alt="Google" />
@@ -94,7 +94,7 @@ const SignIn = () => {
 
           <footer className="signup-footer">
             <p>
-              By clicking continue, you agree to our{" "}
+              By clicking sign in, you agree to our{" "}
               <a href="terms.html" target="_blank" rel="noopener noreferrer">
                 Terms of Service
               </a>
