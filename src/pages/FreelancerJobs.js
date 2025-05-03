@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import '../stylesheets/FreelancerJob.css';
 import HeaderFreelancer from '../components/HeaderFreelancer';
 
-import { get, ref } from "firebase/database";
-import { db } from '../firebaseConfig';
+import { get, push, ref } from "firebase/database";
+import { db, applications_db } from '../firebaseConfig';
 
 const FreelancerJobs = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -13,7 +13,6 @@ const FreelancerJobs = () => {
   const [selectedJob, setSelectedJob] = useState(null);
   const [appliedJobs, setAppliedJobs] = useState([]);
 
-  // 🆕 Application form state
   const [applicationData, setApplicationData] = useState({
     name: '',
     surname: '',
@@ -21,7 +20,6 @@ const FreelancerJobs = () => {
     motivation: '',
   });
 
-  // 🆕 Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setApplicationData(prev => ({
@@ -31,7 +29,11 @@ const FreelancerJobs = () => {
   };
 
   useEffect(() => {
+    const userUID = localStorage.getItem("userUID");
     const jobsRef = ref(db, 'jobs');
+    const applicationsRef = ref(applications_db, 'applications');
+
+    // Fetch jobs
     get(jobsRef).then((snapshot) => {
       if (snapshot.exists()) {
         const jobsArray = Object.entries(snapshot.val()).map(([id, data]) => ({
@@ -40,7 +42,27 @@ const FreelancerJobs = () => {
         }));
         setjobs(jobsArray);
       } else {
-        console.log('No data available');
+        console.log('No job data available');
+      }
+    }).catch((error) => {
+      console.error(error);
+    });
+
+    // Fetch applications for this user
+    get(applicationsRef).then((snapshot) => {
+      if (snapshot.exists()) {
+        const applicationsData = snapshot.val();
+        const userAppliedJobIds = [];
+
+        Object.entries(applicationsData).forEach(([jobId, jobApplications]) => {
+          Object.values(jobApplications).forEach((application) => {
+            if (application.applicant_userUID === userUID) {
+              userAppliedJobIds.push(jobId);
+            }
+          });
+        });
+
+        setAppliedJobs(userAppliedJobIds);
       }
     }).catch((error) => {
       console.error(error);
@@ -70,9 +92,19 @@ const FreelancerJobs = () => {
   };
 
   const handleSubmit = () => {
-    alert("Thank you for applying. You will hear a response soon.");
-    setAppliedJobs([...appliedJobs, selectedJob.id]);
-    closeModal();
+    const applicationsRef = ref(applications_db, `applications/${selectedJob.id}`);
+    push(applicationsRef, {
+      ...applicationData,
+      applicant_userUID: localStorage.getItem("userUID"),
+      jobTitle: selectedJob.title,
+      timestamp: Date.now(),
+    }).then(() => {
+      alert("✅ Thank you for applying. You will hear a response soon.");
+      setAppliedJobs(prev => [...prev, selectedJob.id]);
+      closeModal();
+    }).catch((error) => {
+      alert("❌ Failed to submit application: " + error.message);
+    });
   };
 
   return (
@@ -122,8 +154,26 @@ const FreelancerJobs = () => {
                 <p><strong>Category:</strong> {job.category}</p>
                 <p><strong>Budget:</strong> ${job.budget}</p>
                 <p><strong>Deadline:</strong> {job.deadline}</p>
-                <button onClick={() => openModal(job)}>
-                  {appliedJobs.includes(job.id) ? "Submit" : "Apply"}
+
+                {/* Display Milestones */}
+                {job.milestones && job.milestones.length > 0 && (
+                  <div className="milestones-section">
+                  <h4>Milestones:</h4>
+                  <ul>
+                      {job.milestones.map((milestone, index) => (
+                      <li key={index}>
+                         <p><strong>Milestone {index + 1}:</strong> {milestone.description}</p>
+                        <p><strong>Amount:</strong> ${milestone.amount}</p>
+                        </li>
+                      ))}
+                  </ul>
+                </div>
+              )}
+                <button
+                  onClick={() => openModal(job)}
+                  disabled={appliedJobs.includes(job.id)}
+                >
+                  {appliedJobs.includes(job.id) ? "Pending" : "Apply"}
                 </button>
               </div>
             ))
