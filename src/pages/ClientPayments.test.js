@@ -3,6 +3,8 @@ import ClientJobs from './ClientJobs';
 import { db } from '../firebaseConfig';
 import { set, ref, push } from 'firebase/database';
 import '@testing-library/jest-dom';
+import { getDatabase } from 'firebase/database';
+
 
 // Mock Firebase
 jest.mock('firebase/database', () => ({
