@@ -51,6 +51,50 @@ describe('AdminJobs Component', () => {
     expect(screen.getByText(/\$100/)).toBeInTheDocument();
   });
 
+    test('calls remove and updates state when delete button is clicked', async () => {
+  // Mock initial job data
+  get.mockResolvedValueOnce({
+    exists: () => true,
+    val: () => ({
+      job1: {
+        title: 'Test Job 1',
+        description: 'Description 1',
+        category: 'Category 1',
+        budget: '100',
+        deadline: '2025-05-01',
+      },
+    }),
+  });
+
+  // Mock remove to succeed
+  remove.mockResolvedValueOnce();
+
+  // Mock alert to suppress actual popup
+  window.alert = jest.fn();
+
+  render(
+    <MemoryRouter>
+      <AdminJobs />
+    </MemoryRouter>
+  );
+
+  // Ensure job is present
+  expect(await screen.findByText('Test Job 1')).toBeInTheDocument();
+
+  const deleteButton = screen.getByText('Delete Job Permanently');
+  fireEvent.click(deleteButton);
+
+  // 🔍 Assert .remove() was called
+  expect(remove).toHaveBeenCalled();
+
+  // 🔍 Assert alert was shown
+  expect(window.alert).toHaveBeenCalledWith('Job deleted successfully.');
+
+  // 🔍 Ensure the job is no longer rendered
+  expect(screen.queryByText('Test Job 1')).not.toBeInTheDocument();
+});
+
+
   test('shows message when no jobs are available', async () => {
     get.mockResolvedValueOnce({
       exists: () => false,
