@@ -1,6 +1,8 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import HeaderFreelancer from './HeaderFreelancer';
+import '@testing-library/jest-dom';
+
 
 describe('HeaderFreelancer Component', () => {
   afterEach(() => {
