@@ -2,7 +2,7 @@ import React from "react";
 import '../stylesheets/signup_style.css';
 //import logo from '../images/logo.png';
 import google_icon from '../images/google_icon.png';
-import micro_icon from '../images/micro_icon.png';
+import micro_icon from '../images/micro_icon.svg';
 // Import Firebase modules
 import { googleAuth, google_db, microsoftAuth, microsoft_db} from "../firebaseConfig";
 import { get,ref, set, child} from "firebase/database";
@@ -146,7 +146,7 @@ const SignUp = () => {
             <h1>Sign up to Hustlr</h1>
             
           </header>
-          <p>Pick a role</p>
+          <p> <b>Pick a role</b></p>
           
           <section className="signup-form">
             {/*<label className="form-control" htmlFor="Admin">
@@ -190,10 +190,15 @@ const SignUp = () => {
               Sign in with Microsoft
             </button>
           </section>
-
+          <p>
+              Already a user ? {" "}
+              <a href="/SignIn" rel="noopener noreferrer">
+                Sign In 
+              </a>
+            </p>
           <footer className="signup-footer">
             <p>
-              By clicking continue, you agree to our{" "}
+              By clicking sign up, you agree to our{" "}
               <a href="terms.html" rel="noopener noreferrer">
                 Terms of Service
               </a>
