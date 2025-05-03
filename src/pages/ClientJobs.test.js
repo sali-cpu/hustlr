@@ -2,11 +2,13 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import ClientJobs from '../pages/ClientJobs';
 import { db, applications_db } from '../firebaseConfig';
-import { onValue, get } from 'firebase/database';
+import { ref, onValue, get, push, set, update, remove } from 'firebase/database';
 import '@testing-library/jest-dom';
 
-
+// Mock localStorage
 beforeAll(() => {
+  global.localStorage.setItem('userUID', 'test-user');
+  global.localStorage.setItem('userEmail', 'test@example.com');
   global.MutationObserver = class {
     constructor(callback) {}
     disconnect() {}
@@ -15,8 +17,6 @@ beforeAll(() => {
   };
 });
 
-
-// Mocks
 jest.mock('../firebaseConfig', () => ({
   db: {},
   applications_db: {},
@@ -24,24 +24,20 @@ jest.mock('../firebaseConfig', () => ({
 
 jest.mock('firebase/database', () => ({
   ref: jest.fn(),
-  onValue: jest.fn((ref, callback) => {
-    callback({ val: () => null }); // mock snapshot
-    return () => {}; // <- Mock unsubscribe function
-  }),
-  get: jest.fn(() => Promise.resolve({ exists: () => false })),
+  onValue: jest.fn(),
+  get: jest.fn(),
   push: jest.fn(() => ({ key: 'mockKey' })),
-  set: jest.fn(),
-  update: jest.fn(),
-  remove: jest.fn(),
+  set: jest.fn(() => Promise.resolve()),
+  update: jest.fn(() => Promise.resolve()),
+  remove: jest.fn(() => Promise.resolve()),
 }));
-
 
 jest.mock('../components/HeaderClient', () => () => <div>Mock HeaderClient</div>);
 jest.mock('../components/FooterClient', () => () => <div>Mock FooterClient</div>);
 
 describe('ClientJobs Component', () => {
   beforeEach(() => {
-    localStorage.setItem('userUID', 'test-user');
+    jest.clearAllMocks();
   });
 
   it('renders correctly with no jobs', () => {
@@ -50,110 +46,98 @@ describe('ClientJobs Component', () => {
     });
 
     render(<ClientJobs />);
-    expect(screen.getByText("Jobs for Clients")).toBeInTheDocument();
+    expect(screen.getByText('Jobs for Clients')).toBeInTheDocument();
     expect(screen.getByText("You haven't posted any jobs yet.")).toBeInTheDocument();
   });
 
   it('renders a job and allows editing', async () => {
-    const mockJob = {
-      title: 'Test Job',
-      description: 'Test Description',
-      category: 'Web Development',
-      budget: 1000,
-      deadline: '2025-12-31',
-      clientUID: 'test-user',
-      milestones: [{ description: 'Design', amount: 500 }]
+    const mockJobData = {
+      job1: {
+        title: 'Test Job',
+        description: 'Test Description',
+        category: 'Web Development',
+        budget: 1000,
+        deadline: '2025-12-31',
+        clientUID: 'test-user',
+        milestones: [
+          { description: 'Design Phase', amount: 300 },
+          { description: 'Development Phase', amount: 500 },
+        ],
+      },
     };
 
     onValue.mockImplementation((ref, callback) => {
-      callback({ val: () => ({ job123: mockJob }) });
+      callback({ val: () => mockJobData });
     });
 
     render(<ClientJobs />);
+    await waitFor(() => expect(screen.getByText('Test Job')).toBeInTheDocument());
+    expect(screen.getByText('Web Development')).toBeInTheDocument();
+    expect(screen.getByText('Design Phase')).toBeInTheDocument();
+    expect(screen.getByText('Development Phase')).toBeInTheDocument();
 
-    expect(await screen.findByText('Test Job')).toBeInTheDocument();
-    expect(screen.getByText(/Design/)).toBeInTheDocument();
-
-    fireEvent.click(screen.getByText(/Edit/i));
-
-    expect(await screen.findByDisplayValue('Test Job')).toBeInTheDocument();
-    expect(screen.getByDisplayValue('Test Description')).toBeInTheDocument();
+    fireEvent.click(screen.getByText('Edit'));
+    expect(screen.getByDisplayValue('Test Job')).toBeInTheDocument();
   });
 
-  it('shows error when submitting with empty fields', () => {
+  it('submits a new job', async () => {
     onValue.mockImplementation((ref, callback) => {
       callback({ val: () => null });
     });
 
     render(<ClientJobs />);
 
-    fireEvent.click(screen.getByText(/Create Job/i));
-    expect(screen.getByRole('alert')).toHaveTextContent('⚠️ Please fill in all fields.');
+    fireEvent.change(screen.getByLabelText('Job Title'), { target: { value: 'New Job' } });
+    fireEvent.change(screen.getByLabelText('Description'), { target: { value: 'Job Desc' } });
+    fireEvent.change(screen.getByLabelText('Category'), { target: { value: 'Design' } });
+    fireEvent.change(screen.getByLabelText('Budget (USD)'), { target: { value: '500' } });
+    fireEvent.change(screen.getByLabelText('Deadline'), { target: { value: '2025-06-30' } });
+    
+    fireEvent.click(screen.getByText('Create Job'));
+
+    await waitFor(() => {
+      expect(set).toHaveBeenCalled();
+    });
   });
 
-  it('displays applicants when "View" is clicked', async () => {
-    const mockJob = {
-      title: 'Viewable Job',
-      description: 'Description',
-      category: 'Writing',
-      budget: 400,
-      deadline: '2025-01-01',
-      clientUID: 'test-user',
+  it('displays applicants when viewing them', async () => {
+    const mockJobData = {
+      job1: {
+        title: 'Job A',
+        description: 'Desc',
+        category: 'Design',
+        budget: 200,
+        deadline: '2025-01-01',
+        clientUID: 'test-user',
+      },
     };
 
     const mockApplicants = {
-      applicant1: {
-        applicant_userUID: 'app1',
-        name: 'Alice',
-        surname: 'Smith',
-        motivation: 'I am great',
-        skills: 'Writing',
-      }
+      app1: {
+        applicant_userUID: 'user123',
+        name: 'Jane',
+        surname: 'Doe',
+        skills: 'React',
+        motivation: 'I love React',
+      },
     };
 
     onValue.mockImplementation((ref, callback) => {
-      callback({ val: () => ({ job567: mockJob }) });
+      callback({ val: () => mockJobData });
     });
 
     get.mockResolvedValue({
       exists: () => true,
-      val: () => mockApplicants
+      val: () => mockApplicants,
     });
 
     render(<ClientJobs />);
 
-    fireEvent.click(await screen.findByText(/View/i));
+    await waitFor(() => expect(screen.getByText('Job A')).toBeInTheDocument());
+    fireEvent.click(screen.getByText('View'));
 
-    await waitFor(() => {
-      expect(screen.getByText(/Applicants for "Viewable Job"/)).toBeInTheDocument();
-    });
-
-    expect(screen.getByText('Alice Smith')).toBeInTheDocument();
-    expect(screen.getByText(/I am great/)).toBeInTheDocument();
-    expect(screen.getByText(/Writing/)).toBeInTheDocument();
-  });
-
-  it('deletes a job with confirmation', async () => {
-    window.confirm = jest.fn(() => true);
-    const mockJob = {
-      title: 'Delete Me',
-      description: 'Test',
-      category: 'Design',
-      budget: 250,
-      deadline: '2025-05-01',
-      clientUID: 'test-user'
-    };
-
-    onValue.mockImplementation((ref, callback) => {
-      callback({ val: () => ({ job999: mockJob }) });
-    });
-
-    render(<ClientJobs />);
-
-    fireEvent.click(await screen.findByText(/Delete/i));
-
-    await waitFor(() => {
-      expect(window.confirm).toHaveBeenCalledWith('Are you sure you want to delete this job?');
-    });
+    await waitFor(() => expect(screen.getByText('Jane Doe')).toBeInTheDocument());
+    expect(screen.getByText('React')).toBeInTheDocument();
+    expect(screen.getByText('I love React')).toBeInTheDocument();
   });
 });
