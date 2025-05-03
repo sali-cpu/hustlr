@@ -1,7 +1,7 @@
-// src/pages/FreelancerPayments.test.js
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import FreelancerPayments from './FreelancerPayments';
+import '@testing-library/jest-dom';
 
 describe('FreelancerPayments Component', () => {
   test('renders the page title', () => {
@@ -19,13 +19,16 @@ describe('FreelancerPayments Component', () => {
 
   test('toggles status from Pending to Done when button is clicked', () => {
     render(<FreelancerPayments />);
-    const statusBefore = screen.getByText('Pending');
+
+    // Use getAllByText to handle multiple matching elements
+    const statusBefore = screen.getAllByText('Pending')[0]; // Get the first match
     expect(statusBefore).toBeInTheDocument();
 
     const toggleButton = screen.getByText('Mark as Done');
     fireEvent.click(toggleButton);
 
-    const statusAfter = screen.getByText('Done');
+    // After the click, check if the status has changed to 'Done'
+    const statusAfter = screen.getAllByText('Done')[0]; // Get the first match
     expect(statusAfter).toBeInTheDocument();
   });
 });
