@@ -31,6 +31,9 @@ class Header extends React.Component {
         <div id="dashboard-toggle" onClick={this.toggleSidebar}>☰</div>
 
         <div id="sidebar" className={this.state.showSidebar ? "show" : ""}>
+          <Link to="/">
+          <button>Home</button>
+        </Link>
         <Link to="/SignIn">
           <button>Sign In</button>
         </Link>
@@ -39,9 +42,6 @@ class Header extends React.Component {
           <button>Sign Up</button>
         </Link>
           
-        <Link to="/">
-          <button>Home</button>
-        </Link>
         <a href="#about">
      <button>About</button>
   </a>
