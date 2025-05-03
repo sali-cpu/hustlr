@@ -4,6 +4,12 @@ import AdminJobs from './AdminJobs';
 import { get, remove } from 'firebase/database';
 import { MemoryRouter } from 'react-router-dom';
 
+global.MutationObserver = class {
+    constructor() {}
+    disconnect() {}
+    observe() {}
+  };
+
 jest.mock('firebase/database', () => ({
     getDatabase: jest.fn(),  // ✅ Add this line
     ref: jest.fn(),
