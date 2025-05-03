@@ -54,10 +54,12 @@ class Client extends React.Component {
                   <img src={con} alt="Contracts & Tasks" />
                   <p>Contracts & Tasks</p>
                 </div>
+                <Link to="/ClientPayments">
                 <div className="category-card">
                   <img src={pay} alt="Payments" />
                   <p>Payments</p>
                 </div>
+                </Link>
                 <div className="category-card">
                   <img src={rep} alt="Reports" />
                   <p>Reports</p>
