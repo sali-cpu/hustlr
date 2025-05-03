@@ -4,6 +4,11 @@ import SignIn from '../pages/SignIn';
 import { BrowserRouter } from 'react-router-dom';
 import '@testing-library/jest-dom';
 
+global.MutationObserver = class {
+  constructor(callback) {}
+  disconnect() {}
+  observe(element, initObject) {}
+};
 
 // Mock images
 jest.mock('../images/google_icon.png', () => 'google_icon.png');
@@ -59,6 +64,49 @@ describe('SignIn Component', () => {
     expect(screen.getByText(/Sign in with Microsoft/i)).toBeInTheDocument();
   });
 
+  test('Google provider is initialized with correct parameters', () => {
+    render(
+      <BrowserRouter>
+        <SignIn />
+      </BrowserRouter>
+    );
+    expect(GoogleAuthProvider).toHaveBeenCalled();
+    expect(GoogleAuthProvider.mock.instances[0].setCustomParameters).toHaveBeenCalledWith({
+      prompt: 'select_account',
+    });
+  });
+
+  test('Microsoft provider is initialized with correct parameters', () => {
+    render(
+      <BrowserRouter>
+        <SignIn />
+      </BrowserRouter>
+    );
+    expect(OAuthProvider).toHaveBeenCalledWith('microsoft.com');
+    expect(OAuthProvider.mock.instances[0].setCustomParameters).toHaveBeenCalledWith({
+      prompt: 'select_account',
+    });
+  });
+
+  test('handles network error during sign-in', async () => {
+    signInWithPopup.mockResolvedValue({
+      user: { uid: '123', displayName: 'Test User', email: 'test@example.com' },
+    });
+    get.mockRejectedValue(new Error('Network Error'));
+
+    render(
+      <BrowserRouter>
+        <SignIn />
+      </BrowserRouter>
+    );
+
+    fireEvent.click(screen.getByText(/Sign in with Google/i));
+
+    await waitFor(() => {
+      expect(window.alert).toHaveBeenCalledWith('Sign-in failed. Try again.');
+    });
+  });
+
   test('signs in user with Google and navigates based on role', async () => {
     signInWithPopup.mockResolvedValue({
       user: { uid: '123', displayName: 'Test User', email: 'test@example.com' },
@@ -86,7 +134,7 @@ describe('SignIn Component', () => {
   });
 
   test('shows alert and redirects to SignUp if user not found in DB', async () => {
-    window.alert = jest.fn();
+    jest.spyOn(window, 'alert').mockImplementation(() => {}); // Mock alert function
 
     signInWithPopup.mockResolvedValue({
       user: { uid: '456', displayName: 'No User', email: 'nouser@example.com' },
@@ -109,7 +157,7 @@ describe('SignIn Component', () => {
   });
 
   test('handles sign-in failure', async () => {
-    window.alert = jest.fn();
+    jest.spyOn(window, 'alert').mockImplementation(() => {}); // Mock alert function
 
     signInWithPopup.mockRejectedValue(new Error('Popup closed'));
 
