@@ -2,6 +2,8 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import Header from './Header';
+import '@testing-library/jest-dom';
+
 
 describe('Header Component', () => {
   test('renders header title', () => {
