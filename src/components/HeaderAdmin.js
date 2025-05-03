@@ -32,6 +32,7 @@ class HeaderAdmin extends React.Component {
             <button
               id="menclose"
               className="fas fa-times"
+              data-testid="menu-close"
               onClick={this.toggleMenu}
             ></button>
             <li className="nitem"><a href="#" className="nlink">Ongoing Projects</a></li>
@@ -43,6 +44,7 @@ class HeaderAdmin extends React.Component {
           <button
             id="menopen"
             className="fas fa-bars"
+            data-testid="menu-open"
             onClick={this.toggleMenu}
           ></button>
         </nav>
