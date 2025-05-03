@@ -12,6 +12,10 @@ import ClientJobs from "./pages/ClientJobs";
 import ClientPayments from "./pages/ClientPayments";
 import FreelancerJobs from "./pages/FreelancerJobs";
 import AdminJobs from "./pages/AdminJobs";
+import RecentActivity from './pages/RecentActivity';
+import RouteTracker from './components/RouteTracker'; // Import RouteTracker
+import FreelancerPayments from "./pages/FreelancerPayments";
+
 
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -21,7 +25,7 @@ import './App.css';
 function App() {
   return (
     <Router>
-      
+       <RouteTracker /> 
       <section className="App">
         <Routes>
           
@@ -45,6 +49,8 @@ function App() {
           <Route path="/ClientPayments" element={<ClientPayments />} />
           <Route path="/FreelancerJobs" element={<FreelancerJobs />} />
           <Route path="/AdminJobs" element={<AdminJobs />} />
+          <Route path="/FreelancerPayments" element={<FreelancerPayments />} />
+          <Route path="/RecentActivity" element={<RecentActivity />} />
 
 
         </Routes>
