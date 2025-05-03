@@ -2,6 +2,8 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import SignIn from '../pages/SignIn';
 import { BrowserRouter } from 'react-router-dom';
+import '@testing-library/jest-dom';
+
 
 // Mock images
 jest.mock('../images/google_icon.png', () => 'google_icon.png');
