@@ -69,3 +69,5 @@ describe('SignUp Component', () => {
     expect(window.alert).toHaveBeenCalledWith('Please select a role before signing up.');
   });
 });
+
+
