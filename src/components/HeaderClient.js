@@ -35,9 +35,9 @@ class HeaderClient extends React.Component {
               onClick={this.toggleMenu}
             ></button>
             <li className="nitem"><a href="#" className="nlink">Ongoing Projects</a></li>
-            <li className="nitem"><a href="/ClientPayments" className="nlink">Earnings</a></li>
+            <li className="nitem"><a href="/ClientPayments" className="nlink">Payments</a></li>
             <li className="nitem"><a href="#" className="nlink">Settings</a></li>
-            <li className="nitem"><a href="#" className="nlink">Recent Activities</a></li>
+            <li className="nitem"><a href="/RecentActivity" className="nlink">Recent Activities</a></li>
             <li className="nitem"><a href="/" className="nlink">Sign Out</a></li>
           </ul>
           <button
