@@ -67,6 +67,7 @@ describe('SignUp Component', () => {
   it('shows alert if no role is selected when signing in', () => {
     window.alert = jest.fn(); // mock alert
     renderWithRouter(<SignUp />);
+    // Ensure no role is selected before clicking
     fireEvent.click(screen.getByRole('button', { name: /sign in with google/i }));
     expect(window.alert).toHaveBeenCalledWith('Please select a role before signing up.');
   });
