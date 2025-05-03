@@ -2,6 +2,8 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import SignUp from './SignUp';
 import { BrowserRouter } from 'react-router-dom';
+import '@testing-library/jest-dom';
+
 
 // Mock Firebase methods and dependencies
 jest.mock('../firebaseConfig', () => ({
