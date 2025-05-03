@@ -1,6 +1,8 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import '@testing-library/jest-dom';
 import HeaderClient from "./HeaderClient";
+import React from "react"; // 👈 Required for JSX in some test environments
+
 
 test("menu toggle opens and closes mobile menu", () => {
   render(<HeaderClient />);
