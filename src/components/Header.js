@@ -31,6 +31,10 @@ class Header extends React.Component {
         <div id="dashboard-toggle" onClick={this.toggleSidebar}>☰</div>
 
         <div id="sidebar" className={this.state.showSidebar ? "show" : ""}>
+        <Link to="/SignIn">
+          <button>Sign In</button>
+        </Link>
+
           <Link to="/SignUp">
           <button>Sign Up</button>
         </Link>
