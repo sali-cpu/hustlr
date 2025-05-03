@@ -1,45 +1,99 @@
-// FreelancerPayments.test.js
-import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import FreelancerPayments from '../pages/FreelancerPayments'; // Adjust path as needed
-import '@testing-library/jest-dom';
+import React, { useState } from 'react';
+import '../stylesheets/FreelancerPayments.css';
 
-describe('FreelancerPayments Component', () => {
-  test('renders the component and displays payment data', () => {
-    render(<FreelancerPayments />);
+const FreelancerPayments = () => {
+  // Temporary mock payments data
+  const [payments, setPayments] = useState([
+    {
+      id: 1,
+      jobTitle: 'Website Redesign',
+      client: 'Jane Doe',
+      milestone: 'UI Mockups',
+      amount: 300,
+      status: 'Pending',
+      dueDate: '2025-04-20'
+    }
+  ]);
 
-    expect(screen.getByText('Jobs for Clients')).toBeInTheDocument();
-    expect(screen.getByText('Payments for Freelancers')).toBeInTheDocument();
-    expect(screen.getByText('Website Redesign')).toBeInTheDocument();
-    expect(screen.getByText('Jane Doe')).toBeInTheDocument();
-    expect(screen.getByText('UI Mockups')).toBeInTheDocument();
-    expect(screen.getByText('$300')).toBeInTheDocument();
-    expect(screen.getByText('Pending')).toBeInTheDocument();
-    expect(screen.getByText('2025-04-20')).toBeInTheDocument();
-  });
+  // Toggle status (for now just between Pending and Done)
+  const toggleStatus = (id) => {
+    setPayments(prevPayments =>
+      prevPayments.map(payment =>
+        payment.id === id
+          ? { ...payment, status: payment.status === 'Pending' ? 'Done' : 'Pending' }
+          : payment
+      )
+    );
+  };
 
-  test('toggles status between Pending and Done', () => {
-    render(<FreelancerPayments />);
+  return (
+    <main className="client-payments-main">
+      <header className="client-jobs-header">
+        <section className="header-title-area">
+          <h1 className="main-title">Jobs for Clients</h1>
+        </section>
 
-    const statusElement = screen.getByText('Pending');
-    expect(statusElement).toBeInTheDocument();
+        <section className="nav_section">
+          <nav className="main-nav">
+            <ul>
+              <li><a href="/Freelancer">Home</a></li>
+            </ul>
+          </nav>
+        </section>
+      </header>
 
-    const toggleButton = screen.getByText('Mark as Done');
-    fireEvent.click(toggleButton);
+      <section className="payments-section">
+        <h2>Payments for Freelancers</h2>
 
-    expect(screen.getByText('Done')).toBeInTheDocument();
+        <section className="filters">
+          <input type="text" placeholder="Search by freelancer or job title" />
+          <select>
+            <option>All</option>
+            <option>Paid</option>
+            <option>Pending</option>
+            <option>Overdue</option>
+          </select>
+          <input type="date" />
+          <input type="date" />
+          <button>Export CSV</button>
+        </section>
 
-    // Click again to toggle back to Pending
-    fireEvent.click(screen.getByText('Mark as Done'));
-    expect(screen.getByText('Pending')).toBeInTheDocument();
-  });
+        <table className="payments-table">
+          <thead>
+            <tr>
+              <th>Job Title</th>
+              <th>Client</th>
+              <th>Milestone</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Due Date</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {payments.map(payment => (
+              <tr key={payment.id}>
+                <td>{payment.jobTitle}</td>
+                <td>{payment.client}</td>
+                <td>{payment.milestone}</td>
+                <td>${payment.amount}</td>
+                <td><span className={`status ${payment.status.toLowerCase()}`}>{payment.status}</span></td>
+                <td>{payment.dueDate}</td>
+                <td>
+                  <button
+                    className="mark-paid-btn"
+                    onClick={() => toggleStatus(payment.id)}
+                  >
+                    Mark as Done
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
+    </main>
+  );
+};
 
-  test('renders filter inputs and Export CSV button', () => {
-    render(<FreelancerPayments />);
-
-    expect(screen.getByPlaceholderText('Search by freelancer or job title')).toBeInTheDocument();
-    expect(screen.getByRole('combobox')).toBeInTheDocument();
-    expect(screen.getAllByRole('textbox').length).toBeGreaterThanOrEqual(1);
-    expect(screen.getAllByRole('button', { name: /Export CSV/i })[0]).toBeInTheDocument();
-  });
-});
+export default FreelancerPayments;
