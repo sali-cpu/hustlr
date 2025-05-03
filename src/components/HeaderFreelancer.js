@@ -33,19 +33,17 @@ class HeaderFreelancer extends React.Component {
               id="menclose"
               className="fas fa-times"
               onClick={this.toggleMenu}
-              aria-label="Close menu" // Added aria-label for better accessibility
             ></button>
             <li className="nitem"><a href="#" className="nlink">Ongoing Projects</a></li>
-            <li className="nitem"><a href="#" className="nlink">Earnings</a></li>
+            <li className="nitem"><a href="/FreelancerPayments" className="nlink">Earnings</a></li>
             <li className="nitem"><a href="#" className="nlink">Settings</a></li>
-            <li className="nitem"><a href="#" className="nlink">Recent Activities</a></li>
+            <li className="nitem"><a href="/RecentActivity" className="nlink">Recent Activities</a></li>
             <li className="nitem"><a href="/" className="nlink">Sign Out</a></li>
           </ul>
           <button
             id="menopen"
             className="fas fa-bars"
             onClick={this.toggleMenu}
-            aria-label="Open menu" // Added aria-label for better accessibility
           ></button>
         </nav>
       </header>
