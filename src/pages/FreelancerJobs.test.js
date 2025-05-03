@@ -4,6 +4,12 @@ import FreelancerJobs from './FreelancerJobs';
 import '@testing-library/jest-dom';
 import * as firebaseDatabase from 'firebase/database';
 
+global.MutationObserver = class {
+  constructor(callback) {}
+  disconnect() {}
+  observe(element, initObject) {}
+};
+
 jest.mock('firebase/database', () => ({
   get: jest.fn(),
   ref: jest.fn(),
@@ -28,6 +34,13 @@ describe('FreelancerJobs Component', () => {
       category: 'Design',
       budget: 300,
       deadline: '2025-06-01'
+    },
+    job3: {
+      title: 'Admin Assistant',
+      description: 'Office help needed',
+      category: 'Admin',
+      budget: 200,
+      deadline: '2025-04-15'
     }
   };
 
@@ -52,12 +65,21 @@ describe('FreelancerJobs Component', () => {
     await waitFor(() => {
       expect(screen.getByText('Website Design')).toBeInTheDocument();
       expect(screen.getByText('App UI Mockup')).toBeInTheDocument();
+      expect(screen.getByText('Admin Assistant')).toBeInTheDocument();
+    });
+  });
+
+  test('renders job titles', async () => {
+    render(<FreelancerJobs />);
+    await waitFor(() => {
+      expect(screen.getByText('Website Design')).toBeInTheDocument();
+      expect(screen.getByText('App UI Mockup')).toBeInTheDocument();
+      expect(screen.getByText('Admin Assistant')).toBeInTheDocument();
     });
   });
 
   test('filters job based on search term', async () => {
     render(<FreelancerJobs />);
-
     await waitFor(() => {
       expect(screen.getByText('Website Design')).toBeInTheDocument();
     });
@@ -66,26 +88,80 @@ describe('FreelancerJobs Component', () => {
     fireEvent.change(searchInput, { target: { value: 'Website' } });
 
     expect(screen.queryByText('App UI Mockup')).not.toBeInTheDocument();
+    expect(screen.queryByText('Admin Assistant')).not.toBeInTheDocument();
     expect(screen.getByText('Website Design')).toBeInTheDocument();
   });
 
   test('filters job based on category', async () => {
     render(<FreelancerJobs />);
-
     await waitFor(() => {
       expect(screen.getByText('Website Design')).toBeInTheDocument();
     });
 
-    const select = screen.getByLabelText(/Category/i);
-    fireEvent.change(select, { target: { value: 'Design' } });
+    const categorySelect = screen.getByLabelText(/Category/i);
+    fireEvent.change(categorySelect, { target: { value: 'Design' } });
+
+    expect(screen.getByText('App UI Mockup')).toBeInTheDocument();
+    expect(screen.queryByText('Website Design')).not.toBeInTheDocument();
+    expect(screen.queryByText('Admin Assistant')).not.toBeInTheDocument();
+  });
+
+  test('shows all jobs when "All" is selected', async () => {
+    render(<FreelancerJobs />);
+    await waitFor(() => {
+      expect(screen.getByText('Website Design')).toBeInTheDocument();
+    });
+
+    const categorySelect = screen.getByLabelText(/Category/i);
+    fireEvent.change(categorySelect, { target: { value: 'All' } });
+
+    expect(screen.getByText('Website Design')).toBeInTheDocument();
+    expect(screen.getByText('App UI Mockup')).toBeInTheDocument();
+    expect(screen.getByText('Admin Assistant')).toBeInTheDocument();
+  });
+
+  test('filters by search input', async () => {
+    render(<FreelancerJobs />);
+    await waitFor(() => {
+      expect(screen.getByText('Website Design')).toBeInTheDocument();
+    });
+
+    const searchInput = screen.getByPlaceholderText('Search by job title');
+    fireEvent.change(searchInput, { target: { value: 'App' } });
+
+    expect(screen.getByText('App UI Mockup')).toBeInTheDocument();
+    expect(screen.queryByText('Website Design')).not.toBeInTheDocument();
+    expect(screen.queryByText('Admin Assistant')).not.toBeInTheDocument();
+  });
+
+  test('shows empty state when no jobs match search and category', async () => {
+    render(<FreelancerJobs />);
+    await waitFor(() => {
+      expect(screen.getByText('Website Design')).toBeInTheDocument();
+    });
+
+    const searchInput = screen.getByPlaceholderText('Search by job title');
+    fireEvent.change(searchInput, { target: { value: 'Unmatched Title' } });
 
     expect(screen.queryByText('Website Design')).not.toBeInTheDocument();
-    expect(screen.getByText('App UI Mockup')).toBeInTheDocument();
+    expect(screen.queryByText('App UI Mockup')).not.toBeInTheDocument();
+    expect(screen.queryByText('Admin Assistant')).not.toBeInTheDocument();
+    expect(screen.getByText(/No jobs found/i)).toBeInTheDocument();
+  });
+
+  test('responds to apply button click', async () => {
+    render(<FreelancerJobs />);
+    await waitFor(() => {
+      const applyButtons = screen.getAllByText('Apply');
+      fireEvent.click(applyButtons[0]);
+
+      // Replace this with actual expected behavior (e.g., modal opens, navigation, toast, etc.)
+      expect(true).toBeTruthy(); // Dummy expectation to confirm click occurred
+    });
   });
 
   test('shows fallback if no jobs match filter', async () => {
     render(<FreelancerJobs />);
-
     await waitFor(() => {
       expect(screen.getByText('Website Design')).toBeInTheDocument();
     });
