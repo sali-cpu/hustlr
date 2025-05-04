@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter as Router } from 'react-router-dom';
-import Freelancers from '../pages/Freelancers';
+import Freelancers from '../pages/Freelancer';
 
 // Mock images to prevent errors
 jest.mock('../images/logo.png', () => '');
