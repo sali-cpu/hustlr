@@ -155,9 +155,41 @@ const ClientJobs = () => {
   
 
   
-  const handleRejectApplicant = (applicantId) => {
-    // Placeholder for backend reject logic
-    alert(`❌ Rejected applicant with ID: ${applicantId}`);
+  const handleRejectApplicant = async (applicantId) => 
+    {
+      const jobId = viewingApplicantsJobId;
+
+  const applicationRef = ref(applications_db, `applications/${jobId}/${applicantId}`);
+  const rejectedRef = ref(applications_db, `rejected_applications/${jobId}/${applicantId}`);
+
+  try {
+    // Get the current application data
+    const snapshot = await get(applicationRef);
+    if (!snapshot.exists()) {
+      alert("❌ Applicant not found.");
+      return;
+    }
+
+    const applicantData = snapshot.val();
+
+    // Update status in main applications DB
+    await update(applicationRef, { status: "rejected" });
+
+    // Save a copy to rejected_applications
+    const rejectedData = {
+      ...applicantData,
+      status: "rejected",
+      rejectionTime: new Date().toISOString()
+    };
+
+    await set(rejectedRef, rejectedData);
+
+    alert("❌ Application rejected successfully.");
+    handleViewApplicants(jobId, selectedJobTitle); // Refresh UI
+
+  } catch (error) {
+    alert("Failed to reject application: " + error.message);
+  }
   };
   
 
