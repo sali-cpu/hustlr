@@ -1,4 +1,8 @@
+
 /* --- Overall Page Layout --- */
+html {
+  overflow-y: scroll; /* Ensures consistent scrollbar space */
+}
 .client-jobs-container {
   display: flex;
   flex-wrap: wrap;
@@ -8,6 +12,10 @@
   background-color: #d7e5f4; /* Your background */
   min-height: 100vh;
   box-sizing: border-box;
+  width : 100%;
+  max-width: 100%;
+  flex-grow: 1;
+  flex-shrink: 0;
 }
 
 /* --- Header Styles --- */
@@ -16,6 +24,7 @@
   background-color: #000000; /* Black background */
   color: white;
   display: flex;
+  min-height: 150px;
   flex-direction: horizontal;
   justify-content: space-between;
   position: sticky;
@@ -24,6 +33,42 @@
   height: 150px;
   z-index: 1000;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+
+.applicant-card {
+  border: 1px solid #ddd;
+  padding: 20px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+}
+
+.accepted-message {
+  background-color: #d4edda;
+  padding: 10px;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+.pending-message {
+  margin-top: 10px;
+}
+
+.accept-btn, .reject-btn {
+  padding: 5px 10px;
+  margin: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.accept-btn {
+  background-color: #28a745;
+  color: white;
+}
+
+.reject-btn {
+  background-color: #dc3545;
+  color: white;
 }
 
 
@@ -356,7 +401,13 @@ footer.job-actions { /* Target footer tag */
 .job-btn:active {
     transform: translateY(0px);
 }
-
+.view-btn {
+  background-color: #218838;
+  color: white;
+}
+.view-btn:hover {
+  background-color: #218838;
+}
 .edit-btn {
   background-color: #ffc107;
   color: #333;
@@ -372,6 +423,38 @@ footer.job-actions { /* Target footer tag */
 .delete-btn:hover {
   background-color: #c82333;
 }
+.applicant-card {
+  background: #f4f4f4;
+  padding: 1rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+}
+
+.accept-btn {
+  background-color: #4CAF50;
+  color: white;
+  margin-right: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.reject-btn {
+  background-color: #f44336;
+  color: white;
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
 
 .job-btn:focus-visible {
     outline: 2px solid #007bff;
@@ -476,3 +559,26 @@ footer.job-actions { /* Target footer tag */
      .auth-nav ul { gap: 0.75rem; }
     
 }
+/* === Milestone Form Styles === */
+.milestone-group {
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #fafafa;
+}
+
+.milestone-group label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+}
+
+.milestone-group input {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+ 
