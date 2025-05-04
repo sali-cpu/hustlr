@@ -128,6 +128,176 @@ describe('ClientJobs Component', () => {
       expect(set).toHaveBeenCalled();
     });
 
+    it('deletes a job after confirmation', async () => {
+  const mockJobData = {
+    job1: {
+      title: 'To Be Deleted',
+      description: 'Desc',
+      category: 'Design',
+      budget: 200,
+      deadline: '2025-01-01',
+      clientUID: 'test-user',
+    },
+  };
+
+  onValue.mockImplementation((ref, callback) => {
+    callback({ val: () => mockJobData });
+  });
+
+  render(<ClientJobs />);
+  await waitFor(() => screen.getByText('To Be Deleted'));
+
+  window.confirm = jest.fn(() => true); // simulate confirmation
+  fireEvent.click(screen.getByText('Delete'));
+
+  await waitFor(() => {
+    expect(remove).toHaveBeenCalled();
+  });
+});
+
+it('cancels job deletion if user declines confirmation', async () => {
+  const mockJobData = {
+    job2: {
+      title: 'Not Deleted',
+      description: 'Desc',
+      category: 'Design',
+      budget: 300,
+      deadline: '2025-02-01',
+      clientUID: 'test-user',
+    },
+  };
+
+  onValue.mockImplementation((ref, callback) => {
+    callback({ val: () => mockJobData });
+  });
+
+  render(<ClientJobs />);
+  await waitFor(() => screen.getByText('Not Deleted'));
+
+  window.confirm = jest.fn(() => false); // simulate cancel
+  fireEvent.click(screen.getByText('Delete'));
+
+  expect(remove).not.toHaveBeenCalled();
+});
+
+it('updates an existing job', async () => {
+  const mockJobData = {
+    job3: {
+      title: 'Original Job',
+      description: 'Original Desc',
+      category: 'Writing',
+      budget: 400,
+      deadline: '2025-05-01',
+      clientUID: 'test-user',
+    },
+  };
+
+  onValue.mockImplementation((ref, callback) => {
+    callback({ val: () => mockJobData });
+  });
+
+  render(<ClientJobs />);
+  await waitFor(() => screen.getByText('Original Job'));
+
+  fireEvent.click(screen.getByText('Edit'));
+
+  fireEvent.change(screen.getByLabelText('Job Title'), { target: { value: 'Updated Job' } });
+  fireEvent.click(screen.getByText('Update Job'));
+
+  await waitFor(() => {
+    expect(update).toHaveBeenCalled();
+  });
+});
+
+it('adds and removes milestones', async () => {
+  onValue.mockImplementation((ref, callback) => {
+    callback({ val: () => null });
+  });
+
+  render(<ClientJobs />);
+  fireEvent.click(screen.getByText('Add Milestone'));
+
+  const descriptionInput = screen.getByPlaceholderText('Milestone description');
+  const amountInput = screen.getByPlaceholderText('Amount');
+
+  fireEvent.change(descriptionInput, { target: { value: 'Milestone 1' } });
+  fireEvent.change(amountInput, { target: { value: '100' } });
+
+  fireEvent.click(screen.getByText('Remove'));
+
+  // no milestone inputs should remain
+  expect(screen.queryByPlaceholderText('Milestone description')).not.toBeInTheDocument();
+});
+
+it('handles invalid input and shows alerts', async () => {
+  jest.spyOn(window, 'alert').mockImplementation(() => {});
+  onValue.mockImplementation((ref, callback) => {
+    callback({ val: () => null });
+  });
+
+  render(<ClientJobs />);
+  fireEvent.click(screen.getByText('Create Job'));
+
+  expect(window.alert).toHaveBeenCalled();
+});
+
+it('cancels editing of a job', async () => {
+  const mockJobData = {
+    job4: {
+      title: 'Cancelable Job',
+      description: 'Some Desc',
+      category: 'Other',
+      budget: 800,
+      deadline: '2025-12-01',
+      clientUID: 'test-user',
+    },
+  };
+
+  onValue.mockImplementation((ref, callback) => {
+    callback({ val: () => mockJobData });
+  });
+
+  render(<ClientJobs />);
+  await waitFor(() => screen.getByText('Cancelable Job'));
+
+  fireEvent.click(screen.getByText('Edit'));
+  fireEvent.click(screen.getByText('Cancel'));
+
+  expect(screen.getByText('Cancelable Job')).toBeInTheDocument();
+});
+
+it('handles empty applicants list gracefully', async () => {
+  const mockJobData = {
+    job5: {
+      title: 'Job With No Applicants',
+      description: 'No one yet',
+      category: 'Design',
+      budget: 100,
+      deadline: '2025-03-01',
+      clientUID: 'test-user',
+    },
+  };
+
+  onValue.mockImplementation((ref, callback) => {
+    callback({ val: () => mockJobData });
+  });
+
+  get.mockResolvedValue({
+    exists: () => false,
+    val: () => null,
+  });
+
+  render(<ClientJobs />);
+  await waitFor(() => screen.getByText('Job With No Applicants'));
+
+  fireEvent.click(screen.getByText('View'));
+
+  await waitFor(() => {
+    expect(screen.getByText('No applicants yet')).toBeInTheDocument();
+  });
+});
+
+
     // Optional: check if an error message or fallback UI appears
     // expect(screen.getByText(/error/i)).toBeInTheDocument();
   });
