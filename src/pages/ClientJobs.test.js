@@ -47,6 +47,7 @@ describe('ClientJobs Component', () => {
   it('renders correctly with no jobs', () => {
     onValue.mockImplementation((ref, callback) => {
       callback({ val: () => null });
+      return () => {};
     });
 
     render(<ClientJobs />);
@@ -72,6 +73,7 @@ describe('ClientJobs Component', () => {
 
     onValue.mockImplementation((ref, callback) => {
       callback({ val: () => mockJobData });
+      return () => {};
     });
 
     render(<ClientJobs />);
@@ -87,6 +89,7 @@ describe('ClientJobs Component', () => {
   it('submits a new job', async () => {
     onValue.mockImplementation((ref, callback) => {
       callback({ val: () => null });
+      return () => {};
     });
 
     render(<ClientJobs />);
@@ -112,6 +115,7 @@ describe('ClientJobs Component', () => {
 
     onValue.mockImplementation((ref, callback) => {
       callback({ val: () => null });
+      return () => {};
     });
 
     render(<ClientJobs />);
@@ -142,6 +146,7 @@ describe('ClientJobs Component', () => {
 
   onValue.mockImplementation((ref, callback) => {
     callback({ val: () => mockJobData });
+    return () => {};
   });
 
   render(<ClientJobs />);
@@ -195,6 +200,7 @@ it('updates an existing job', async () => {
 
   onValue.mockImplementation((ref, callback) => {
     callback({ val: () => mockJobData });
+    return () => {};
   });
 
   render(<ClientJobs />);
@@ -213,6 +219,7 @@ it('updates an existing job', async () => {
 it('adds and removes milestones', async () => {
   onValue.mockImplementation((ref, callback) => {
     callback({ val: () => null });
+    return () => {};
   });
 
   render(<ClientJobs />);
@@ -234,6 +241,7 @@ it('handles invalid input and shows alerts', async () => {
   jest.spyOn(window, 'alert').mockImplementation(() => {});
   onValue.mockImplementation((ref, callback) => {
     callback({ val: () => null });
+    return () => {};
   });
 
   render(<ClientJobs />);
@@ -256,6 +264,7 @@ it('cancels editing of a job', async () => {
 
   onValue.mockImplementation((ref, callback) => {
     callback({ val: () => mockJobData });
+    return () => {};
   });
 
   render(<ClientJobs />);
@@ -281,6 +290,7 @@ it('handles empty applicants list gracefully', async () => {
 
   onValue.mockImplementation((ref, callback) => {
     callback({ val: () => mockJobData });
+    return () => {};
   });
 
   get.mockResolvedValue({
@@ -317,6 +327,7 @@ it('handles empty applicants list gracefully', async () => {
 
     onValue.mockImplementation((ref, callback) => {
       callback({ val: () => mockJobData });
+      return () => {};
     });
 
     render(<ClientJobs />);
@@ -348,6 +359,7 @@ it('handles empty applicants list gracefully', async () => {
 
     onValue.mockImplementation((ref, callback) => {
       callback({ val: () => mockJobData });
+       return () => {};
     });
 
     get.mockResolvedValue({
