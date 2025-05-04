@@ -12,6 +12,7 @@ const FreelancerJobs = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
   const [appliedJobs, setAppliedJobs] = useState([]);
+  const [acceptedJobs, setAcceptedJobs] = useState([]);
 
   const [applicationData, setApplicationData] = useState({
     name: '',
@@ -31,7 +32,7 @@ const FreelancerJobs = () => {
   useEffect(() => {
     const userUID = localStorage.getItem("userUID");
     const jobsRef = ref(db, 'jobs');
-    const applicationsRef = ref(applications_db, 'applications');
+    const applicationsRef = ref(applications_db, 'accepted_applications');
 
     // Fetch jobs
     get(jobsRef).then((snapshot) => {
@@ -53,19 +54,22 @@ const FreelancerJobs = () => {
       if (snapshot.exists()) {
         const applicationsData = snapshot.val();
         const userAppliedJobIds = [];
-
+        const userAcceptedJobIds = [];
+  
         Object.entries(applicationsData).forEach(([jobId, jobApplications]) => {
           Object.values(jobApplications).forEach((application) => {
             if (application.applicant_userUID === userUID) {
               userAppliedJobIds.push(jobId);
+              if (application.status === "accepted") {
+                userAcceptedJobIds.push(jobId);
+              }
             }
           });
         });
-
+  
         setAppliedJobs(userAppliedJobIds);
+        setAcceptedJobs(userAcceptedJobIds);
       }
-    }).catch((error) => {
-      console.error(error);
     });
   }, []);
 
@@ -92,11 +96,18 @@ const FreelancerJobs = () => {
   };
 
   const handleSubmit = () => {
+    //avoid allowing a user to apply multiple times.
+    if (appliedJobs.includes(selectedJob.id)) {
+      alert("You have already applied to this job.");
+      return;
+    }
     const applicationsRef = ref(applications_db, `applications/${selectedJob.id}`);
     push(applicationsRef, {
       ...applicationData,
       applicant_userUID: localStorage.getItem("userUID"),
       jobTitle: selectedJob.title,
+      status : "pending",
+      job_milestones : selectedJob.milestones,
       timestamp: Date.now(),
     }).then(() => {
       alert("✅ Thank you for applying. You will hear a response soon.");
@@ -134,8 +145,8 @@ const FreelancerJobs = () => {
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
           />
-          <label htmlFor="category-select">Category</label>
-          <select id = "category-select" onChange={e => setCategoryFilter(e.target.value)} value={categoryFilter}>
+          <label>Category</label>
+          <select onChange={e => setCategoryFilter(e.target.value)} value={categoryFilter}>
             <option value="All">All</option>
             <option value="Web Design">Web Design</option>
             <option value="App Development">App Development</option>
@@ -144,43 +155,79 @@ const FreelancerJobs = () => {
           </select>
         </aside>
 
-        <section className="job-listings">
+        <section className="job-listings job-column">
           <h2>Available Jobs</h2>
-          {filteredJobs.length > 0 ? (
-            filteredJobs.map(job => (
-              <div key={job.id} className="job-card">
-                <h3>{job.title}</h3>
-                <p><strong>Description:</strong> {job.description}</p>
-                <p><strong>Category:</strong> {job.category}</p>
-                <p><strong>Budget:</strong> ${job.budget}</p>
-                <p><strong>Deadline:</strong> {job.deadline}</p>
+          {filteredJobs.filter(job => !appliedJobs.includes(job.id)).length > 0 ? (
+            filteredJobs
+              .filter(job => !appliedJobs.includes(job.id))
+              .map(job => (
+                <div key={job.id} className="job-card">
+                  <h3>{job.title}</h3>
+                  <p><strong>Description:</strong> {job.description}</p>
+                  <p><strong>Category:</strong> {job.category}</p>
+                  <p><strong>Budget:</strong> ${job.budget}</p>
+                  <p><strong>Deadline:</strong> {job.deadline}</p>
 
-                {/* Display Milestones */}
-                {job.milestones && job.milestones.length > 0 && (
-                  <div className="milestones-section">
-                  <h4>Milestones:</h4>
-                  <ul>
-                      {job.milestones.map((milestone, index) => (
-                      <li key={index}>
-                         <p><strong>Milestone {index + 1}:</strong> {milestone.description}</p>
-                        <p><strong>Amount:</strong> ${milestone.amount}</p>
-                        </li>
-                      ))}
-                  </ul>
-                </div>
-              )}
-                <button
-                  onClick={() => openModal(job)}
-                  disabled={appliedJobs.includes(job.id)}
-                >
-                  {appliedJobs.includes(job.id) ? "Pending" : "Apply"}
-                </button>
-              </div>
-            ))
-          ) : (
-            <p>No jobs found.</p>
+                  {job.milestones && job.milestones.length > 0 && (
+                    <div className="milestones-section">
+                      <h4>Milestones:</h4>
+                      <ul>
+                        {job.milestones.map((milestone, index) => (
+                          <li key={index}>
+                            <p><strong>Milestone {index + 1}:</strong> {milestone.description}</p>
+                            <p><strong>Amount:</strong> ${milestone.amount}</p>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+          <button onClick={() => openModal(job)}>
+            Apply
+          </button>
+        </div>
+      ))
+  ) : (
+    <p>No available jobs.</p>
+  )}
+</section>
+
+<section className="job-listings job-column">
+  <h2>Accepted Jobs</h2>
+  {filteredJobs.filter(job => acceptedJobs.includes(job.id)).length > 0 ? (
+    filteredJobs
+      .filter(job => acceptedJobs.includes(job.id))
+      .map(job => (
+        <div key={job.id} className="job-card accepted">
+          <h3>{job.title}</h3>
+          <p><strong>Description:</strong> {job.description}</p>
+          <p><strong>Category:</strong> {job.category}</p>
+          <p><strong>Budget:</strong> ${job.budget}</p>
+          <p><strong>Deadline:</strong> {job.deadline}</p>
+
+          {job.milestones && job.milestones.length > 0 && (
+            <div className="milestones-section">
+              <h4>Milestones:</h4>
+              <ul>
+                {job.milestones.map((milestone, index) => (
+                  <li key={index}>
+                    <p><strong>Milestone {index + 1}:</strong> {milestone.description}</p>
+                    <p><strong>Amount:</strong> ${milestone.amount}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
-        </section>
+
+          <p className="status-label done">Accepted</p>
+        </div>
+      ))
+  ) : (
+    <p>No accepted jobs.</p>
+  )}
+</section>
+
+
       </main>
 
       {showModal && selectedJob && (
