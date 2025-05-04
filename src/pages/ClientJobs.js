@@ -70,15 +70,23 @@ const ClientJobs = () => {
   
       if (snapshot.exists()) {
         const data = snapshot.val();
-        const loadedApplicants = Object.entries(data).map(([key, appData]) => ({
-          id: key,
-          user_UID: appData.applicant_userUID || '',
-          name: appData.name || '',
-          surname: appData.surname || '',
-          motivation: appData.motivation || '',
-          skills: appData.skills || '',
-          email: localStorage.getItem("userEmail")
-        }));
+        const loadedApplicants = Object.entries(data)
+          .filter(([_, appData]) => {
+            const status = appData.status?.toLowerCase();
+            return status === 'pending' || status === 'accepted';
+          })
+          .map(([key, appData]) => ({
+            id: key,
+            user_UID: appData.applicant_userUID || '',
+            name: appData.name || '',
+            surname: appData.surname || '',
+            motivation: appData.motivation || '',
+            skills: appData.skills || '',
+            status: appData.status || '',
+            email: localStorage.getItem("userEmail"), 
+           // milestones: appData.milestones || [],
+          }));
+  
         setApplicants(loadedApplicants);
       } else {
         setApplicants([]);
@@ -91,10 +99,61 @@ const ClientJobs = () => {
       alert("Failed to load applicants.");
     }
   };
-  const handleAcceptApplicant = (applicantId) => {
-    // Placeholder for backend accept logic
-    alert(`✅ Accepted applicant with ID: ${applicantId}`);
+  
+  
+  
+  const handleAcceptApplicant = async (applicantId) => {
+    try {
+      const jobId = viewingApplicantsJobId;
+      const applicantRef = ref(applications_db, `applications/${jobId}/${applicantId}`);
+      const acceptedRef = ref(applications_db, `accepted_applications/${jobId}/${applicantId}`);
+      const jobApplicationsRef = ref(applications_db, `applications/${jobId}`);
+  
+      // Fetch the accepted applicant's data
+      const applicantSnapshot = await get(applicantRef);
+      if (!applicantSnapshot.exists()) {
+        alert("❌ Applicant not found.");
+        return;
+      }
+      const applicantData = applicantSnapshot.val();
+  
+      // Ensure milestones are included when copying
+      const acceptedData = {
+        ...applicantData,
+        status: "accepted",
+        milestones: applicantData.milestones || {}  // fallback to empty object if not present
+      };
+  
+      // Update accepted applicant status in original location
+      await update(applicantRef, { status: "accepted" });
+  
+      // Store the accepted applicant in accepted_applications
+      await set(acceptedRef, acceptedData);
+  
+      // Reject all other applicants
+      const snapshot = await get(jobApplicationsRef);
+      if (snapshot.exists()) {
+        const allApplicants = snapshot.val();
+        for (const id in allApplicants) {
+          if (id !== applicantId) {
+            const otherRef = ref(applications_db, `applications/${jobId}/${id}`);
+            await update(otherRef, {
+              status: "rejected"
+            });
+          }
+        }
+      }
+  
+      alert(`✅ Accepted applicant with ID: ${applicantId}`);
+      handleViewApplicants(jobId, selectedJobTitle); // Refresh UI
+  
+    } catch (error) {
+      console.error("❌ Error accepting applicant:", error);
+      alert("Failed to accept applicant.");
+    }
   };
+  
+
   
   const handleRejectApplicant = (applicantId) => {
     // Placeholder for backend reject logic
@@ -123,6 +182,14 @@ const ClientJobs = () => {
       setError('⚠️ Please fill in all fields.');
       return;
     }
+
+    for (const milestone of formData.milestones) {
+      if (!milestone.description || !milestone.amount) {
+        setError('⚠️ Please fill in all milestone fields.');
+        return;
+      }
+    }
+    
 
     setError('');
 
@@ -212,12 +279,13 @@ const ClientJobs = () => {
                   <section className="milestones">
                   <h4>Milestones:</h4>
                   <ul>
-                    {job.milestones.map((milestone, index) => (
-                        <li key={index}>
-                        <p><strong>Milestone {index + 1}:</strong></p>
-                         <p>{milestone.description}</p>
-                        <p><strong>Amount:</strong> ${milestone.amount}</p>
-                      </li>
+      
+
+                  {job.milestones.map((milestone, index) => (
+                    <li key={index}>
+                    <strong>Description:</strong> {milestone.description} <br />
+                    <strong>Amount:</strong> ${parseFloat(milestone.amount).toLocaleString()}
+                  </li>
                     ))}
                  </ul>
                  </section>
@@ -250,7 +318,8 @@ const ClientJobs = () => {
 
   {viewingApplicantsJobId ? (
     <>
-      {applicants.length === 0 ? (
+    
+    {applicants.length === 0 ? (
         <p>No applicants yet.</p>
       ) : (
         <ul className="applicants-list">
@@ -260,8 +329,21 @@ const ClientJobs = () => {
              <p><strong>Skill:</strong> {applicant.skills}</p>
              <p><strong>Motivation:</strong> {applicant.motivation}</p>
              <p><strong>Email:</strong> {applicant.email}</p>
+
+            {applicant.status.toLowerCase() === "accepted" ? (
+              <div className="accepted-message" style={{ backgroundColor: '#d4edda', padding: '10px', borderRadius: '8px', marginTop: '10px' }}>
+                <strong>✅ You have accepted this applicant for the job.</strong>
+                <p>Please contact them at: <a href={`mailto:${applicant.email}`}>{applicant.email}</a></p>
+              </div>
+            ) : (
+              <div className="pending-message" style={{ marginTop: '10px' }}>
+              <em>⏳ This application is still pending.</em>
               <button onClick={() => handleAcceptApplicant(applicant.id)} className="accept-btn">Accept</button>
               <button onClick={() => handleRejectApplicant(applicant.id)} className="reject-btn">Reject</button>
+              </div>
+            )}
+             
+             
             </li>
           ))}
         </ul>
@@ -297,31 +379,32 @@ const ClientJobs = () => {
         <input id="deadline" type="date" name="deadline" value={formData.deadline} onChange={handleChange} required />
       </fieldset>
       <fieldset>
-  <legend>Milestone Payments (Optional)</legend>
+  
 
-  {formData.milestones?.map((milestone, index) => (
-    <div className="milestone-group" key={index}>
-      <label htmlFor={`milestone-description-${index}`}>Milestone {index + 1} Description</label>
+  {formData.milestones.map((milestone, index) => (
+  <div key={index} className="milestone-group">
+    <label>
+      Milestone {index + 1} Description:
       <input
-        id={`milestone-description-${index}`}
         type="text"
+        name={`milestone_description_${index}`}
         value={milestone.description}
         onChange={(e) => handleMilestoneChange(index, 'description', e.target.value)}
-        placeholder={`Describe milestone ${index + 1}`}
+        required
       />
-
-      <label htmlFor={`milestone-amount-${index}`}>Milestone {index + 1} Amount (USD)</label>
+    </label>
+    <label>
+      Amount:
       <input
-        id={`milestone-amount-${index}`}
         type="number"
+        name={`milestone_amount_${index}`}
         value={milestone.amount}
         onChange={(e) => handleMilestoneChange(index, 'amount', e.target.value)}
-        min="0"
-        step="any"
-        placeholder="Amount"
+        required
       />
-    </div>
-  ))}
+    </label>
+  </div>
+))}
 </fieldset>
 
 
