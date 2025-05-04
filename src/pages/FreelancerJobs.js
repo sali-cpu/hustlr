@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import '../stylesheets/FreelancerJob.css';
 import HeaderFreelancer from '../components/HeaderFreelancer';
 
-import { get, push, ref } from "firebase/database";
+import { get, push, ref, onValue } from "firebase/database";
 import { db, applications_db } from '../firebaseConfig';
 
 const FreelancerJobs = () => {
@@ -52,7 +52,7 @@ const FreelancerJobs = () => {
       console.error(error);
     });
 
-    // Fetch applications for this user
+    // Fetch accepted and pending from accepted_applications
     get(applicationsRef).then((snapshot) => {
       if (snapshot.exists()) {
         const applicationsData = snapshot.val();
@@ -78,9 +78,29 @@ const FreelancerJobs = () => {
 
         setAppliedJobs(userAppliedJobIds);
         setAcceptedJobs(userAcceptedJobIds);
-        setRejectedJobs(userRejectedJobIds);
         setPendingJobs(userPendingJobIds);
       }
+    });
+
+    // Fetch rejected jobs from rejected_applications
+    const rejectedRef = ref(applications_db, `rejected_applications`);
+    onValue(rejectedRef, (snapshot) => {
+      const data = snapshot.val();
+      if (!data) return;
+
+      const userUID = localStorage.getItem("userUID");
+      const userRejectedJobIds = [];
+
+      for (const jobId in data) {
+        for (const applicantId in data[jobId]) {
+          const appData = data[jobId][applicantId];
+          if (appData.applicant_userUID === userUID) {
+            userRejectedJobIds.push(jobId);
+          }
+        }
+      }
+
+      setRejectedJobs(userRejectedJobIds);
     });
   }, []);
 
@@ -166,6 +186,7 @@ const FreelancerJobs = () => {
           </select>
         </aside>
 
+        {/* Available Jobs */}
         <section className="job-listings job-column">
           <h2>Available Jobs</h2>
           {filteredJobs.filter(job =>
@@ -211,6 +232,7 @@ const FreelancerJobs = () => {
           )}
         </section>
 
+        {/* Accepted Jobs */}
         <section className="job-listings job-column">
           <h2>Accepted Jobs</h2>
           {filteredJobs.filter(job => acceptedJobs.includes(job.id)).length > 0 ? (
@@ -244,6 +266,7 @@ const FreelancerJobs = () => {
           )}
         </section>
 
+        {/* Rejected Jobs */}
         <section className="job-listings job-column">
           <h2>Rejected Jobs</h2>
           {filteredJobs.filter(job => rejectedJobs.includes(job.id)).length > 0 ? (
@@ -278,6 +301,7 @@ const FreelancerJobs = () => {
         </section>
       </main>
 
+      {/* Modal */}
       {showModal && selectedJob && (
         <div className="modal-overlay">
           <div className="modal">
