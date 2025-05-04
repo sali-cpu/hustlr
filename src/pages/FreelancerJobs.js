@@ -11,8 +11,11 @@ const FreelancerJobs = () => {
   const [jobs, setjobs] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
+
   const [appliedJobs, setAppliedJobs] = useState([]);
   const [acceptedJobs, setAcceptedJobs] = useState([]);
+  const [rejectedJobs, setRejectedJobs] = useState([]);
+  const [pendingJobs, setPendingJobs] = useState([]);
 
   const [applicationData, setApplicationData] = useState({
     name: '',
@@ -55,20 +58,28 @@ const FreelancerJobs = () => {
         const applicationsData = snapshot.val();
         const userAppliedJobIds = [];
         const userAcceptedJobIds = [];
-  
+        const userRejectedJobIds = [];
+        const userPendingJobIds = [];
+
         Object.entries(applicationsData).forEach(([jobId, jobApplications]) => {
           Object.values(jobApplications).forEach((application) => {
             if (application.applicant_userUID === userUID) {
               userAppliedJobIds.push(jobId);
               if (application.status === "accepted") {
                 userAcceptedJobIds.push(jobId);
+              } else if (application.status === "rejected") {
+                userRejectedJobIds.push(jobId);
+              } else if (application.status === "pending") {
+                userPendingJobIds.push(jobId);
               }
             }
           });
         });
-  
+
         setAppliedJobs(userAppliedJobIds);
         setAcceptedJobs(userAcceptedJobIds);
+        setRejectedJobs(userRejectedJobIds);
+        setPendingJobs(userPendingJobIds);
       }
     });
   }, []);
@@ -96,7 +107,6 @@ const FreelancerJobs = () => {
   };
 
   const handleSubmit = () => {
-    //avoid allowing a user to apply multiple times.
     if (appliedJobs.includes(selectedJob.id)) {
       alert("You have already applied to this job.");
       return;
@@ -106,12 +116,13 @@ const FreelancerJobs = () => {
       ...applicationData,
       applicant_userUID: localStorage.getItem("userUID"),
       jobTitle: selectedJob.title,
-      status : "pending",
-      job_milestones : selectedJob.milestones,
+      status: "pending",
+      job_milestones: selectedJob.milestones,
       timestamp: Date.now(),
     }).then(() => {
       alert("✅ Thank you for applying. You will hear a response soon.");
       setAppliedJobs(prev => [...prev, selectedJob.id]);
+      setPendingJobs(prev => [...prev, selectedJob.id]);
       closeModal();
     }).catch((error) => {
       alert("❌ Failed to submit application: " + error.message);
@@ -154,119 +165,117 @@ const FreelancerJobs = () => {
             <option value="Admin Support">Admin Support</option>
           </select>
         </aside>
-          
-    <section className="job-listings job-column">
-        <h2>Available Jobs</h2>
-          {filteredJobs.filter(job => !appliedJobs.includes(job.id)).length > 0 ? (
+
+        <section className="job-listings job-column">
+          <h2>Available Jobs</h2>
+          {filteredJobs.filter(job =>
+            !acceptedJobs.includes(job.id) &&
+            !rejectedJobs.includes(job.id)
+          ).length > 0 ? (
             filteredJobs
-              .filter(job => !appliedJobs.includes(job.id))
+              .filter(job =>
+                !acceptedJobs.includes(job.id) &&
+                !rejectedJobs.includes(job.id)
+              )
               .map(job => (
-                    <div key={job.id} className="job-card">
-                      <h3>{job.title}</h3>
-                      <p><strong>Description:</strong> {job.description}</p>
-                      <p><strong>Category:</strong> {job.category}</p>
-                      <p><strong>Budget:</strong> ${job.budget}</p>
-                      <p><strong>Deadline:</strong> {job.deadline}</p>
+                <div key={job.id} className="job-card">
+                  <h3>{job.title}</h3>
+                  <p><strong>Description:</strong> {job.description}</p>
+                  <p><strong>Category:</strong> {job.category}</p>
+                  <p><strong>Budget:</strong> ${job.budget}</p>
+                  <p><strong>Deadline:</strong> {job.deadline}</p>
 
-                      {job.milestones && job.milestones.length > 0 && (
-                        <div className="milestones-section">
-                          <h4>Milestones:</h4>
-                          <ul>
-                            {job.milestones.map((milestone, index) => (
-                              <li key={index}>
-                                <p><strong>Milestone {index + 1}:</strong> {milestone.description}</p>
-                                <p><strong>Amount:</strong> ${milestone.amount}</p>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
+                  {job.milestones && job.milestones.length > 0 && (
+                    <div className="milestones-section">
+                      <h4>Milestones:</h4>
+                      <ul>
+                        {job.milestones.map((milestone, index) => (
+                          <li key={index}>
+                            <p><strong>Milestone {index + 1}:</strong> {milestone.description}</p>
+                            <p><strong>Amount:</strong> ${milestone.amount}</p>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
 
-              <button onClick={() => openModal(job)}>
-                Apply
-              </button>
-            </div>
-          ))
-      ) : (
-        <p>No available jobs.</p>
-      )}
-    </section>
-
-    <section className="job-listings job-column">
-      <h2>Accepted Jobs</h2>
-      {filteredJobs.filter(job => acceptedJobs.includes(job.id)).length > 0 ? (
-        filteredJobs
-          .filter(job => acceptedJobs.includes(job.id))
-          .map(job => (
-            <div key={job.id} className="job-card accepted">
-              <h3>{job.title}</h3>
-              <p><strong>Description:</strong> {job.description}</p>
-              <p><strong>Category:</strong> {job.category}</p>
-              <p><strong>Budget:</strong> ${job.budget}</p>
-              <p><strong>Deadline:</strong> {job.deadline}</p>
-
-              {job.milestones && job.milestones.length > 0 && (
-                <div className="milestones-section">
-                  <h4>Milestones:</h4>
-                  <ul>
-                    {job.milestones.map((milestone, index) => (
-                      <li key={index}>
-                        <p><strong>Milestone {index + 1}:</strong> {milestone.description}</p>
-                        <p><strong>Amount:</strong> ${milestone.amount}</p>
-                      </li>
-                    ))}
-                  </ul>
+                  {pendingJobs.includes(job.id) ? (
+                    <p className="status-label pending">⏳ Application Pending</p>
+                  ) : (
+                    <button onClick={() => openModal(job)}>Apply</button>
+                  )}
                 </div>
-              )}
+              ))
+          ) : (
+            <p>No available jobs.</p>
+          )}
+        </section>
 
-              <p className="status-label done">Accepted</p>
-            </div>
-          ))
-      ) : (
-        <p>No accepted jobs.</p>
-      )}
-    </section>
-    <section className="job-listings job-column">
-      <h2>Rejected Jobs</h2>
-      {filteredJobs.filter(job => 
-        appliedJobs.includes(job.id) && !acceptedJobs.includes(job.id)
-      ).length > 0 ? (
-        filteredJobs
-          .filter(job => 
-            appliedJobs.includes(job.id) && !acceptedJobs.includes(job.id)
-          )
-          .map(job => (
-            <div key={job.id} className="job-card rejected">
-              <h3>{job.title}</h3>
-              <p><strong>Description:</strong> {job.description}</p>
-              <p><strong>Category:</strong> {job.category}</p>
-              <p><strong>Budget:</strong> ${job.budget}</p>
-              <p><strong>Deadline:</strong> {job.deadline}</p>
-
-              {job.milestones && job.milestones.length > 0 && (
-                <div className="milestones-section">
-                  <h4>Milestones:</h4>
-                  <ul>
-                    {job.milestones.map((milestone, index) => (
-                      <li key={index}>
-                        <p><strong>Milestone {index + 1}:</strong> {milestone.description}</p>
-                        <p><strong>Amount:</strong> ${milestone.amount}</p>
-                      </li>
-                    ))}
-                  </ul>
+        <section className="job-listings job-column">
+          <h2>Accepted Jobs</h2>
+          {filteredJobs.filter(job => acceptedJobs.includes(job.id)).length > 0 ? (
+            filteredJobs
+              .filter(job => acceptedJobs.includes(job.id))
+              .map(job => (
+                <div key={job.id} className="job-card accepted">
+                  <h3>{job.title}</h3>
+                  <p><strong>Description:</strong> {job.description}</p>
+                  <p><strong>Category:</strong> {job.category}</p>
+                  <p><strong>Budget:</strong> ${job.budget}</p>
+                  <p><strong>Deadline:</strong> {job.deadline}</p>
+                  {job.milestones && job.milestones.length > 0 && (
+                    <div className="milestones-section">
+                      <h4>Milestones:</h4>
+                      <ul>
+                        {job.milestones.map((milestone, index) => (
+                          <li key={index}>
+                            <p><strong>Milestone {index + 1}:</strong> {milestone.description}</p>
+                            <p><strong>Amount:</strong> ${milestone.amount}</p>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  <p className="status-label done">✅ Accepted</p>
                 </div>
-              )}
+              ))
+          ) : (
+            <p>No accepted jobs.</p>
+          )}
+        </section>
 
-              <p className="status-label rejected">Rejected</p>
-            </div>
-          ))
-      ) : (
-        <p>No rejected jobs.</p>
-      )}
-    </section>
-
-
-
+        <section className="job-listings job-column">
+          <h2>Rejected Jobs</h2>
+          {filteredJobs.filter(job => rejectedJobs.includes(job.id)).length > 0 ? (
+            filteredJobs
+              .filter(job => rejectedJobs.includes(job.id))
+              .map(job => (
+                <div key={job.id} className="job-card rejected">
+                  <h3>{job.title}</h3>
+                  <p><strong>Description:</strong> {job.description}</p>
+                  <p><strong>Category:</strong> {job.category}</p>
+                  <p><strong>Budget:</strong> ${job.budget}</p>
+                  <p><strong>Deadline:</strong> {job.deadline}</p>
+                  {job.milestones && job.milestones.length > 0 && (
+                    <div className="milestones-section">
+                      <h4>Milestones:</h4>
+                      <ul>
+                        {job.milestones.map((milestone, index) => (
+                          <li key={index}>
+                            <p><strong>Milestone {index + 1}:</strong> {milestone.description}</p>
+                            <p><strong>Amount:</strong> ${milestone.amount}</p>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  <p className="status-label rejected">❌ Rejected</p>
+                </div>
+              ))
+          ) : (
+            <p>No rejected jobs.</p>
+          )}
+        </section>
       </main>
 
       {showModal && selectedJob && (

@@ -108,6 +108,7 @@ const ClientJobs = () => {
       const applicantRef = ref(applications_db, `applications/${jobId}/${applicantId}`);
       const acceptedRef = ref(applications_db, `accepted_applications/${jobId}/${applicantId}`);
       const jobApplicationsRef = ref(applications_db, `applications/${jobId}`);
+      const jobRef = ref(db, `jobs/${jobId}`);  // 👈 reference to the job to delete
   
       // Fetch the accepted applicant's data
       const applicantSnapshot = await get(applicantRef);
@@ -117,17 +118,17 @@ const ClientJobs = () => {
       }
       const applicantData = applicantSnapshot.val();
   
-      // Ensure milestones are included when copying
+      // Prepare accepted data with status
       const acceptedData = {
         ...applicantData,
         status: "accepted",
-        milestones: applicantData.milestones || {}  // fallback to empty object if not present
+        milestones: applicantData.milestones || {}
       };
   
-      // Update accepted applicant status in original location
+      // Update status of accepted applicant
       await update(applicantRef, { status: "accepted" });
   
-      // Store the accepted applicant in accepted_applications
+      // Store accepted data in accepted_applications
       await set(acceptedRef, acceptedData);
   
       // Reject all other applicants
@@ -137,21 +138,24 @@ const ClientJobs = () => {
         for (const id in allApplicants) {
           if (id !== applicantId) {
             const otherRef = ref(applications_db, `applications/${jobId}/${id}`);
-            await update(otherRef, {
-              status: "rejected"
-            });
+            await update(otherRef, { status: "rejected" });
           }
         }
       }
   
-      alert(`✅ Accepted applicant with ID: ${applicantId}`);
-      handleViewApplicants(jobId, selectedJobTitle); // Refresh UI
+      // ✅ Delete job from the main jobs database
+      await remove(jobRef);
+  
+      alert(`✅ Accepted applicant and deleted job with ID: ${jobId}`);
+      setViewingApplicantsJobId(null);  // Clear state if needed
+      setApplicants([]);               // Clear list if needed
   
     } catch (error) {
       console.error("❌ Error accepting applicant:", error);
       alert("Failed to accept applicant.");
     }
   };
+  
   
 
   
