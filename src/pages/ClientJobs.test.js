@@ -169,6 +169,7 @@ it('cancels job deletion if user declines confirmation', async () => {
 
   onValue.mockImplementation((ref, callback) => {
     callback({ val: () => mockJobData });
+    return () => {}; // mock unsubscribe
   });
 
   render(<ClientJobs />);
