@@ -15,8 +15,7 @@ microsoftProvider.setCustomParameters({ prompt: "select_account" });
 
 const adminEmails = [
 
-  "2680440@students.wits.ac.za",
-  "1602758@students.wits.ac.za",
+  "ahustlr70@gmail.com",
   
 ];
 
