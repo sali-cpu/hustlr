@@ -1,56 +1,33 @@
-import React from "react";
-import "../stylesheets/Final.css";
+import React from 'react';
+import { render, screen, fireEvent } from '@testing-library/react';
+import Freelancers from '../pages/Freelancers'; // adjust path if needed
+import { BrowserRouter } from 'react-router-dom';
 
-class HeaderFreelancer extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      isMobileMenuOpen: false,
-    };
-  }
-
-  toggleMenu = () => {
-    this.setState((prevState) => ({
-      isMobileMenuOpen: !prevState.isMobileMenuOpen,
-    }), () => {
-      if (this.state.isMobileMenuOpen) {
-        document.body.classList.add("show-mobile-menu");
-      } else {
-        document.body.classList.remove("show-mobile-menu");
-      }
-    });
+describe('Freelancers Component', () => {
+  const renderWithRouter = (ui) => {
+    return render(<BrowserRouter>{ui}</BrowserRouter>);
   };
 
-  render() {
-    return (
-      <header className="head">
-        <nav className="nbar">
-          <a href="#" className="nlogo">
-            <h2 className="logo-text">Hustlr.</h2>
-          </a>
-          <ul className="nmenu">
-            <button
-              id="menclose"
-              className="fas fa-times"
-              aria-label="Close menu"
-              onClick={this.toggleMenu}
-            ></button>
-            <li className="nitem"><a href="#" className="nlink">Ongoing Projects</a></li>
-            <li className="nitem"><a href="/FreelancerPayments" className="nlink">Earnings</a></li>
-            <li className="nitem"><a href="#" className="nlink">Settings</a></li>
-            <li className="nitem"><a href="/RecentActivity" className="nlink">Recent Activities</a></li>
-            <li className="nitem"><a href="/" className="nlink">Sign Out</a></li>
-          </ul>
-          <button
-            id="menopen"
-            className="fas fa-bars"
-            aria-label="Open menu"
-            onClick={this.toggleMenu}
-          ></button>
-        </nav>
-      </header>
-    );
-  }
-}
+  test('renders welcome box by default', () => {
+    renderWithRouter(<Freelancers />);
+    expect(screen.getByText('Welcome, Freelancer!')).toBeInTheDocument();
+    expect(screen.getByText('Access gigs, manage your profile, and collaborate with clients')).toBeInTheDocument();
+  });
 
-export default HeaderFreelancer;
+  test('closes welcome box when close button is clicked', () => {
+    renderWithRouter(<Freelancers />);
+    const closeButton = screen.getByRole('button', { name: /×/i });
+    fireEvent.click(closeButton);
+    expect(screen.queryByText('Welcome, Freelancer!')).not.toBeInTheDocument();
+  });
+
+  test('shows categories after closing welcome box', () => {
+    renderWithRouter(<Freelancers />);
+    fireEvent.click(screen.getByRole('button', { name: /×/i }));
+    expect(screen.getByText('Jobs')).toBeInTheDocument();
+    expect(screen.getByText('Contracts & Tasks')).toBeInTheDocument();
+    expect(screen.getByText('Payments')).toBeInTheDocument();
+    expect(screen.getByText('Reports')).toBeInTheDocument();
+    expect(screen.getByText('Quick Stats')).toBeInTheDocument();
+  });
+});
