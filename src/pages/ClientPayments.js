@@ -34,7 +34,7 @@ const ClientPayments = () => {
           <input type="date" />
           <button>Export CSV</button>
         </section>
-
+ 
         {/* Payments Table */}
         <table className="payments-table">
           <thead>

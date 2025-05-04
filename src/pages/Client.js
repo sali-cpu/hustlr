@@ -64,11 +64,14 @@ class Client extends React.Component {
                   <img src={rep} alt="Reports" />
                   <p>Reports</p>
                 </div>
+                <Link to="/CQStats">
                 <div className="category-card">
                   <img src={stat} alt="Quick Stats" />
                   <p>Quick Stats</p>
                 </div>
+                </Link>
               </div>
+             
             </section>
           )}
         </main>

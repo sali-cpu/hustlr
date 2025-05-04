@@ -1,0 +1,61 @@
+main {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    font-family: Arial, sans-serif;
+  }
+  
+  header h1 {
+    text-align: center;
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 2rem;
+  }
+  
+  .stats-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  article {
+    background-color: #f0f4f8;
+    padding: 1.25rem;
+    border-radius: 0.75rem;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  article:hover {
+    transform: translateY(-4px);
+  }
+  
+  article h2 {
+    font-size: 1rem;
+    color: #444;
+    margin-bottom: 0.5rem;
+  }
+  
+  article p {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #007bff;
+    margin: 0;
+  }
+  .client-jobs-header {
+    width: 100%;
+    background-color: #000000; /* Black background */
+    color: white;
+    display: flex;
+    min-height: 150px;
+    flex-direction: horizontal;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    left: 0;
+    height: 150px;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  

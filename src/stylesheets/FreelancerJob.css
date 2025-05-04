@@ -132,3 +132,18 @@
   font-weight: bold;
   margin-top: 10px;
 }
+
+/* General label styling */
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+/* Optional: Add spacing above each label-input pair */
+input,
+textarea {
+  margin-bottom: 16px;
+}
