@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import ClientJobs from '../pages/ClientJobs';
 import { db, applications_db } from '../firebaseConfig';
 import { ref, onValue, get, push, set, update, remove } from 'firebase/database';
@@ -37,6 +37,10 @@ jest.mock('../components/FooterClient', () => () => <div>Mock FooterClient</div>
 
 describe('ClientJobs Component', () => {
   beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  afterEach(() => {
     jest.clearAllMocks();
   });
 
@@ -92,12 +96,61 @@ describe('ClientJobs Component', () => {
     fireEvent.change(screen.getByLabelText('Category'), { target: { value: 'Design' } });
     fireEvent.change(screen.getByLabelText('Budget (USD)'), { target: { value: '500' } });
     fireEvent.change(screen.getByLabelText('Deadline'), { target: { value: '2025-06-30' } });
-    
+
+    fireEvent.click(screen.getByText('Create Job'));
+
+    await waitFor(() => {
+      expect(push).toHaveBeenCalled();
+      expect(set).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({
+        title: 'New Job',
+      }));
+    });
+  });
+
+  it('handles Firebase error when submitting job', async () => {
+    set.mockRejectedValue(new Error('Firebase write error'));
+
+    onValue.mockImplementation((ref, callback) => {
+      callback({ val: () => null });
+    });
+
+    render(<ClientJobs />);
+
+    fireEvent.change(screen.getByLabelText('Job Title'), { target: { value: 'Fail Job' } });
+    fireEvent.change(screen.getByLabelText('Description'), { target: { value: 'Fail Desc' } });
+    fireEvent.change(screen.getByLabelText('Category'), { target: { value: 'FailCat' } });
+    fireEvent.change(screen.getByLabelText('Budget (USD)'), { target: { value: '123' } });
+    fireEvent.change(screen.getByLabelText('Deadline'), { target: { value: '2025-11-11' } });
+
     fireEvent.click(screen.getByText('Create Job'));
 
     await waitFor(() => {
       expect(set).toHaveBeenCalled();
     });
+
+    // Optional: check if an error message or fallback UI appears
+    // expect(screen.getByText(/error/i)).toBeInTheDocument();
+  });
+
+  it('handles a job without milestones gracefully', async () => {
+    const mockJobData = {
+      job1: {
+        title: 'No Milestones',
+        description: 'Desc',
+        category: 'Misc',
+        budget: 100,
+        deadline: '2025-10-10',
+        clientUID: 'test-user',
+      },
+    };
+
+    onValue.mockImplementation((ref, callback) => {
+      callback({ val: () => mockJobData });
+    });
+
+    render(<ClientJobs />);
+    await waitFor(() => expect(screen.getByText('No Milestones')).toBeInTheDocument());
+    expect(screen.getByText('Misc')).toBeInTheDocument();
   });
 
   it('displays applicants when viewing them', async () => {
