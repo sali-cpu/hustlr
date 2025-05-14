@@ -70,10 +70,12 @@ class Freelancers extends React.Component {
                 <img src={rep} alt="Reports" />
                 <p>Reports</p>
               </section>
+              <Link to = "/FQStats">
               <section className="category-card">
                 <img src={stat} alt="Quick Stats" />
                 <p>Quick Stats</p>
               </section>
+              </Link>
             </section>
           </section>
         )}
