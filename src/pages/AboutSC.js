@@ -43,7 +43,7 @@ const AboutSC = () => {
       <HeaderFreelancer />
 
       <section className="settings-container">
-        <h2 className="centered-title">About</h2>
+        <h2 className="centered-title">Account</h2>
 
         {isSaved && (
           <section className="top-icon-container">
