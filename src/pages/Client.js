@@ -6,13 +6,11 @@ import pay from '../images/Payment.png';
 import stat from '../images/Quick Stats.png';
 import con from '../images/contract.png';
 import rep from '../images/Reports.png';
-import hero1 from '../images/HeroJPG.jpg';
 import HeaderClient from "../components/HeaderClient";
-import FooterClient from "../components/FooterClient";
 import '../stylesheets/Final.css';
 
 class Client extends React.Component {
-  constructor(props) {
+ constructor(props) {
     super(props);
     const hasSeenWelcome = localStorage.getItem('hasSeenWelcome');
   
@@ -24,59 +22,75 @@ class Client extends React.Component {
   closeWelcomeMessage = () => {
     localStorage.setItem('hasSeenWelcome', 'true'); // Remember the user saw it
     this.setState({ showWelcomeBox: false });
-  };
+  };                                             
 
   render() {
     return (
       <>
         <HeaderClient />
 
-        <div className="search-box">
+        <section className="search-box">
           <input type="text" placeholder="Search for any service..." />
           <button className="search-icon">🔍</button>
-        </div>
+        </section>
 
         <main className="client-main">
-          {this.state.showWelcomeBox ? (
-            <section className="messagebox">
-              <button className="close" onClick={this.closeWelcomeMessage}>×</button>
-              <img src={cuteWelcome} alt="Cute Welcome" />
-              <h2>Welcome, Client!</h2>
-              <p>We’re excited to have you here! Our platform connects you with skilled freelancers ready to bring your projects to life. Explore, collaborate, and create something amazing today.</p>
-            </section>
-          ) : (
-            <section className="categories">
-              <div className="category-grid">
-                <Link to="/ClientJobs">
-                  <div className="category-card">
-                    <img src={job} alt="Jobs" />
-                    <p>Jobs</p>
-                  </div>
-                </Link>
-                <div className="category-card">
-                  <img src={con} alt="Contracts & Tasks" />
-                  <p>Contracts & Tasks</p>
-                </div>
-                <Link to="/ClientPayments">
-                <div className="category-card">
-                  <img src={pay} alt="Payments" />
-                  <p>Payments</p>
-                </div>
-                </Link>
-                <div className="category-card">
-                  <img src={rep} alt="Reports" />
-                  <p>Reports</p>
-                </div>
-                <div className="category-card">
-                  <img src={stat} alt="Quick Stats" />
-                  <p>Quick Stats</p>
-                </div>
-              </div>
-            </section>
-          )}
-        </main>
+          {(() => {
+            if (this.state.showWelcomeBox) 
+              {
+              return (
+                <section className="messagebox">
+                  <button className="close" onClick={this.closeWelcomeMessage}>×</button>
+                  <img src={cuteWelcome} alt="Cute Welcome" />
+                  <h2>Welcome, Client!</h2>
+                  <p>
+                    We’re excited to have you here! Our platform connects you with skilled freelancers
+                    ready to bring your projects to life. Explore, collaborate, and create something amazing today.
+                  </p>
+                </section>
+              );
+            } 
+            else 
+            {
+              return (
+                <section className="categories">
+                  <section className="category-grid">
+                    <Link to="/ClientJobs">
+                      <section className="category-card">
+                        <img src={job} alt="Jobs" />
+                        <p>Jobs</p>
+                      </section>
+                    </Link>
 
-       
+                    <section className="category-card">
+                      <img src={con} alt="Contracts & Tasks" />
+                      <p>Contracts & Tasks</p>
+                    </section>
+
+                    <Link to="/ClientPayments">
+                      <section className="category-card">
+                        <img src={pay} alt="Payments" />
+                        <p>Payments</p>
+                      </section>
+                    </Link>
+
+                    <section className="category-card">
+                      <img src={rep} alt="Reports" />
+                      <p>Reports</p>
+                    </section>
+
+                    <section className="category-card">
+                      <img src={stat} alt="Quick Stats" />
+                      <p>Quick Stats</p>
+                    </section>
+                  </section>
+                </section>
+              );
+            }
+          })
+          ()
+          }
+        </main>
       </>
     );
   }
