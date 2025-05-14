@@ -37,7 +37,7 @@ class Freelancers extends React.Component {
         <main>
           {this.state.showWelcomeBox && (
             <section className="messagebox" id="welcomeBox">
-              <button className="close" onClick={this.closeMessage}>×</button>
+              <button className="close" onClick={this.closeWelcomeMessage}>×</button>
               <img src={cuteWelcome} alt="Cute Welcome" />
               <h2>Welcome, Freelancer!</h2>
               <p>
