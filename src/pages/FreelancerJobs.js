@@ -11,7 +11,9 @@ const FreelancerJobs = () => {
   const [jobs, setjobs] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
-
+  
+  const [formErrors, setFormErrors] = useState({});//added for errors
+  
   const [appliedJobs, setAppliedJobs] = useState([]);
   const [acceptedJobs, setAcceptedJobs] = useState([]);
   const [rejectedJobs, setRejectedJobs] = useState([]);
@@ -127,6 +129,20 @@ const FreelancerJobs = () => {
   };
 
   const handleSubmit = () => {
+    //form error handling logic
+     const errors = {};
+    for (const [key, value] of Object.entries(applicationData)) {
+      if (!value || value.trim?.() === "") {
+        errors[key] = `Please fill in the ${key.replace(/_/g, ' ')} field.`;
+      }
+    }
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return; // Stop the submission
+    }
+    // No errors — clear old ones
+    setFormErrors({});
+    
     if (appliedJobs.includes(selectedJob.id)) {
       alert("You have already applied to this job.");
       return;
