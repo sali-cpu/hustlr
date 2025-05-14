@@ -46,8 +46,6 @@ const SignIn = () => {
 
       // Store basic info locally
       localStorage.setItem("userUID", user.uid);
-      localStorage.setItem("userName", user.displayName);
-      localStorage.setItem("userEmail", user.email);
 
       if (adminEmails.includes(user.email)) {
         navigate("/Admin");
@@ -56,16 +54,20 @@ const SignIn = () => {
 
       // Check if user exists in DB
       const snapshot = await get(userRef);
-      if (snapshot.exists()) {
+      if (snapshot.exists()) 
+        {
         const role = snapshot.val().role;
         goToPage(role);
-      } else {
+      } 
+      else 
+      {
         alert("User not found. Redirecting to Sign Up.");
         navigate("/SignUp");
       }
-    } catch (error) {
-      console.error("Sign-in error:", error);
-      alert("Sign-in failed. Try again.");
+    } 
+    catch (error) 
+    {
+      alert("Sign-in failed. Try again."+ error.message);
     }
   };
 
