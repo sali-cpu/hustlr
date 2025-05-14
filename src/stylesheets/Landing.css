@@ -115,14 +115,16 @@
   
   .text-overlay {
     position: absolute;
-    top: 50%;
-    left: 30%;
+    top: 40%;
+    left: 50%; /* <-- change from 30% to 50% */
     transform: translate(-50%, -50%);
     color: white;
     text-align: center;
     z-index: 10;
     font-family: 'Arial', sans-serif;
+    padding: 0 20px; /* optional: add padding for smaller screens */
   }
+  
   
   .text-overlay h2 {
     font-size: 3rem;
@@ -191,7 +193,7 @@
   
   .trusted-by {
     margin-top: 30px;
-    color: #ccc;
+    
     font-size: 0.9rem;
     display: flex;
     align-items: center;
@@ -205,7 +207,7 @@
     font-weight: 500;
   }
   
-   .trusted-by img {
+  .trusted-by img {
     height: 20px;
     opacity: 1; /* full visibility */
     filter: none; /* remove any color effects */
