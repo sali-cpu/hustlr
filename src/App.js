@@ -16,6 +16,7 @@ import RecentActivity from './pages/RecentActivity';
 import RouteTracker from './components/RouteTracker'; // Import RouteTracker
 import FreelancerPayments from "./pages/FreelancerPayments";
 import CQStats from "./pages/CQStats";
+import FQStats from "./pages/FQStats";
 
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -52,6 +53,7 @@ function App() {
           <Route path="/FreelancerPayments" element={<FreelancerPayments />} />
           <Route path="/RecentActivity" element={<RecentActivity />} />
           <Route path="/CQStats" element={<CQStats />} />
+          <Route path="/FQStats" element={<FQStats />} />
 
 
         </Routes>
