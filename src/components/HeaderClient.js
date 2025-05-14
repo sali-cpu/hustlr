@@ -36,7 +36,7 @@ class HeaderClient extends React.Component {
             ></button>
             <li className="nitem"><a href="#" className="nlink">Ongoing Projects</a></li>
             <li className="nitem"><a href="/ClientPayments" className="nlink">Payments</a></li>
-            <li className="nitem"><a href="#" className="nlink">Settings</a></li>
+            <li className="nitem"><a href="/ClientSettings" className="nlink">Settings</a></li>
             <li className="nitem"><a href="/RecentActivity" className="nlink">Recent Activities</a></li>
             <li className="nitem"><a href="/" className="nlink">Sign Out</a></li>
           </ul>
