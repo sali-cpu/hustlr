@@ -36,7 +36,7 @@ class HeaderFreelancer extends React.Component {
             ></button>
             <li className="nitem"><a href="#" className="nlink">Ongoing Projects</a></li>
             <li className="nitem"><a href="/FreelancerPayments" className="nlink">Earnings</a></li>
-            <li className="nitem"><a href="#" className="nlink">Settings</a></li>
+            <li className="nitem"><a href="/FreeSettings" className="nlink">Settings</a></li>
             <li className="nitem"><a href="/RecentActivity" className="nlink">Recent Activities</a></li>
             <li className="nitem"><a href="/" className="nlink">Sign Out</a></li>
           </ul>
