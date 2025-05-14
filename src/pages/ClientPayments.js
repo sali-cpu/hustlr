@@ -55,7 +55,7 @@ const ClientPayments = () => {
               <td>Jane Doe</td>
               <td>UI Mockups</td>
               <td>$300</td>
-              <td><span className="status pending">Pending</span></td>
+              <td><p className="status pending">Pending</p></td>
               <td>2025-04-20</td>
               <td><button className="mark-paid-btn">Mark as Paid</button></td>
             </tr>
