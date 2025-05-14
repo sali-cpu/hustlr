@@ -1,0 +1,86 @@
+.settings-container {
+    max-width: 600px;
+    margin: 40px auto;
+    background: white;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  }
+  
+  .settings-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .settings-form label {
+    display: flex;
+    flex-direction: column;
+    font-weight: 600;
+    color: #1e293b;
+  }
+  
+  .settings-form input,
+  .settings-form textarea {
+    padding: 0.6rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    margin-top: 0.4rem;
+    font-size: 1rem;
+  }
+  
+  .icon-selection {
+    margin-top: 1rem;
+  }
+  
+  .icon-grid {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 0.5rem;
+  }
+  
+  .icon-option {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 3px solid transparent;
+    transition: border 0.3s ease;
+  }
+  
+  .icon-option.selected {
+    border: 3px solid #3b82f6;
+  }
+  
+  .save-btn {
+    background: #3b82f6;
+    color: white;
+    padding: 0.7rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  
+  .save-btn:hover {
+    background: #2563eb;
+  }
+  
+  /* 👇 New additions for top icon display */
+  .top-icon-container {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  .top-profile-icon {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #3b82f6;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
