@@ -1,11 +1,7 @@
 import React from "react";
 import '../stylesheets/style.css'; // if you have styles for this page
 import { Link } from "react-router-dom";
-import logo from '../images/logo.png';
 import cuteWelcome from '../images/cute.jpg';
-import HeaderClient from "../components/HeaderClient";
-import FooterClient from "../components/FooterClient";
-import hero1 from '../images/HeroJPG.jpg';
 import job from '../images/Job.png';
 import pay from '../images/Payment.png';
 import stat from '../images/Quick Stats.png';
@@ -14,29 +10,28 @@ import rep from '../images/Reports.png';
 import HeaderFreelancer from '../components/HeaderFreelancer';
 
 class Freelancers extends React.Component {
-  constructor(props) {
+    constructor(props) {
     super(props);
     const hasSeenWelcome = localStorage.getItem('hasSeenWelcome');
   
     this.state = {
-      showWelcomeBox: !hasSeenWelcome, // Only show if not seen before
+      showWelcomeBox: !hasSeenWelcome, 
     };
   }
   
   closeWelcomeMessage = () => {
-    localStorage.setItem('hasSeenWelcome', 'true'); // Remember the user saw it
+    localStorage.setItem('hasSeenWelcome', 'true'); 
     this.setState({ showWelcomeBox: false });
   };
-  
 
   render() {
     return (
       <>
         <HeaderFreelancer />
-         <div className="search-box">
+         <section className="search-box">
               <input type="text" placeholder="Search for any service..." />
               <button className="search-icon">🔍</button>
-            </div>
+            </section>
 
 
         <main>
@@ -54,36 +49,35 @@ class Freelancers extends React.Component {
 
         {!this.state.showWelcomeBox && (
           <section className="categories">
-            <div className="category-grid">
+            <section className="category-grid">
             <Link to = "/FreelancerJobs">
-              <div className="category-card">
+              <section className="category-card">
                 <img src={job} alt="Jobs" />
                 <p>Jobs</p>
-              </div>
+              </section>
               </Link>
-              <div className="category-card">
+              <section className="category-card">
                 <img src={con} alt="Contracts & Tasks" />
                 <p>Contracts & Tasks</p>
-              </div>
+              </section>
               <Link to = "/FreelancerPayments">
-              <div className="category-card">
+              <section className="category-card">
                 <img src={pay} alt="Payments" />
                 <p>Payments</p>
-              </div>
+              </section>
               </Link>
-              <div className="category-card">
+              <section className="category-card">
                 <img src={rep} alt="Reports" />
                 <p>Reports</p>
-              </div>
-              <div className="category-card">
+              </section>
+              <section className="category-card">
                 <img src={stat} alt="Quick Stats" />
                 <p>Quick Stats</p>
-              </div>
-            </div>
+              </section>
+            </section>
           </section>
         )}
        
-
       </>
     );
   }
