@@ -14,12 +14,15 @@ import '../stylesheets/Final.css';
 class Client extends React.Component {
   constructor(props) {
     super(props);
+    const hasSeenWelcome = localStorage.getItem('hasSeenWelcome');
+  
     this.state = {
-      showWelcomeBox: true,
+      showWelcomeBox: !hasSeenWelcome, // Only show if not seen before
     };
   }
-
+  
   closeWelcomeMessage = () => {
+    localStorage.setItem('hasSeenWelcome', 'true'); // Remember the user saw it
     this.setState({ showWelcomeBox: false });
   };
 
