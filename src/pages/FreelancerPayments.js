@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import '../stylesheets/FreelancerPayments.css';
 
 const FreelancerPayments = () => {
-  // Temporary mock payments data
   const [payments, setPayments] = useState([
     {
       id: 1,
@@ -12,10 +11,19 @@ const FreelancerPayments = () => {
       amount: 300,
       status: 'Pending',
       dueDate: '2025-04-20'
+    },
+    // Add more sample data for testing
+    {
+      id: 2,
+      jobTitle: 'Mobile App Development',
+      client: 'John Smith',
+      milestone: 'Initial Prototype',
+      amount: 500,
+      status: 'Done',
+      dueDate: '2025-03-15'
     }
   ]);
 
-  // Toggle status (for now just between Pending and Done)
   const toggleStatus = (id) => {
     setPayments(prevPayments =>
       prevPayments.map(payment =>
@@ -24,6 +32,44 @@ const FreelancerPayments = () => {
           : payment
       )
     );
+  };
+
+  const exportToCSV = () => {
+    // Prepare CSV content
+    const headers = ['Job Title', 'Client', 'Milestone', 'Amount', 'Status', 'Due Date'];
+    const csvRows = [];
+    
+    // Add headers
+    csvRows.push(headers.join(','));
+    
+    // Add data rows
+    payments.forEach(payment => {
+      const values = [
+        `"${payment.jobTitle}"`,
+        `"${payment.client}"`,
+        `"${payment.milestone}"`,
+        payment.amount,
+        payment.status,
+        payment.dueDate
+      ];
+      csvRows.push(values.join(','));
+    });
+
+    // Create CSV file
+    const csvContent = csvRows.join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    
+    // Set download attributes
+    link.setAttribute('href', url);
+    link.setAttribute('download', `payments_${new Date().toISOString().slice(0,10)}.csv`);
+    link.style.visibility = 'hidden';
+    
+    // Trigger download
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
@@ -55,7 +101,7 @@ const FreelancerPayments = () => {
           </select>
           <input type="date" />
           <input type="date" />
-          <button>Export CSV</button>
+          <button onClick={exportToCSV}>Export CSV</button>
         </section>
 
         <table className="payments-table">
@@ -84,7 +130,7 @@ const FreelancerPayments = () => {
                     className="mark-paid-btn"
                     onClick={() => toggleStatus(payment.id)}
                   >
-                    Mark as Done
+                    {payment.status === 'Pending' ? 'Mark as Done' : 'Mark as Pending'}
                   </button>
                 </td>
               </tr>
