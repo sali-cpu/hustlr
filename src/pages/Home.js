@@ -2,8 +2,6 @@
 import React, { useEffect } from 'react';
 import '../stylesheets/Landing.css';
 import { Link } from "react-router-dom";
-import Land from "./pages/Land";
-
 import hero1 from '../images/HeroJPG.jpg';
 import hero2 from '../images/NewHero.jpg';
 import hero3 from '../images/HeroJPG3.jpg';
