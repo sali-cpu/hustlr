@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import '../stylesheets/ClientJobs.css';
 import HeaderClient from "../components/HeaderClient";
 import FooterClient from "../components/FooterClient";
@@ -16,7 +16,7 @@ const initialFormData = {
     { description: '', amount: '' },
     { description: '', amount: '' },
     { description: '', amount: '' }
-  ] //newly added 
+  ] 
 };
 
 const userUID = localStorage.getItem("userUID");
@@ -33,10 +33,11 @@ const ClientJobs = () => {
   const [selectedJobTitle, setSelectedJobTitle] = useState('');
 
 
-  const handleChange = (e) => {
+  const handleChange = (e) => 
+    {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-  //newly added 
+    };
+  
   const handleMilestoneChange = (index, field, value) => {
     const updatedMilestones = [...formData.milestones];
     updatedMilestones[index][field] = value;
@@ -59,6 +60,7 @@ const ClientJobs = () => {
     });
     formSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
+
   const handleViewApplicants = async (jobId, jobTitle) => {
     setViewingApplicantsJobId(jobId);
     setSelectedJobTitle(jobTitle);
@@ -68,7 +70,8 @@ const ClientJobs = () => {
     try {
       const snapshot = await get(applicantsRef);
   
-      if (snapshot.exists()) {
+      if (snapshot.exists()) 
+        {
         const data = snapshot.val();
         const loadedApplicants = Object.entries(data)
           .filter(([_, appData]) => {
@@ -84,71 +87,79 @@ const ClientJobs = () => {
             skills: appData.skills || '',
             status: appData.status || '',
             email: localStorage.getItem("userEmail"), 
-           // milestones: appData.milestones || [],
+           
           }));
   
         setApplicants(loadedApplicants);
-      } else {
+      } 
+      else 
+      {
         setApplicants([]);
       }
-  
+        // This deals with scrolling down the page so dont remove
       formSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
   
-    } catch (error) {
-      console.error("❌ Error fetching applicants:", error);
-      alert("Failed to load applicants.");
+    } 
+    catch (error) 
+    {
+      alert("Failed to load applicants."+ error.message);
     }
   };
   
   
   
   const handleAcceptApplicant = async (applicantId) => {
-    try {
+    try 
+    {
       const jobId = viewingApplicantsJobId;
       const applicantRef = ref(applications_db, `applications/${jobId}/${applicantId}`);
       const acceptedRef = ref(applications_db, `accepted_applications/${jobId}/${applicantId}`);
       const jobApplicationsRef = ref(applications_db, `applications/${jobId}`);
   
-      // Fetch the accepted applicant's data
+      // Fetch the accepted freelancer data
       const applicantSnapshot = await get(applicantRef);
-      if (!applicantSnapshot.exists()) {
-        alert("❌ Applicant not found.");
+      if (!applicantSnapshot.exists()) 
+        {
+        alert("Applicant not found.");
         return;
       }
       const applicantData = applicantSnapshot.val();
-  
-      // Ensure milestones are included when copying
       const acceptedData = {
         ...applicantData,
         status: "accepted",
-        milestones: applicantData.milestones || {}  // fallback to empty object if not present
+        milestones: applicantData.milestones || {}
       };
   
-      // Update accepted applicant status in original location
+      
       await update(applicantRef, { status: "accepted" });
-  
-      // Store the accepted applicant in accepted_applications
       await set(acceptedRef, acceptedData);
   
-      // Reject all other applicants
+      // Reject all butt we might need to chamge this 
       const snapshot = await get(jobApplicationsRef);
-      if (snapshot.exists()) {
+      if (snapshot.exists()) 
+        {
         const allApplicants = snapshot.val();
-        for (const id in allApplicants) {
-          if (id !== applicantId) {
-            const otherRef = ref(applications_db, `applications/${jobId}/${id}`);
-            await update(otherRef, {
-              status: "rejected"
-            });
-          }
+
+        for (const id in allApplicants) 
+          {
+            if (id !== applicantId) 
+            {
+              const otherRef = ref(applications_db, `applications/${jobId}/${id}`);
+              await update(otherRef, 
+                {
+                status: "rejected"
+                } 
+              );
+            }
         }
       }
   
-      alert(`✅ Accepted applicant with ID: ${applicantId}`);
-      handleViewApplicants(jobId, selectedJobTitle); // Refresh UI
+      alert(`Accepted applicant with ID: ${applicantId}`);
+      handleViewApplicants(jobId, selectedJobTitle); 
   
-    } catch (error) {
-      console.error("❌ Error accepting applicant:", error);
+    } 
+    catch (error) 
+    {
       alert("Failed to accept applicant.");
     }
   };
@@ -166,16 +177,13 @@ const ClientJobs = () => {
     // Get the current application data
     const snapshot = await get(applicationRef);
     if (!snapshot.exists()) {
-      alert("❌ Applicant not found.");
+      alert("Applicant not found.");
       return;
     }
 
     const applicantData = snapshot.val();
-
-    // Update status in main applications DB
     await update(applicationRef, { status: "rejected" });
 
-    // Save a copy to rejected_applications
     const rejectedData = {
       ...applicantData,
       status: "rejected",
@@ -183,11 +191,12 @@ const ClientJobs = () => {
     };
 
     await set(rejectedRef, rejectedData);
+    alert("Application rejected successfully.");
+    handleViewApplicants(jobId, selectedJobTitle); 
 
-    alert("❌ Application rejected successfully.");
-    handleViewApplicants(jobId, selectedJobTitle); // Refresh UI
-
-  } catch (error) {
+  } 
+  catch (error) 
+  {
     alert("Failed to reject application: " + error.message);
   }
   };
@@ -211,45 +220,49 @@ const ClientJobs = () => {
     //alert("User UID during submit: " + userUID);
 
     if (!formData.title || !formData.description || !formData.category || !formData.budget || !formData.deadline) {
-      setError('⚠️ Please fill in all fields.');
+      setError('Please fill in all fields.');
       return;
     }
 
-    for (const milestone of formData.milestones) {
-      if (!milestone.description || !milestone.amount) {
-        setError('⚠️ Please fill in all milestone fields.');
-        return;
-      }
+    for (const milestone of formData.milestones) 
+      {
+      if (!milestone.description || !milestone.amount) 
+        {
+          setError('Please fill in all milestone fields.');
+          return;
+        }
     }
-    
-
+  
     setError('');
 
     try {
-      if (editingJobId) {
+      if (editingJobId) 
+        {
         const jobRef = ref(db, `jobs/${editingJobId}`);
         await update(jobRef, {
           ...formData,
           budget: parseFloat(formData.budget),
         });
-        //alert("✅ Job updated in Firebase");
-      } else {
+      
+      } 
+      else 
+      {
         const newJobRef = push(ref(db, "jobs"));
         await set(newJobRef, {
           ...formData,
           budget: parseFloat(formData.budget),
           clientUID: localStorage.getItem("userUID"),
         });
-        //alert("✅ Job added to Firebase");
+        //alert(" Job added to Firebase");
       }
 
       setFormData(initialFormData);
       setEditingJobId(null);
 
     } catch (error) {
-      console.error("🔥 Failed to add/update job:", error);
-      setError("⚠️ Error: " + error.message);
-      alert("❌ Failed to add job: " + error.message);
+      
+      setError("Error: " + error.message);
+      alert("Failed to add job: " + error.message);
     }
   };
 
@@ -268,7 +281,7 @@ const ClientJobs = () => {
     });
 
     return () => unsubscribe();
-  }, [userUID]);
+  }, );
 
   return (
     <>
@@ -363,16 +376,16 @@ const ClientJobs = () => {
              <p><strong>Email:</strong> {applicant.email}</p>
 
             {applicant.status.toLowerCase() === "accepted" ? (
-              <div className="accepted-message" style={{ backgroundColor: '#d4edda', padding: '10px', borderRadius: '8px', marginTop: '10px' }}>
-                <strong>✅ You have accepted this applicant for the job.</strong>
+              <section className="accepted-message" style={{ backgroundColor: '#d4edda', padding: '10px', borderRadius: '8px', marginTop: '10px' }}>
+                <strong>You have accepted this applicant for the job.</strong>
                 <p>Please contact them at: <a href={`mailto:${applicant.email}`}>{applicant.email}</a></p>
-              </div>
+              </section>
             ) : (
-              <div className="pending-message" style={{ marginTop: '10px' }}>
+              <section className="pending-message" style={{ marginTop: '10px' }}>
               <em>⏳ This application is still pending.</em>
               <button onClick={() => handleAcceptApplicant(applicant.id)} className="accept-btn">Accept</button>
               <button onClick={() => handleRejectApplicant(applicant.id)} className="reject-btn">Reject</button>
-              </div>
+              </section>
             )}
              
              
@@ -414,7 +427,7 @@ const ClientJobs = () => {
   
 
   {formData.milestones.map((milestone, index) => (
-  <div key={index} className="milestone-group">
+  <section key={index} className="milestone-group">
     <label>
       Milestone {index + 1} Description:
       <input
@@ -435,7 +448,7 @@ const ClientJobs = () => {
         required
       />
     </label>
-  </div>
+  </section>
 ))}
 </fieldset>
 
