@@ -79,10 +79,13 @@ class Client extends React.Component {
                       <p>Reports</p>
                     </section>
 
+                    <Link to="/CQStats">
                     <section className="category-card">
                       <img src={stat} alt="Quick Stats" />
                       <p>Quick Stats</p>
                     </section>
+                    </Link>
+                    
                   </section>
                 </section>
               );
