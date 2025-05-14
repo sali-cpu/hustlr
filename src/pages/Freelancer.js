@@ -16,19 +16,18 @@ import HeaderFreelancer from '../components/HeaderFreelancer';
 class Freelancers extends React.Component {
   constructor(props) {
     super(props);
+    const hasSeenWelcome = localStorage.getItem('hasSeenWelcome');
+  
     this.state = {
-      showMenu: false,
-      showWelcomeBox: true
+      showWelcomeBox: !hasSeenWelcome, // Only show if not seen before
     };
   }
-
-  toggleMenu = () => {
-    this.setState({ showMenu: !this.state.showMenu });
-  };
-
-  closeMessage = () => {
+  
+  closeWelcomeMessage = () => {
+    localStorage.setItem('hasSeenWelcome', 'true'); // Remember the user saw it
     this.setState({ showWelcomeBox: false });
   };
+  
 
   render() {
     return (
