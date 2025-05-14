@@ -205,10 +205,10 @@
     font-weight: 500;
   }
   
-  .trusted-by img {
+   .trusted-by img {
     height: 20px;
-    opacity: 0.8;
-    filter: brightness(0) invert(1); /* make logos white */
+    opacity: 1; /* full visibility */
+    filter: none; /* remove any color effects */
   }
   .categories {
     padding: 60px 20px;
