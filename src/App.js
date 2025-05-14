@@ -17,6 +17,11 @@ import RouteTracker from './components/RouteTracker'; // Import RouteTracker
 import FreelancerPayments from "./pages/FreelancerPayments";
 import CQStats from "./pages/CQStats";
 import FQStats from "./pages/FQStats";
+import FreeSettings  from "./pages/FreeSettings";
+import AboutSF  from "./pages/AboutSF";
+import ClientSettings  from "./pages/ClientSettings";
+import AboutSC  from "./pages/AboutSC";
+
 
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -54,6 +59,10 @@ function App() {
           <Route path="/RecentActivity" element={<RecentActivity />} />
           <Route path="/CQStats" element={<CQStats />} />
           <Route path="/FQStats" element={<FQStats />} />
+          <Route path="/FreeSettings" element={<FreeSettings />} />
+          <Route path="/AboutSF" element={<AboutSF />} />
+          <Route path="/ClientSettings" element={<ClientSettings />} />
+          <Route path="/AboutSC" element={<AboutSC />} />
 
 
         </Routes>
