@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import '../stylesheets/FreelancerJob.css';
 import HeaderFreelancer from '../components/HeaderFreelancer';
-
-import { get, push, ref, onValue } from "firebase/database";
+import { get, push, ref } from "firebase/database";
 import { db, applications_db } from '../firebaseConfig';
 
 const FreelancerJobs = () => {
@@ -11,14 +10,11 @@ const FreelancerJobs = () => {
   const [jobs, setjobs] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
-  
-  const [formErrors, setFormErrors] = useState({});//added for errors
-  
+  const [formErrors, setFormErrors] = useState({});
   const [appliedJobs, setAppliedJobs] = useState([]);
   const [acceptedJobs, setAcceptedJobs] = useState([]);
   const [rejectedJobs, setRejectedJobs] = useState([]);
   const [pendingJobs, setPendingJobs] = useState([]);
-
   const [applicationData, setApplicationData] = useState({
     name: '',
     surname: '',
@@ -39,7 +35,6 @@ const FreelancerJobs = () => {
     const jobsRef = ref(db, 'jobs');
     const applicationsRef = ref(applications_db, 'accepted_applications');
 
-    // Fetch jobs
     get(jobsRef).then((snapshot) => {
       if (snapshot.exists()) {
         const jobsArray = Object.entries(snapshot.val()).map(([id, data]) => ({
@@ -47,14 +42,9 @@ const FreelancerJobs = () => {
           ...data,
         }));
         setjobs(jobsArray);
-      } else {
-        console.log('No job data available');
       }
-    }).catch((error) => {
-      console.error(error);
     });
 
-    // Fetch accepted and pending from accepted_applications
     get(applicationsRef).then((snapshot) => {
       if (snapshot.exists()) {
         const applicationsData = snapshot.val();
@@ -80,29 +70,9 @@ const FreelancerJobs = () => {
 
         setAppliedJobs(userAppliedJobIds);
         setAcceptedJobs(userAcceptedJobIds);
+        setRejectedJobs(userRejectedJobIds);
         setPendingJobs(userPendingJobIds);
       }
-    });
-
-    // Fetch rejected jobs from rejected_applications
-    const rejectedRef = ref(applications_db, `rejected_applications`);
-    onValue(rejectedRef, (snapshot) => {
-      const data = snapshot.val();
-      if (!data) return;
-
-      const userUID = localStorage.getItem("userUID");
-      const userRejectedJobIds = [];
-
-      for (const jobId in data) {
-        for (const applicantId in data[jobId]) {
-          const appData = data[jobId][applicantId];
-          if (appData.applicant_userUID === userUID) {
-            userRejectedJobIds.push(jobId);
-          }
-        }
-      }
-
-      setRejectedJobs(userRejectedJobIds);
     });
   }, []);
 
@@ -129,8 +99,7 @@ const FreelancerJobs = () => {
   };
 
   const handleSubmit = () => {
-    //form error handling logic
-     const errors = {};
+    const errors = {};
     for (const [key, value] of Object.entries(applicationData)) {
       if (!value || value.trim?.() === "") {
         errors[key] = `Please fill in the ${key.replace(/_/g, ' ')} field.`;
@@ -138,11 +107,10 @@ const FreelancerJobs = () => {
     }
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
-      return; // Stop the submission
+      return;
     }
-    // No errors — clear old ones
     setFormErrors({});
-    
+
     if (appliedJobs.includes(selectedJob.id)) {
       alert("You have already applied to this job.");
       return;
@@ -173,14 +141,11 @@ const FreelancerJobs = () => {
         <section className="header-title-area">
           <h1 className="main-title">Freelancer Job Board</h1>
         </section>
-
-        <section className="nav_section">
-          <nav className="main-nav">
-            <ul>
-              <li><a href="/freelancer">Home</a></li>
-            </ul>
-          </nav>
-        </section>
+        <nav className="main-nav">
+          <ul>
+            <li><a href="/freelancer">Home</a></li>
+          </ul>
+        </nav>
       </header>
 
       <main className="freelancer-jobs-main">
@@ -202,7 +167,6 @@ const FreelancerJobs = () => {
           </select>
         </aside>
 
-        {/* Available Jobs */}
         <section className="job-listings job-column">
           <h2>Available Jobs</h2>
           {filteredJobs.filter(job =>
@@ -215,15 +179,15 @@ const FreelancerJobs = () => {
                 !rejectedJobs.includes(job.id)
               )
               .map(job => (
-                <div key={job.id} className="job-card">
+                <article key={job.id} className="job-card">
                   <h3>{job.title}</h3>
                   <p><strong>Description:</strong> {job.description}</p>
                   <p><strong>Category:</strong> {job.category}</p>
                   <p><strong>Budget:</strong> ${job.budget}</p>
                   <p><strong>Deadline:</strong> {job.deadline}</p>
 
-                  {job.milestones && job.milestones.length > 0 && (
-                    <div className="milestones-section">
+                  {job.milestones?.length > 0 && (
+                    <section className="milestones-section">
                       <h4>Milestones:</h4>
                       <ul>
                         {job.milestones.map((milestone, index) => (
@@ -233,7 +197,7 @@ const FreelancerJobs = () => {
                           </li>
                         ))}
                       </ul>
-                    </div>
+                    </section>
                   )}
 
                   {pendingJobs.includes(job.id) ? (
@@ -241,28 +205,27 @@ const FreelancerJobs = () => {
                   ) : (
                     <button onClick={() => openModal(job)}>Apply</button>
                   )}
-                </div>
+                </article>
               ))
           ) : (
             <p>No available jobs.</p>
           )}
         </section>
 
-        {/* Accepted Jobs */}
         <section className="job-listings job-column">
           <h2>Accepted Jobs</h2>
           {filteredJobs.filter(job => acceptedJobs.includes(job.id)).length > 0 ? (
             filteredJobs
               .filter(job => acceptedJobs.includes(job.id))
               .map(job => (
-                <div key={job.id} className="job-card accepted">
+                <article key={job.id} className="job-card accepted">
                   <h3>{job.title}</h3>
                   <p><strong>Description:</strong> {job.description}</p>
                   <p><strong>Category:</strong> {job.category}</p>
                   <p><strong>Budget:</strong> ${job.budget}</p>
                   <p><strong>Deadline:</strong> {job.deadline}</p>
-                  {job.milestones && job.milestones.length > 0 && (
-                    <div className="milestones-section">
+                  {job.milestones?.length > 0 && (
+                    <section className="milestones-section">
                       <h4>Milestones:</h4>
                       <ul>
                         {job.milestones.map((milestone, index) => (
@@ -272,31 +235,30 @@ const FreelancerJobs = () => {
                           </li>
                         ))}
                       </ul>
-                    </div>
+                    </section>
                   )}
                   <p className="status-label done">✅ Accepted</p>
-                </div>
+                </article>
               ))
           ) : (
             <p>No accepted jobs.</p>
           )}
         </section>
 
-        {/* Rejected Jobs */}
         <section className="job-listings job-column">
           <h2>Rejected Jobs</h2>
           {filteredJobs.filter(job => rejectedJobs.includes(job.id)).length > 0 ? (
             filteredJobs
               .filter(job => rejectedJobs.includes(job.id))
               .map(job => (
-                <div key={job.id} className="job-card rejected">
+                <article key={job.id} className="job-card rejected">
                   <h3>{job.title}</h3>
                   <p><strong>Description:</strong> {job.description}</p>
                   <p><strong>Category:</strong> {job.category}</p>
                   <p><strong>Budget:</strong> ${job.budget}</p>
                   <p><strong>Deadline:</strong> {job.deadline}</p>
-                  {job.milestones && job.milestones.length > 0 && (
-                    <div className="milestones-section">
+                  {job.milestones?.length > 0 && (
+                    <section className="milestones-section">
                       <h4>Milestones:</h4>
                       <ul>
                         {job.milestones.map((milestone, index) => (
@@ -306,10 +268,10 @@ const FreelancerJobs = () => {
                           </li>
                         ))}
                       </ul>
-                    </div>
+                    </section>
                   )}
                   <p className="status-label rejected">❌ Rejected</p>
-                </div>
+                </article>
               ))
           ) : (
             <p>No rejected jobs.</p>
@@ -317,10 +279,9 @@ const FreelancerJobs = () => {
         </section>
       </main>
 
-      {/* Modal */}
       {showModal && selectedJob && (
-        <div className="modal-overlay">
-          <div className="modal">
+        <section className="modal-overlay">
+          <section className="modal">
             <h2>Apply for {selectedJob.title}</h2>
             <form>
               <label>Name:</label>
@@ -330,7 +291,9 @@ const FreelancerJobs = () => {
                 placeholder="Enter your name"
                 value={applicationData.name}
                 onChange={handleChange}
+                className={formErrors.name ? "input-error" : ""}
               />
+              {formErrors.name && <p className="error-text">{formErrors.name}</p>}
 
               <label>Surname:</label>
               <input
@@ -339,7 +302,9 @@ const FreelancerJobs = () => {
                 placeholder="Enter your surname"
                 value={applicationData.surname}
                 onChange={handleChange}
+                className={formErrors.surname ? "input-error" : ""}
               />
+              {formErrors.surname && <p className="error-text">{formErrors.surname}</p>}
 
               <label>Skills (comma separated):</label>
               <input
@@ -348,7 +313,9 @@ const FreelancerJobs = () => {
                 placeholder="e.g., JavaScript, React, Firebase"
                 value={applicationData.skills}
                 onChange={handleChange}
+                className={formErrors.skills ? "input-error" : ""}
               />
+              {formErrors.skills && <p className="error-text">{formErrors.skills}</p>}
 
               <label>Motivation:</label>
               <textarea
@@ -357,17 +324,19 @@ const FreelancerJobs = () => {
                 rows={5}
                 value={applicationData.motivation}
                 onChange={handleChange}
-              ></textarea>
+                className={formErrors.motivation ? "input-error" : ""}
+              />
+              {formErrors.motivation && <p className="error-text">{formErrors.motivation}</p>}
 
-              <div className="modal-buttons">
+              <section className="modal-buttons">
                 <button type="button" onClick={closeModal}>Cancel</button>
                 <button type="button" className="submit-button" onClick={handleSubmit}>
                   Submit
                 </button>
-              </div>
+              </section>
             </form>
-          </div>
-        </div>
+          </section>
+        </section>
       )}
     </>
   );
