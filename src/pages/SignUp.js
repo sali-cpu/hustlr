@@ -5,29 +5,23 @@ import google_icon from '../images/google_icon.png';
 import micro_icon from '../images/micro_icon.svg';
 // Import Firebase modules
 import { googleAuth, google_db, microsoftAuth, microsoft_db} from "../firebaseConfig";
-import { get,ref, set, child} from "firebase/database";
+import { get,ref, set} from "firebase/database";
 import { GoogleAuthProvider, OAuthProvider, signInWithPopup } from "firebase/auth";
 import { useNavigate } from 'react-router-dom';
 // Use only one Firebase for google
 
-
+// google prompter for provider
 const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({
   prompt: "select_account",
 });
 
-// Microsoft provider
+// microsdoft prompter for provider
 const microsoftProvider = new OAuthProvider("microsoft.com");
 microsoftProvider.setCustomParameters({
   prompt: "select_account",
 });
 
-const adminEmails = [
-
-  "2680440@students.wits.ac.za",
-  "1602758@students.wits.ac.za",
-  
-];
 const SignUp = () => {
   const navigate = useNavigate();
 
@@ -54,14 +48,14 @@ const SignUp = () => {
         const userRef = ref(google_db, 'users/' + user.uid);
   
         localStorage.setItem("userUID", user.uid);
-        localStorage.setItem("userName", user.displayName);
-        localStorage.setItem("userEmail", user.email);
   
         // Check if user already exists
-        get(userRef).then((snapshot) => {
-          if (snapshot.exists()) {
-            alert("User already exists. Redirecting you to Sign In...");
-            navigate("/SignIn"); // Adjust this route to match your sign-in page
+        get(userRef).then((snapshot) => 
+          {
+          if (snapshot.exists()) 
+            {
+            alert("User already exists. Redirecting you to Sign In");
+            navigate("/SignIn"); 
             return;
           }
          
@@ -75,14 +69,13 @@ const SignUp = () => {
             set(userRef, {
               role: role
             });
-  
+            // Page nevigator
             goToPage(role);
           
         });
       })
       .catch((error) => {
-        console.error("Google sign-in error:", error);
-        alert("404 error signing in!");
+        alert("Error signing in, Please try again!"+ error.message);
       });
   };
   
@@ -94,14 +87,13 @@ const SignUp = () => {
       const userRef = ref(microsoft_db, 'users/' + user.uid);
   
       localStorage.setItem("userUID", user.uid);
-      localStorage.setItem("userName", user.displayName);
-      localStorage.setItem("userEmail", user.email);
   
-      // Check if user already exists
+      // Check to verify if user exists
       const snapshot = await get(userRef);
-      if (snapshot.exists()) {
-        alert("User already exists. Redirecting you to Sign In...");
-        navigate("/SignIn"); // Adjust this route to match your sign-in page
+      if (snapshot.exists()) 
+        {
+        alert("User already exists. Redirecting you to Sign In");
+        navigate("/SignIn"); 
         return;
       }
   
@@ -112,7 +104,7 @@ const SignUp = () => {
           return;
         }
   
-        // Save new user only if they don't already exist
+        // savee new user 
         await set(userRef, {
           role: role
         });
@@ -120,9 +112,10 @@ const SignUp = () => {
         goToPage(role);
       
   
-    } catch (error) {
-      console.error("Microsoft sign-in error:", error);
-      alert("Sign-in failed. Please try again.");
+    } 
+    catch (error) 
+    {
+      alert("Sign-in failed. Please try again."+ error.message);
     }
   };
   
