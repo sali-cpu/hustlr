@@ -1,8 +1,12 @@
 import React from 'react';
 import '../stylesheets/ClientPayments.css';
+import HeaderClient from "../components/HeaderClient";
+import FooterClient from "../components/FooterClient";
 
 const ClientPayments = () => {
   return (
+     <>
+          <HeaderClient />
     <main className="client-payments-main">
       <header className="client-jobs-header">
         <section className="header-title-area">
@@ -63,6 +67,8 @@ const ClientPayments = () => {
         </table>
       </section>
     </main>
+  <FooterClient />
+    </>
   );
 };
 
