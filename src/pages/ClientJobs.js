@@ -13,9 +13,9 @@ const initialFormData = {
   budget: '',
   deadline: '',
   milestones: [
-    { description: '', amount: '' },
-    { description: '', amount: '' },
-    { description: '', amount: '' }
+    { description: '', amount: '',Status :''},
+    { description: '', amount: '',Status :''},
+    { description: '', amount: '',Status :''}
   ] //newly added 
 };
 
