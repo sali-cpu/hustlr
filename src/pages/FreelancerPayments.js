@@ -1,134 +1,82 @@
 import React, { useEffect, useState } from 'react';
 import '../stylesheets/FreelancerPayments.css';
-import HeaderClient from "../components/HeaderClient";
-import FooterClient from "../components/FooterClient";
-
-import { getDatabase, ref, get, update,onValue } from "firebase/database";
-import { applications_db, db } from '../firebaseConfig';
+import { ref, get,update } from "firebase/database";
+import { applications_db } from '../firebaseConfig';
 
 const FreelancerPayments = () => {
   const [payments, setPayments] = useState([]);
   const [wallet, setWallet] = useState(0);
-  const [updatingId, setUpdatingId] = useState(null);
-
-
-  const handlePaymentStatusChange = async (paymentId, status) => {
-  setUpdatingId(paymentId); // show spinner/button disabled
-  const parts = paymentId.split('_ms_');
-  const milestoneIndex = parts[1];
-  const [parentKey, jobKey] = parts[0].split('_');
-
-  const accepted_jobRef = ref(
-    applications_db,
-    `accepted_applications/${parentKey}/${jobKey}/job_milestones/${milestoneIndex}`
-  );
-
-
-  try {
-    await update(accepted_jobRef, { status });
-    alert(`Milestone marked as ${status}`);
-
-    const updatedPayments = payments.map(payment =>
-      payment.id === paymentId ? { ...payment, status } : payment
-    );
-
-    setPayments(updatedPayments);
-  } catch (error) {
-    console.error("Error updating payment status:", error);
-  }
-
-  setUpdatingId(null); // done
-};
-
 
   useEffect(() => {
-    const userUID = localStorage.getItem("userUID");
-    const acceptedRef = ref(applications_db, 'accepted_applications');
-  
-    const unsubscribe = onValue(acceptedRef, (snapshot) => {
-      const jobList = [];
-  
-      snapshot.forEach(parentSnap => {
-        parentSnap.forEach(jobSnap => {
-          const data = jobSnap.val();
-          if (data.applicant_userUID === userUID && Array.isArray(data.job_milestones)) {
-            data.job_milestones.forEach((milestone, index) => {
-              jobList.push({
-                id: parentSnap.key + "_" + jobSnap.key + "_ms_" + index, // include parentSnap.key
-                jobTitle: data.jobTitle,
-                client: data.clientName || 'Unknown',
-                milestone: milestone.description,
-                amount: milestone.amount,
-                status: milestone.status,
-                dueDate: milestone.dueDate || 'N/A'
-              });
+    const savedWallet = localStorage.getItem("freelancerWallet");
+    if (savedWallet) setWallet(parseFloat(savedWallet));
 
+    const fetchAcceptedJobs = async () => {
+      const userUID = localStorage.getItem("userUID");
+      const acceptedRef = ref(applications_db, 'accepted_applications');
+
+      try {
+        const snapshot = await get(acceptedRef);
+        const jobList = [];
+
+        if (snapshot.exists()) {
+          snapshot.forEach(parentSnap => {
+            parentSnap.forEach(jobSnap => {
+              const data = jobSnap.val();
+              if (data.applicant_userUID === userUID && Array.isArray(data.job_milestones)) {
+                data.job_milestones.forEach((milestone, index) => {
+
+                  const id = jobSnap.key + "_ms_" + index;
+                  jobList.push({
+                  id,
+                  jobTitle: data.jobTitle,
+                  client: data.clientName || 'Unknown',
+                  milestone: milestone.description,
+                  amount: milestone.amount,
+                  status: milestone.status || 'Pending',
+                  dueDate: milestone.dueDate || 'N/A',
+                  parentKey: parentSnap.key,
+                  jobKey: jobSnap.key,
+                  milestoneIndex: index
+                });
+
+
+                });
+              }
             });
-          }
-        });
-      });
-  
-      setPayments(jobList);
-    });
-  
-    return () => unsubscribe(); // clean up on unmount
+          });
+          setPayments(jobList);
+        }
+      } catch (error) {
+        console.error("Error fetching jobs:", error);
+      }
+    };
+
+    fetchAcceptedJobs();
   }, []);
+const handleMarkDone = async (payment) => {
+  try {
+    const jobRef = ref(applications_db, `accepted_applications/${payment.parentKey}/${payment.jobKey}/job_milestones/${payment.milestoneIndex}`);
+    await update(jobRef, { status: "Done" });
 
-
-  const toggleStatus = (id) => {
-  const payment = payments.find(p => p.id === id);
-  const newStatus = payment.status === 'Pending' ? 'Done' : 'Pending';
-  handlePaymentStatusChange(id, newStatus);
+    // Update UI state
+    setPayments(prev =>
+      prev.map(p => p.id === payment.id ? { ...p, status: "Done" } : p)
+    );
+  } catch (err) {
+    console.error("Failed to update milestone status:", err);
+    alert("Failed to mark milestone as done.");
+  }
 };
 
 
-  const exportToCSV = () => {
-    // Prepare CSV content
-    const headers = ['Job Title', 'Client', 'Milestone', 'Amount', 'Status', 'Due Date'];
-    const csvRows = [];
-    
-    // Add headers
-    csvRows.push(headers.join(','));
-    
-    // Add data rows
-    payments.forEach(payment => {
-      const values = [
-        `"${payment.jobTitle}"`,
-        `"${payment.client}"`,
-        `"${payment.milestone}"`,
-        payment.amount,
-        payment.status,
-        payment.dueDate
-      ];
-      csvRows.push(values.join(','));
-    });
-
-    // Create CSV file
-    const csvContent = csvRows.join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    
-    // Set download attributes
-    link.setAttribute('href', url);
-    link.setAttribute('download', `payments_${new Date().toISOString().slice(0,10)}.csv`);
-    link.style.visibility = 'hidden';
-    
-    // Trigger download
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
 
   return (
-     <>
-          <HeaderClient />
     <main className="client-payments-main">
       <header className="client-jobs-header">
         <section className="header-title-area">
-          <h1 className="main-title">Jobs for Clients</h1>
+          <h1 className="main-title">Jobs for Freelancer</h1>
         </section>
-
         <section className="nav_section">
           <nav className="main-nav">
             <ul>
@@ -141,6 +89,11 @@ const FreelancerPayments = () => {
       <section className="payments-section">
         <h2>Payments for Freelancers</h2>
 
+        <section className="wallet-section">
+          <h3>Freelancer Wallet</h3>
+          <p>Balance: ${wallet.toFixed(2)}</p>
+        </section>
+
         <section className="filters">
           <input type="text" placeholder="Search by freelancer or job title" />
           <select>
@@ -151,7 +104,7 @@ const FreelancerPayments = () => {
           </select>
           <input type="date" />
           <input type="date" />
-          <button onClick={exportToCSV}>Export CSV</button>
+          <button>Export CSV</button>
         </section>
 
         <table className="payments-table">
@@ -176,12 +129,12 @@ const FreelancerPayments = () => {
                 <td><span className={`status ${payment.status.toLowerCase()}`}>{payment.status}</span></td>
                 <td>{payment.dueDate}</td>
                 <td>
-                  <button
-                    disabled={updatingId === payment.id}
-                    onClick={() => toggleStatus(payment.id)}
-                  >
-                    {payment.status === 'Pending' ? 'Mark as Done' : 'Mark as Pending'}
-                  </button>
+                  {payment.status !== 'Done' && (
+                <button className="mark-paid-btn" onClick={() => handleMarkDone(payment)}>
+                  Mark as Done
+                </button>
+                )}
+
                 </td>
               </tr>
             ))}
@@ -189,8 +142,6 @@ const FreelancerPayments = () => {
         </table>
       </section>
     </main>
-<FooterClient />
-    </>
   );
 };
 
