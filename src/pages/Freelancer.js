@@ -40,7 +40,7 @@ class Freelancers extends React.Component {
       { 
         id: 4,
         name: "Reports", 
-        path: "", 
+        path: "/FreeReports", 
         image: rep,
         keywords: ["reports", "analytics", "data"]
       },
