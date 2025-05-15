@@ -13,10 +13,10 @@ const initialFormData = {
   budget: '',
   deadline: '',
   milestones: [
-    { description: '', amount: '' },
-    { description: '', amount: '' },
-    { description: '', amount: '' }
-  ] 
+    { description: '', amount: '', status: 'pending' },
+    { description: '', amount: '', status: 'pending' },
+    { description: '', amount: '', status: 'pending' }
+  ]
 };
 
 const userUID = localStorage.getItem("userUID");
@@ -39,10 +39,10 @@ const ClientJobs = () => {
     };
   
   const handleMilestoneChange = (index, field, value) => {
-    const updatedMilestones = [...formData.milestones];
-    updatedMilestones[index][field] = value;
-    setFormData({ ...formData, milestones: updatedMilestones });
-  };
+  const updatedMilestones = [...formData.milestones];
+  updatedMilestones[index][field] = value;
+  setFormData({ ...formData, milestones: updatedMilestones });
+};
   
   const handleEditClick = (jobToEdit) => {
     setEditingJobId(jobToEdit.id);
@@ -109,60 +109,60 @@ const ClientJobs = () => {
   
   
   const handleAcceptApplicant = async (applicantId) => {
-    try 
-    {
-      const jobId = viewingApplicantsJobId;
-      const applicantRef = ref(applications_db, `applications/${jobId}/${applicantId}`);
-      const acceptedRef = ref(applications_db, `accepted_applications/${jobId}/${applicantId}`);
-      const jobApplicationsRef = ref(applications_db, `applications/${jobId}`);
-  
-      // Fetch the accepted freelancer data
-      const applicantSnapshot = await get(applicantRef);
-      if (!applicantSnapshot.exists()) 
-        {
-        alert("Applicant not found.");
-        return;
-      }
-      const applicantData = applicantSnapshot.val();
-      const acceptedData = {
-        ...applicantData,
-        status: "accepted",
-        milestones: applicantData.milestones || {}
-      };
-  
-      
-      await update(applicantRef, { status: "accepted" });
-      await set(acceptedRef, acceptedData);
-  
-      // Reject all butt we might need to chamge this 
-      const snapshot = await get(jobApplicationsRef);
-      if (snapshot.exists()) 
-        {
-        const allApplicants = snapshot.val();
+  try {
+    const jobId = viewingApplicantsJobId;
+    const applicantRef = ref(applications_db, `applications/${jobId}/${applicantId}`);
+    const acceptedRef = ref(applications_db, `accepted_applications/${jobId}/${applicantId}`);
+    const jobApplicationsRef = ref(applications_db, `applications/${jobId}`);
+    const jobRef = ref(db, `jobs/${jobId}`); // Reference to the job to delete
 
-        for (const id in allApplicants) 
-          {
-            if (id !== applicantId) 
-            {
-              const otherRef = ref(applications_db, `applications/${jobId}/${id}`);
-              await update(otherRef, 
-                {
-                status: "rejected"
-                } 
-              );
-            }
+    // Fetch the accepted freelancer data
+    const applicantSnapshot = await get(applicantRef);
+    if (!applicantSnapshot.exists()) {
+      alert("Applicant not found.");
+      return;
+    }
+
+    const applicantData = applicantSnapshot.val();
+
+    // Prepare accepted data with status
+    const acceptedData = {
+      ...applicantData,
+      status: "accepted",
+      milestones: applicantData.milestones || {}
+    };
+
+    // Update status of accepted applicant
+    await update(applicantRef, { status: "accepted" });
+
+    // Store accepted data in accepted_applications
+    await set(acceptedRef, acceptedData);
+
+    // Reject all other applicants
+    const snapshot = await get(jobApplicationsRef);
+    if (snapshot.exists()) {
+      const allApplicants = snapshot.val();
+      for (const id in allApplicants) {
+        if (id !== applicantId) {
+          const otherRef = ref(applications_db, `applications/${jobId}/${id}`);
+          await update(otherRef, { status: "rejected" });
         }
       }
-  
-      alert(`Accepted applicant with ID: ${applicantId}`);
-      handleViewApplicants(jobId, selectedJobTitle); 
-  
-    } 
-    catch (error) 
-    {
-      alert("Failed to accept applicant.");
     }
-  };
+
+    // Delete the job from the jobs database
+    await remove(jobRef);
+
+    alert(`✅ Accepted applicant and deleted job with ID: ${jobId}`);
+    setViewingApplicantsJobId(null);
+    setApplicants([]);
+
+  } catch (error) {
+    alert("Failed to accept applicant.");
+  }
+};
+
+  
   
 
   
@@ -219,6 +219,11 @@ const ClientJobs = () => {
     e.preventDefault();
     //alert("User UID during submit: " + userUID);
 
+    const enrichedMilestones = formData.milestones.map(m => ({
+      ...m,
+       status: m.status || 'pending'
+    }));
+
     if (!formData.title || !formData.description || !formData.category || !formData.budget || !formData.deadline) {
       setError('Please fill in all fields.');
       return;
@@ -241,8 +246,11 @@ const ClientJobs = () => {
         const jobRef = ref(db, `jobs/${editingJobId}`);
         await update(jobRef, {
           ...formData,
+          milestones: enrichedMilestones,
+          clientUID: localStorage.getItem("userUID"),
           budget: parseFloat(formData.budget),
         });
+
       
       } 
       else 
@@ -250,6 +258,7 @@ const ClientJobs = () => {
         const newJobRef = push(ref(db, "jobs"));
         await set(newJobRef, {
           ...formData,
+          milestones: enrichedMilestones,
           budget: parseFloat(formData.budget),
           clientUID: localStorage.getItem("userUID"),
         });
@@ -324,15 +333,14 @@ const ClientJobs = () => {
                   <section className="milestones">
                   <h4>Milestones:</h4>
                   <ul>
-      
-
                   {job.milestones.map((milestone, index) => (
                     <li key={index}>
                     <strong>Description:</strong> {milestone.description} <br />
-                    <strong>Amount:</strong> ${parseFloat(milestone.amount).toLocaleString()}
-                  </li>
-                    ))}
-                 </ul>
+                    <strong>Amount:</strong> ${parseFloat(milestone.amount).toLocaleString()} <br />
+                    <strong>Status:</strong> {milestone.status || 'pending'}
+                    </li>
+                  ))}
+                  </ul>
                  </section>
                 )}
 
@@ -423,34 +431,27 @@ const ClientJobs = () => {
         <label htmlFor="deadline">Deadline</label>
         <input id="deadline" type="date" name="deadline" value={formData.deadline} onChange={handleChange} required />
       </fieldset>
-      <fieldset>
-  
-
-  {formData.milestones.map((milestone, index) => (
-  <section key={index} className="milestone-group">
-    <label>
-      Milestone {index + 1} Description:
-      <input
-        type="text"
-        name={`milestone_description_${index}`}
-        value={milestone.description}
-        onChange={(e) => handleMilestoneChange(index, 'description', e.target.value)}
-        required
-      />
-    </label>
-    <label>
-      Amount:
-      <input
-        type="number"
-        name={`milestone_amount_${index}`}
-        value={milestone.amount}
-        onChange={(e) => handleMilestoneChange(index, 'amount', e.target.value)}
-        required
-      />
-    </label>
-  </section>
-))}
-</fieldset>
+     <fieldset>
+        <legend>Milestones</legend>
+        {formData.milestones.map((milestone, index) => (
+          <section key={index} className="milestone-field">
+            <label>
+              Description: <input
+                type="text"
+                value={milestone.description}
+                onChange={(e) => handleMilestoneChange(index, 'description', e.target.value)}
+              />
+            </label>
+            <label>
+              Amount: <input
+                type="number"
+                value={milestone.amount}
+                onChange={(e) => handleMilestoneChange(index, 'amount', e.target.value)}
+              />
+            </label>
+          </section>
+        ))}
+      </fieldset>
 
 
       <footer>
