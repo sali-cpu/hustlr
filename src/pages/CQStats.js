@@ -1,18 +1,90 @@
-import React from 'react';
+
 import '../stylesheets/CQStats.css';
 import HeaderClient from "../components/HeaderClient";
 import FooterClient from "../components/FooterClient";
+import { useEffect, useState } from 'react';
+import { ref, get } from 'firebase/database';
+import { db, applications_db } from '../firebaseConfig';
 
-const CQStats = () => {
-  // Mock data - in a real app, this would come from props/API
-  const stats = {
-    jobsPosted: 8,
-    activeJobs: 2,
-    completedJobs: 6,
-    totalSpent: 12000,
-    completionRate: 75, // percentage
-    earningsOverTime: [2000, 4000, 7000, 9000, 12000] // sample data for the chart
+
+const userUID = localStorage.getItem("userUID");
+const CQStats = ( ) => {
+  const [stats, setStats] = useState({
+    jobsPosted: 0,
+    activeJobs: 0,
+    completedJobs: 0,
+    totalSpent: 0,
+    completionRate: 0,
+    earningsOverTime: [], // dummy data if needed: [0, 100, 200]
+  });
+
+useEffect(() => {
+  const fetchStats = async () => {
+    if (!userUID) {
+      console.warn("No userUID found.");
+      return;
+    }
+
+    try {
+      
+      const jobsRef = ref(db, 'jobs');
+      const jobsSnapshot = await get(jobsRef);
+
+      let jobsPosted = 0;
+      let jobsByClient = {};
+
+      if (jobsSnapshot.exists()) {
+        const allJobs = jobsSnapshot.val();
+        //console.log("Fetched jobs:", allJobs);
+
+        Object.entries(allJobs).forEach(([jobId, job]) => {
+          if (job.clientUID === userUID) {
+            jobsPosted++;
+            jobsByClient[jobId] = job;
+          }
+        });
+        //console.log("Jobs posted by client:", jobsPosted);
+      } else {
+        alert("No jobs found.");
+      }
+
+      // Step 2: Fetch accepted applications
+      const appsRef = ref(applications_db, 'accepted_applications');
+      const appsSnapshot = await get(appsRef);
+
+      let activeJobs = 0;
+
+      if (appsSnapshot.exists()) {
+        const applicationsData = appsSnapshot.val();
+        
+
+        Object.entries(applicationsData).forEach(([jobId, jobApplications]) => {
+          if (jobsByClient[jobId]) {
+            Object.values(jobApplications).forEach((application) => {
+              if (application.status === "accepted") {
+                activeJobs++;
+              }
+            });
+          }
+        });
+        //alert("Active jobs accepted:", activeJobs);
+      } else {
+        alert("No accepted_applications found.");
+      }
+
+      setStats(prev => ({
+        ...prev,
+        jobsPosted,
+        activeJobs
+      }));
+    } catch (error) {
+      alert("Error fetching job/application stats:", error.message);
+    }
   };
+
+  fetchStats();
+}, []);
+
 
   return (
 
