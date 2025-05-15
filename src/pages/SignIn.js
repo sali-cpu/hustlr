@@ -46,7 +46,7 @@ const SignIn = () => {
 
       // Store basic info locally
       localStorage.setItem("userUID", user.uid);
-
+      localStorage.setItem("nameSur", user.displayName);
       if (adminEmails.includes(user.email)) {
         navigate("/Admin");
         return;
