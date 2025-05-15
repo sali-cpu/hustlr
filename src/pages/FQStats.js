@@ -2,17 +2,77 @@ import React from 'react';
 import '../stylesheets/FQStats.css';
 import FooterClient from "../components/FooterClient";
 import HeaderFreelancer from '../components/HeaderFreelancer';
-
+import { useEffect, useState } from 'react';
+import { ref, get } from 'firebase/database';
+import {  applications_db } from '../firebaseConfig';
 const FQStats = () => {
-  // Mock data - in a real app, this would come from props/API
-  const stats = {
-    jobsApplied: 8,
-    activeJobs: 2,
-    completedJobs: 6,
-    totalEarned: 12000,
-    completionRate: 75, // percentage
-    earningsOverTime: [2000, 4000, 7000, 9000, 12000] // sample data for the chart
+  const [stats, setStats] = useState({
+    jobsApplied: 0,
+    activeJobs: 0,
+    completedJobs: 0,
+    totalEarned: 0,
+    completionRate: 0, 
+    earningsOverTime: [] 
+  });
+const userUID = localStorage.getItem("userUID");
+
+useEffect(() => {
+  const fetchFreelancerStats = async () => {
+    if (!userUID) 
+      {
+      alert("No userUID found.");
+      return;
+    }
+
+    try 
+    {
+      const appsRef = ref(applications_db, 'applications');
+
+      const appsSnapshot = await get(appsRef);
+
+      let jobsApplied = 0;
+      let activeJobs = 0;
+      let completedJobs = 0;
+
+      if (appsSnapshot.exists()) {
+        const allApplications = appsSnapshot.val();
+
+        Object.entries(allApplications).forEach(([jobId, applications]) => {
+          Object.values(applications).forEach((application) => {
+            if (application.applicant_userUID === userUID) 
+              {
+              jobsApplied++;
+
+              if (application.status === "accepted") 
+                {
+                activeJobs++;
+              }
+              //After completion it will just work 
+              if (application.status === "completed") 
+                {
+                completedJobs++;
+              }
+            }
+          });
+        });
+      }
+      // Completion rate
+      const completionRate =0;
+
+      setStats(prev => ({
+        ...prev,
+        jobsApplied,
+        activeJobs,
+        completedJobs,
+        completionRate
+      }));
+    } catch (error) {
+      alert("Error fetching freelancer stats:", error.message);
+    }
   };
+
+  fetchFreelancerStats();
+}, );
 
   return (
 
@@ -27,7 +87,7 @@ const FQStats = () => {
 
         <nav className="main-nav" aria-label="Primary navigation">
           <ul>
-            <li><a href="/freelancer">Home</a></li>
+            <li><a href="/Freelancer">Home</a></li>
           </ul>
         </nav>
       </header>
