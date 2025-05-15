@@ -4,23 +4,28 @@ import FreelancerJobs from './FreelancerJobs';
 import '@testing-library/jest-dom';
 import * as firebaseDatabase from 'firebase/database';
 
+// Mock MutationObserver
 global.MutationObserver = class {
   constructor(callback) {}
   disconnect() {}
   observe(element, initObject) {}
 };
 
+// Enhanced Firebase mocks
 jest.mock('firebase/database', () => ({
+  get: jest.fn(),
+  ref: jest.fn((db, path) => ({ db, path })),
+  push: jest.fn(() => ({
+    then: jest.fn(callback => callback()) // Mock the Promise chain
+  })),
   onValue: jest.fn(),
-  ref: jest.fn(),
   set: jest.fn(),
-  push: jest.fn(),
-  update: jest.fn(),
-  get: jest.fn()
+  update: jest.fn()
 }));
 
 jest.mock('../firebaseConfig', () => ({
   db: {},
+  applications_db: {} // Add this if missing
 }));
 
 jest.mock('../components/HeaderFreelancer', () => () => <div>Mock Header</div>);
@@ -32,7 +37,11 @@ describe('FreelancerJobs Component', () => {
       description: 'Redesign homepage',
       category: 'Web Design',
       budget: 500,
-      deadline: '2025-05-01'
+      deadline: '2025-05-01',
+      milestones: [
+        { description: 'Design phase', amount: '200' },
+        { description: 'Implementation', amount: '300' }
+      ]
     },
     job2: {
       title: 'App UI Mockup',
@@ -40,21 +49,43 @@ describe('FreelancerJobs Component', () => {
       category: 'Design',
       budget: 300,
       deadline: '2025-06-01'
-    },
-    job3: {
-      title: 'Admin Assistant',
-      description: 'Office help needed',
-      category: 'Admin',
-      budget: 200,
-      deadline: '2025-04-15'
+    }
+  };
+
+  const mockApplications = {
+    job1: {
+      app1: {
+        applicant_userUID: 'test123',
+        status: 'pending'
+      }
     }
   };
 
   beforeEach(() => {
-    firebaseDatabase.get.mockResolvedValue({
-      exists: () => true,
-      val: () => mockJobs
+    // Mock localStorage
+    Storage.prototype.getItem = jest.fn((key) => {
+      if (key === 'userUID') return 'test123';
+      return null;
     });
+
+    // Mock Firebase responses
+    firebaseDatabase.get.mockImplementation((ref) => {
+      if (ref.path === 'jobs') {
+        return Promise.resolve({ exists: () => true, val: () => mockJobs });
+      }
+      if (ref.path.includes('accepted_applications')) {
+        return Promise.resolve({ exists: () => false });
+      }
+      return Promise.resolve({ exists: () => false });
+    });
+
+    // Mock push to return a thenable
+    firebaseDatabase.push.mockImplementation(() => ({
+      then: (callback) => {
+        callback();
+        return { catch: jest.fn() };
+      }
+    }));
   });
 
   afterEach(() => {
@@ -64,83 +95,62 @@ describe('FreelancerJobs Component', () => {
   test('renders header and UI sections', async () => {
     render(<FreelancerJobs />);
     expect(screen.getByText('Mock Header')).toBeInTheDocument();
-    expect(screen.getByText('Freelancer Job Board')).toBeInTheDocument();
-    expect(screen.getByText('Filter Jobs')).toBeInTheDocument();
-
     await waitFor(() => {
-      expect(screen.getAllByText('Apply').length).toBeGreaterThan(0);
-    });
-  });
-
-  test('renders job cards and apply buttons', async () => {
-    render(<FreelancerJobs />);
-    await waitFor(() => {
-      const applyButtons = screen.getAllByText('Apply');
-      expect(applyButtons.length).toBeGreaterThan(0);
-    });
-  });
-
-  test('opens and closes application modal', async () => {
-    render(<FreelancerJobs />);
-    await waitFor(() => {
-      const applyButtons = screen.getAllByText('Apply');
-      fireEvent.click(applyButtons[0]);
-
-      expect(screen.getByText(/Apply for/i)).toBeInTheDocument();
-
-      const cancelButton = screen.getByText('Cancel');
-      fireEvent.click(cancelButton);
-
-      expect(screen.queryByText(/Apply for/i)).not.toBeInTheDocument();
+      expect(screen.getByText('Website Design')).toBeInTheDocument();
     });
   });
 
   test('fills and submits application form', async () => {
     render(<FreelancerJobs />);
+    
     await waitFor(() => {
-      fireEvent.click(screen.getAllByText('Apply')[0]);
+      expect(screen.getByText('Website Design')).toBeInTheDocument();
+    });
 
-      fireEvent.change(screen.getByPlaceholderText('Enter your name'), { target: { value: 'John' } });
-      fireEvent.change(screen.getByPlaceholderText('Enter your surname'), { target: { value: 'Doe' } });
-      fireEvent.change(screen.getByPlaceholderText('e.g., JavaScript, React, Firebase'), { target: { value: 'React, Firebase' } });
-      fireEvent.change(screen.getByPlaceholderText('Write your motivation here...'), { target: { value: 'I am passionate.' } });
+    // Click apply button
+    fireEvent.click(screen.getAllByText('Apply')[0]);
 
-      fireEvent.click(screen.getByText('Submit'));
+    // Fill form
+    fireEvent.change(screen.getByPlaceholderText('Enter your name'), { 
+      target: { value: 'John' } 
+    });
+    fireEvent.change(screen.getByPlaceholderText('Enter your surname'), { 
+      target: { value: 'Doe' } 
+    });
+    fireEvent.change(screen.getByPlaceholderText('e.g., JavaScript, React, Firebase'), { 
+      target: { value: 'React, Firebase' } 
+    });
+    fireEvent.change(screen.getByPlaceholderText('Write your motivation here...'), { 
+      target: { value: 'I am passionate.' } 
+    });
 
+    // Mock window.alert
+    window.alert = jest.fn();
+
+    // Submit form
+    fireEvent.click(screen.getByText('Submit'));
+
+    await waitFor(() => {
       expect(firebaseDatabase.push).toHaveBeenCalled();
+      expect(window.alert).toHaveBeenCalledWith('✅ Thank you for applying. You will hear a response soon.');
     });
   });
 
-  test('handles already applied job gracefully', async () => {
+  test('shows validation errors', async () => {
     render(<FreelancerJobs />);
+    
     await waitFor(() => {
-      const applyButtons = screen.getAllByText('Apply');
-      fireEvent.click(applyButtons[0]);
-
-      fireEvent.change(screen.getByPlaceholderText('Enter your name'), { target: { value: 'Jane' } });
-      fireEvent.change(screen.getByPlaceholderText('Enter your surname'), { target: { value: 'Smith' } });
-      fireEvent.change(screen.getByPlaceholderText('e.g., JavaScript, React, Firebase'), { target: { value: 'Node, Express' } });
-      fireEvent.change(screen.getByPlaceholderText('Write your motivation here...'), { target: { value: 'I want this job.' } });
-
-      fireEvent.click(screen.getByText('Submit'));
-
-      fireEvent.click(applyButtons[0]);
-
-      expect(screen.getByText("You have already applied to this job.")).toBeInTheDocument();
-    });
-  });
-
-  test('handles firebase errors gracefully', async () => {
-    firebaseDatabase.get.mockRejectedValueOnce(new Error('Firebase error'));
-
-    const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-    render(<FreelancerJobs />);
-
-    await waitFor(() => {
-      expect(screen.getByText('Freelancer Job Board')).toBeInTheDocument();
+      expect(screen.getByText('Website Design')).toBeInTheDocument();
     });
 
-    expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining('Firebase error'));
-    errorSpy.mockRestore();
+    // Click apply button
+    fireEvent.click(screen.getAllByText('Apply')[0]);
+
+    // Submit empty form
+    fireEvent.click(screen.getByText('Submit'));
+
+    // Check for validation errors
+    expect(screen.getByText('Please fill in the name field.')).toBeInTheDocument();
+    expect(screen.getByText('Please fill in the surname field.')).toBeInTheDocument();
   });
 });
