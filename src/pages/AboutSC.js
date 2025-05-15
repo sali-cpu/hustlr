@@ -43,7 +43,8 @@ const AboutSC = () => {
       <HeaderFreelancer />
 
       <section className="settings-container">
-        <h2 className="centered-title">Account</h2>
+        <h2 className="centered-title">Account Settings</h2>
+        <h3 className="hName">Welcome (Name) (Surname)</h3>
 
         {isSaved && (
           <section className="top-icon-container">
@@ -53,14 +54,10 @@ const AboutSC = () => {
 
         <form className="settings-form">
           <label>
-            Name:
+            Skills:
             <input type="text" name="name" value={formData.name} onChange={handleChange} disabled={isSaved} />
           </label>
 
-          <label>
-            Surname:
-            <input type="text" name="surname" value={formData.surname} onChange={handleChange} disabled={isSaved} />
-          </label>
 
           <label>
             Bio:
