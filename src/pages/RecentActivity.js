@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../stylesheets/RecentActivity.css';
+import HeaderClient from "../components/HeaderClient";
+import FooterClient from "../components/FooterClient";
 
 const STORAGE_KEY = 'recent_activity';
 
@@ -41,7 +43,9 @@ const RecentActivity = () => {
   };
 
   return (
-    <div className="activity-container">
+    <>
+      <HeaderClient />
+    <section className="activity-container">
       <h2>🕒 Recent Activity</h2>
       <button onClick={clearHistory} className="clear-btn">Clear History</button>
       {activities.length > 0 ? (
@@ -55,14 +59,16 @@ const RecentActivity = () => {
                 {index === 0 ? '🔸 ' : '• '}
                 {pathLabels[activity.path] || activity.path}
               </Link>
-              <span className="timestamp">{formatDate(activity.timestamp)}</span>
+              <section className="timestamp">{formatDate(activity.timestamp)}</section>
             </li>
           ))}
         </ul>
       ) : (
         <p>No recent activity found.</p>
       )}
-    </div>
+    </section>
+    <FooterClient />
+    </>
   );
 };
 
