@@ -1,33 +1,64 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import Freelancers from '../pages/Freelancers'; // adjust path if needed
-import { BrowserRouter } from 'react-router-dom';
+import '@testing-library/jest-dom';
+import HeaderFreelancer from './HeaderFreelancer';
 
-describe('Freelancers Component', () => {
-  const renderWithRouter = (ui) => {
-    return render(<BrowserRouter>{ui}</BrowserRouter>);
-  };
-
-  test('renders welcome box by default', () => {
-    renderWithRouter(<Freelancers />);
-    expect(screen.getByText('Welcome, Freelancer!')).toBeInTheDocument();
-    expect(screen.getByText('Access gigs, manage your profile, and collaborate with clients')).toBeInTheDocument();
+describe('HeaderFreelancer Component', () => {
+  beforeAll(() => {
+    document.body.classList.add = jest.fn();
+    document.body.classList.remove = jest.fn();
   });
 
-  test('closes welcome box when close button is clicked', () => {
-    renderWithRouter(<Freelancers />);
-    const closeButton = screen.getByRole('button', { name: /×/i });
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('renders without crashing', () => {
+    render(<HeaderFreelancer />);
+    expect(screen.getByText('Hustlr.')).toBeInTheDocument();
+  });
+
+  it('finds both mobile menu buttons', () => {
+    render(<HeaderFreelancer />);
+    const buttons = screen.getAllByRole('button');
+    expect(buttons).toHaveLength(2); // Should find both buttons
+    expect(buttons[0]).toHaveClass('fas', 'fa-times');
+    expect(buttons[1]).toHaveClass('fas', 'fa-bars');
+  });
+
+  it('toggles mobile menu when buttons are clicked', () => {
+    render(<HeaderFreelancer />);
+    const buttons = screen.getAllByRole('button');
+    const closeButton = buttons[0]; // First button is close button
+    const menuButton = buttons[1]; // Second button is menu button
+    
+    // Initial state - menu closed
+    expect(document.body.classList.add).not.toHaveBeenCalled();
+    
+    // Click menu button to open
+    fireEvent.click(menuButton);
+    expect(document.body.classList.add).toHaveBeenCalledWith('show-mobile-menu');
+    
+    // Click close button to close
     fireEvent.click(closeButton);
-    expect(screen.queryByText('Welcome, Freelancer!')).not.toBeInTheDocument();
+    expect(document.body.classList.remove).toHaveBeenCalledWith('show-mobile-menu');
   });
 
-  test('shows categories after closing welcome box', () => {
-    renderWithRouter(<Freelancers />);
-    fireEvent.click(screen.getByRole('button', { name: /×/i }));
-    expect(screen.getByText('Jobs')).toBeInTheDocument();
-    expect(screen.getByText('Contracts & Tasks')).toBeInTheDocument();
-    expect(screen.getByText('Payments')).toBeInTheDocument();
-    expect(screen.getByText('Reports')).toBeInTheDocument();
-    expect(screen.getByText('Quick Stats')).toBeInTheDocument();
+  it('renders all navigation links', () => {
+    render(<HeaderFreelancer />);
+    expect(screen.getByText('Ongoing Projects')).toBeInTheDocument();
+    expect(screen.getByText('Earnings')).toBeInTheDocument();
+    expect(screen.getByText('Settings')).toBeInTheDocument();
+    expect(screen.getByText('Recent Activities')).toBeInTheDocument();
+    expect(screen.getByText('Sign Out')).toBeInTheDocument();
+  });
+
+  it('has correct href attributes for navigation links', () => {
+    render(<HeaderFreelancer />);
+    
+    expect(screen.getByText('Earnings').closest('a')).toHaveAttribute('href', '/FreelancerPayments');
+    expect(screen.getByText('Settings').closest('a')).toHaveAttribute('href', '/FreeSettings');
+    expect(screen.getByText('Recent Activities').closest('a')).toHaveAttribute('href', '/RecentActivity');
+    expect(screen.getByText('Sign Out').closest('a')).toHaveAttribute('href', '/');
   });
 });
