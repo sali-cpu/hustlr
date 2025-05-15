@@ -4,25 +4,29 @@ import HeaderClient from "../components/HeaderClient";
 import FooterClient from "../components/FooterClient";
 
 import { getDatabase, ref, get, update,onValue } from "firebase/database";
-import { applications_db } from '../firebaseConfig';
+import { applications_db, db } from '../firebaseConfig';
 
 const FreelancerPayments = () => {
   const [payments, setPayments] = useState([]);
   const [wallet, setWallet] = useState(0);
+  const [updatingId, setUpdatingId] = useState(null);
 
 
   const handlePaymentStatusChange = async (paymentId, status) => {
+  setUpdatingId(paymentId); // show spinner/button disabled
   const parts = paymentId.split('_ms_');
   const milestoneIndex = parts[1];
   const [parentKey, jobKey] = parts[0].split('_');
 
-  const jobRef = ref(
+  const accepted_jobRef = ref(
     applications_db,
     `accepted_applications/${parentKey}/${jobKey}/job_milestones/${milestoneIndex}`
   );
 
+
   try {
-    await update(jobRef, { status });
+    await update(accepted_jobRef, { status });
+    alert(`Milestone marked as ${status}`);
 
     const updatedPayments = payments.map(payment =>
       payment.id === paymentId ? { ...payment, status } : payment
@@ -32,6 +36,8 @@ const FreelancerPayments = () => {
   } catch (error) {
     console.error("Error updating payment status:", error);
   }
+
+  setUpdatingId(null); // done
 };
 
 
@@ -171,7 +177,7 @@ const FreelancerPayments = () => {
                 <td>{payment.dueDate}</td>
                 <td>
                   <button
-                    className="mark-paid-btn"
+                    disabled={updatingId === payment.id}
                     onClick={() => toggleStatus(payment.id)}
                   >
                     {payment.status === 'Pending' ? 'Mark as Done' : 'Mark as Pending'}
