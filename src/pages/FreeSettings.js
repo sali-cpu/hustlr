@@ -1,11 +1,15 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../stylesheets/SettingsPage.css";
+import HeaderClient from "../components/HeaderClient";
+import FooterClient from "../components/FooterClient";
 
 function FreeSettings() {
   const navigate = useNavigate();
 
   return (
+     <>
+          <HeaderClient />
     <main className="settings-container">
       <header className="settings-header">
         <button className="back-button" onClick={() => navigate(-1)}>←</button>
@@ -51,6 +55,8 @@ function FreeSettings() {
         </ul>
       </nav>
     </main>
+    <FooterClient />
+    </>
   );
 }
 
