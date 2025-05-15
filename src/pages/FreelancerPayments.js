@@ -1,38 +1,78 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import '../stylesheets/FreelancerPayments.css';
 
+import { getDatabase, ref, get, update,onValue } from "firebase/database";
+import { applications_db } from '../firebaseConfig';
+
 const FreelancerPayments = () => {
-  const [payments, setPayments] = useState([
-    {
-      id: 1,
-      jobTitle: 'Website Redesign',
-      client: 'Jane Doe',
-      milestone: 'UI Mockups',
-      amount: 300,
-      status: 'Pending',
-      dueDate: '2025-04-20'
-    },
-    // Add more sample data for testing
-    {
-      id: 2,
-      jobTitle: 'Mobile App Development',
-      client: 'John Smith',
-      milestone: 'Initial Prototype',
-      amount: 500,
-      status: 'Done',
-      dueDate: '2025-03-15'
-    }
-  ]);
+  const [payments, setPayments] = useState([]);
+  const [wallet, setWallet] = useState(0);
+
+
+  const handlePaymentStatusChange = async (paymentId, status) => {
+  const parts = paymentId.split('_ms_');
+  const milestoneIndex = parts[1];
+  const [parentKey, jobKey] = parts[0].split('_');
+
+  const jobRef = ref(
+    applications_db,
+    `accepted_applications/${parentKey}/${jobKey}/job_milestones/${milestoneIndex}`
+  );
+
+  try {
+    await update(jobRef, { status });
+
+    const updatedPayments = payments.map(payment =>
+      payment.id === paymentId ? { ...payment, status } : payment
+    );
+
+    setPayments(updatedPayments);
+  } catch (error) {
+    console.error("Error updating payment status:", error);
+  }
+};
+
+
+  useEffect(() => {
+    const userUID = localStorage.getItem("userUID");
+    const acceptedRef = ref(applications_db, 'accepted_applications');
+  
+    const unsubscribe = onValue(acceptedRef, (snapshot) => {
+      const jobList = [];
+  
+      snapshot.forEach(parentSnap => {
+        parentSnap.forEach(jobSnap => {
+          const data = jobSnap.val();
+          if (data.applicant_userUID === userUID && Array.isArray(data.job_milestones)) {
+            data.job_milestones.forEach((milestone, index) => {
+              jobList.push({
+                id: parentSnap.key + "_" + jobSnap.key + "_ms_" + index, // include parentSnap.key
+                jobTitle: data.jobTitle,
+                client: data.clientName || 'Unknown',
+                milestone: milestone.description,
+                amount: milestone.amount,
+                status: milestone.status,
+                dueDate: milestone.dueDate || 'N/A'
+              });
+
+            });
+          }
+        });
+      });
+  
+      setPayments(jobList);
+    });
+  
+    return () => unsubscribe(); // clean up on unmount
+  }, []);
+
 
   const toggleStatus = (id) => {
-    setPayments(prevPayments =>
-      prevPayments.map(payment =>
-        payment.id === id
-          ? { ...payment, status: payment.status === 'Pending' ? 'Done' : 'Pending' }
-          : payment
-      )
-    );
-  };
+  const payment = payments.find(p => p.id === id);
+  const newStatus = payment.status === 'Pending' ? 'Done' : 'Pending';
+  handlePaymentStatusChange(id, newStatus);
+};
+
 
   const exportToCSV = () => {
     // Prepare CSV content
