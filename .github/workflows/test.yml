@@ -23,7 +23,7 @@ jobs:
       run: npm cache clean --force
 
     - name: Install dependencies
-      run: npm install
+      run: npm install --include=dev
 
     - name: Fix permissions (optional but helpful on Linux)
       run: chmod +x ./node_modules/.bin/*
