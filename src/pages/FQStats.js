@@ -27,7 +27,7 @@ const FQStats = () => {
 
         <nav className="main-nav" aria-label="Primary navigation">
           <ul>
-            <li><a href="/client">Home</a></li>
+            <li><a href="/freelancer">Home</a></li>
           </ul>
         </nav>
       </header>
