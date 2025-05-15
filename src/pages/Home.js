@@ -1,7 +1,6 @@
 
-import React, { useEffect } from 'react';
+import  { useEffect } from 'react';
 import '../stylesheets/Landing.css';
-import { Link } from "react-router-dom";
 import hero1 from '../images/HeroJPG.jpg';
 import hero2 from '../images/NewHero.jpg';
 import hero3 from '../images/HeroJPG3.jpg';
@@ -10,7 +9,7 @@ import job from '../images/jobJPG.jpg';
 import task from '../images/taskJp.jpg';
 import payment from '../images/payment.jpg';
 import google from '../images/google-logo.png';
-  import netflix from '../images/netflix-logo.jpg';
+import netflix from '../images/netflix-logo.jpg';
 import pg from '../images/pg-logo.jpg';
 import paypal from '../images/paypal-logo.jpg';
 import payoneer from '../images/payoneer-logo.jpg';
@@ -28,64 +27,59 @@ function Home() {
   }, []);
 
   return (
-    
-      
-      <div className="landing">
-        <div className="text-overlay">
-            <h2>Empowering Freelancers & Clients</h2>
-            <p>Seamlessly manage contracts, payments & Projects</p>
+    <main className="landing">
+      <section className="text-overlay">
+        <h2>Empowering Freelancers & Clients</h2>
+        <p>Seamlessly manage contracts, payments & Projects</p>
 
-            <div className="search-box">
-              <input type="text" placeholder="Search for any service..." />
-              <button className="search-icon">🔍</button>
-            </div>
-
-            <div className="cta-buttons">
-              <button className="cta">Find work</button>
-              <button className="cta">Hire talent</button>
-            </div>
-
-            <div className="trusted-by">
-              <span>Trusted by:</span>
-              {[google, netflix, pg, paypal, payoneer].map((logo, i) => (
-                <img key={i} src={logo} alt={`Logo ${i + 1}`} />
-              ))}
-            </div>
-          </div>
-        <div className="image-slider">
-          <div className="slide-track">
-            {[hero1, hero2, hero3, hero4, hero1, hero2, hero3, hero4].map((img, i) => (
-              <img key={i} src={img} alt={`Hero ${i + 1}`} />
-            ))}
-          </div>
-
-          
-        </div>
-
-        <section className="categories">
-          <h2>Explore Categories</h2>
-          <div className="category-grid">
-           
-            <div className="category-card">
-              <img src={job} alt="Job Icon" />
-              <p>Post and Apply for Jobs</p>
-            </div>
-           
-            <div className="category-card">
-              <img src={task} alt="Tasks Icon" />
-              <p>Manage Tasks & Milestones</p>
-            </div>
-            
-            <div className="category-card">
-              <img src={payment} alt="Payment Icon" />
-              <p>Secure Milestone-Based Payment</p>
-            </div>
-           
-          </div>
+        <section className="search-box">
+          <input type="text" placeholder="Search for any service..." />
+          <button className="search-icon">🔍</button>
         </section>
-      </div>
-      
+
+        <section className="cta-buttons">
+          <button className="cta">Find work</button>
+          <button className="cta">Hire talent</button>
+        </section>
+
+        <section className="trusted-by">
+          <strong>Trusted by:</strong>
+          {[google, netflix, pg, paypal, payoneer].map((logo, i) => (
+            <img key={i} src={logo} alt={`Logo ${i + 1}`} />
+          ))}
+        </section>
+      </section>
+
+      <section className="image-slider">
+        <section className="slide-track">
+          {[hero1, hero2, hero3, hero4, hero1, hero2, hero3, hero4].map((img, i) => (
+            <img key={i} src={img} alt={`Hero ${i + 1}`} />
+          ))}
+        </section>
+      </section>
+
+      <section className="categories">
+        <h2>Explore Categories</h2>
+        <section className="category-grid">
+          <article className="category-card">
+            <img src={job} alt="Job Icon" />
+            <p>Post and Apply for Jobs</p>
+          </article>
+
+          <article className="category-card">
+            <img src={task} alt="Tasks Icon" />
+            <p>Manage Tasks & Milestones</p>
+          </article>
+
+          <article className="category-card">
+            <img src={payment} alt="Payment Icon" />
+            <p>Secure Milestone-Based Payment</p>
+          </article>
+        </section>
+      </section>
+    </main>
   );
 }
+
 
 export default Home;
