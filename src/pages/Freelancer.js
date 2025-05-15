@@ -8,6 +8,7 @@ import stat from '../images/Quick Stats.png';
 import con from '../images/contract.png';
 import rep from '../images/Reports.png';
 import HeaderFreelancer from '../components/HeaderFreelancer';
+import FooterClient from "../components/FooterClient";
 
 class Freelancers extends React.Component {
   constructor(props) {
@@ -139,6 +140,7 @@ class Freelancers extends React.Component {
             )}
           </section>
         )}
+          <FooterClient />
       </>
     );
   }
