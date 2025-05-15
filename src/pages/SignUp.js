@@ -28,10 +28,10 @@ const SignUp = () => {
   const goToPage = (role) => {
     switch (role.toLowerCase()) {
       case "client":
-        navigate("/Client");
+        navigate("/AboutSC");
         break;
       case "freelancer":
-        navigate("/Freelancer");
+        navigate("/AboutSF");
         break;
       case "admin":
         navigate("/Admin");
@@ -48,7 +48,7 @@ const SignUp = () => {
         const userRef = ref(google_db, 'users/' + user.uid);
   
         localStorage.setItem("userUID", user.uid);
-  
+        localStorage.setItem("nameSur", user.displayName);
         // Check if user already exists
         get(userRef).then((snapshot) => 
           {
@@ -87,7 +87,7 @@ const SignUp = () => {
       const userRef = ref(microsoft_db, 'users/' + user.uid);
   
       localStorage.setItem("userUID", user.uid);
-  
+      localStorage.setItem("nameSur", user.displayName);
       // Check to verify if user exists
       const snapshot = await get(userRef);
       if (snapshot.exists()) 
