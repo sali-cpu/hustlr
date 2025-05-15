@@ -21,6 +21,8 @@ import FreeSettings  from "./pages/FreeSettings";
 import AboutSF  from "./pages/AboutSF";
 import ClientSettings  from "./pages/ClientSettings";
 import AboutSC  from "./pages/AboutSC";
+import ClientReports  from "./pages/ClientReports";
+import FreeReports  from "./pages/FreeReports";
 
 
 import React from "react";
@@ -63,6 +65,8 @@ function App() {
           <Route path="/AboutSF" element={<AboutSF />} />
           <Route path="/ClientSettings" element={<ClientSettings />} />
           <Route path="/AboutSC" element={<AboutSC />} />
+          <Route path="/ClientReports" element={<ClientReports />} />
+          <Route path="/FreeReports" element={<FreeReports />} />
 
 
         </Routes>
