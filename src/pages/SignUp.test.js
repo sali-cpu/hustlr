@@ -1,10 +1,10 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import SignUp from './SignUp';
 import { BrowserRouter } from 'react-router-dom';
 import '@testing-library/jest-dom';
-import { signInWithPopup } from 'firebase/auth';
-import { set } from 'firebase/database';
+import { signInWithPopup, GoogleAuthProvider, OAuthProvider } from 'firebase/auth';
+import { get, set, ref } from 'firebase/database';
 
 // Mock Firebase methods and dependencies
 jest.mock('../firebaseConfig', () => ({
@@ -14,27 +14,35 @@ jest.mock('../firebaseConfig', () => ({
   microsoft_db: {},
 }));
 
-jest.mock('firebase/auth', () => ({
-  GoogleAuthProvider: jest.fn(() => ({
-    setCustomParameters: jest.fn(),
-  })),
-  OAuthProvider: jest.fn(() => ({
-    setCustomParameters: jest.fn(),
-  })),
-  signInWithPopup: jest.fn(() => Promise.resolve({
-    user: {
-      uid: 'testuid',
-      displayName: 'Test User',
-      email: 'test@example.com',
-    },
-  })),
-}));
+jest.mock('firebase/auth', () => {
+  const originalModule = jest.requireActual('firebase/auth');
+  return {
+    ...originalModule,
+    GoogleAuthProvider: jest.fn(() => ({
+      setCustomParameters: jest.fn(),
+    })),
+    OAuthProvider: jest.fn((providerId) => ({
+      providerId,
+      setCustomParameters: jest.fn(),
+    })),
+    signInWithPopup: jest.fn(),
+  };
+});
 
 jest.mock('firebase/database', () => ({
-  get: jest.fn(() => Promise.resolve({ exists: () => false })),
-  ref: jest.fn(),
-  set: jest.fn(() => Promise.resolve()),
+  get: jest.fn(),
+  ref: jest.fn((db, path) => ({ db, path })),
+  set: jest.fn(),
 }));
+
+// Mock localStorage
+const localStorageMock = {
+  getItem: jest.fn(),
+  setItem: jest.fn(),
+  removeItem: jest.fn(),
+  clear: jest.fn(),
+};
+global.localStorage = localStorageMock;
 
 // Mock navigation
 const mockNavigate = jest.fn();
@@ -49,6 +57,19 @@ const renderWithRouter = (ui) => render(<BrowserRouter>{ui}</BrowserRouter>);
 describe('SignUp Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    
+    // Reset all mock implementations
+    signInWithPopup.mockImplementation(() => Promise.resolve({
+      user: {
+        uid: 'testuid',
+        displayName: 'Test User',
+        email: 'test@example.com',
+      },
+    }));
+    
+    get.mockImplementation(() => Promise.resolve({ exists: () => false }));
+    set.mockImplementation(() => Promise.resolve());
+    localStorageMock.setItem.mockImplementation(() => {});
   });
 
   it('renders without crashing', () => {
@@ -62,38 +83,91 @@ describe('SignUp Component', () => {
     expect(screen.getByLabelText('Freelancer')).toBeInTheDocument();
   });
 
-  it('triggers Google sign-in and calls signInWithPopup', async () => {
-    renderWithRouter(<SignUp />);
-    fireEvent.click(screen.getByLabelText('Client'));
-    fireEvent.click(screen.getByRole('button', { name: /sign in with google/i }));
-    await waitFor(() => expect(signInWithPopup).toHaveBeenCalled());
+  describe('Google Sign-In', () => {
+    it('triggers signInWithPopup when Google button clicked', async () => {
+      renderWithRouter(<SignUp />);
+      fireEvent.click(screen.getByLabelText('Client'));
+      fireEvent.click(screen.getByRole('button', { name: /sign in with google/i }));
+      
+      await waitFor(() => {
+        expect(signInWithPopup).toHaveBeenCalled();
+      });
+    });
+
+    it('shows alert if no role is selected', async () => {
+      window.alert = jest.fn();
+      renderWithRouter(<SignUp />);
+      
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /sign in with google/i }));
+      });
+      
+      expect(window.alert).toHaveBeenCalledWith('Please select a role before signing up.');
+    });
+
+    it('writes user to database if user does not exist', async () => {
+      renderWithRouter(<SignUp />);
+      fireEvent.click(screen.getByLabelText('Client'));
+      
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /sign in with google/i }));
+      });
+      
+      expect(set).toHaveBeenCalled();
+    });
+
+    it('navigates to correct page after successful sign-in', async () => {
+      renderWithRouter(<SignUp />);
+      fireEvent.click(screen.getByLabelText('Client'));
+      
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /sign in with google/i }));
+      });
+      
+      expect(mockNavigate).toHaveBeenCalledWith('/Client');
+    });
+
+    it('redirects to sign-in if user exists', async () => {
+      get.mockImplementationOnce(() => Promise.resolve({ exists: () => true }));
+      window.alert = jest.fn();
+      
+      renderWithRouter(<SignUp />);
+      fireEvent.click(screen.getByLabelText('Client'));
+      
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /sign in with google/i }));
+      });
+      
+      expect(window.alert).toHaveBeenCalledWith('User already exists. Redirecting you to Sign In');
+      expect(mockNavigate).toHaveBeenCalledWith('/SignIn');
+    });
   });
 
-  it('triggers Microsoft sign-in and calls signInWithPopup', async () => {
-    renderWithRouter(<SignUp />);
-    fireEvent.click(screen.getByLabelText('Freelancer'));
-    fireEvent.click(screen.getByRole('button', { name: /sign in with microsoft/i }));
-    await waitFor(() => expect(signInWithPopup).toHaveBeenCalled());
-  });
+  describe('Microsoft Sign-In', () => {
+    it('triggers signInWithPopup when Microsoft button clicked', async () => {
+      renderWithRouter(<SignUp />);
+      fireEvent.click(screen.getByLabelText('Freelancer'));
+      fireEvent.click(screen.getByRole('button', { name: /sign in with microsoft/i }));
+      
+      await waitFor(() => {
+        expect(signInWithPopup).toHaveBeenCalled();
+      });
+    });
 
-  it('shows alert if no role is selected when signing in', () => {
-    window.alert = jest.fn(); // mock alert
-    renderWithRouter(<SignUp />);
-    fireEvent.click(screen.getByRole('button', { name: /sign in with google/i }));
-    expect(window.alert).toHaveBeenCalledWith('Please select a role before signing up.');
-  });
-
-  it('writes user to database if user does not exist', async () => {
-    renderWithRouter(<SignUp />);
-    fireEvent.click(screen.getByLabelText('Client'));
-    fireEvent.click(screen.getByRole('button', { name: /sign in with google/i }));
-    await waitFor(() => expect(set).toHaveBeenCalled());
-  });
-
-  it('navigates to dashboard after successful sign-in', async () => {
-    renderWithRouter(<SignUp />);
-    fireEvent.click(screen.getByLabelText('Client'));
-    fireEvent.click(screen.getByRole('button', { name: /sign in with google/i }));
-    await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith('/client-dashboard')); // Replace with actual path
+    it('handles sign-in errors', async () => {
+      signInWithPopup.mockImplementationOnce(() => 
+        Promise.reject(new Error('Auth failed'))
+      );
+      window.alert = jest.fn();
+      
+      renderWithRouter(<SignUp />);
+      fireEvent.click(screen.getByLabelText('Freelancer'));
+      
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /sign in with microsoft/i }));
+      });
+      
+      expect(window.alert).toHaveBeenCalledWith(expect.stringContaining('Sign-in failed'));
+    });
   });
 });
