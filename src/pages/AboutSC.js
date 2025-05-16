@@ -13,8 +13,6 @@ const profileIcons = [icon1, icon2, icon3, icon4, icon5];
 
 const AboutSC = () => {
   const [formData, setFormData] = useState({
-    name: '',
-    surname: '',
     bio: '',
     profession: '',
     totalJobs: '',
@@ -53,10 +51,6 @@ const AboutSC = () => {
         )}
 
         <form className="settings-form">
-          <label>
-            Skills:
-            <input type="text" name="name" value={formData.name} onChange={handleChange} disabled={isSaved} />
-          </label>
 
 
           <label>
@@ -70,7 +64,7 @@ const AboutSC = () => {
           </label>
 
           <label>
-            Total Jobs Done:
+            Total Jobs Done For You:
             <input type="number" name="totalJobs" value={formData.totalJobs} onChange={handleChange} disabled={isSaved} />
           </label>
 
