@@ -13,8 +13,6 @@ const profileIcons = [icon1, icon2, icon3, icon4, icon5];
 
 const AboutSF = () => {
   const [formData, setFormData] = useState({
-    name: '',
-    surname: '',
     bio: '',
     profession: '',
     totalJobs: '',
