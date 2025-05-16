@@ -16,23 +16,22 @@ jest.mock('../images/s6.png', () => 'icon5.png');
 describe('AboutSF Component', () => {
   test('renders all form elements correctly', () => {
     render(<AboutSF />);
-    expect(screen.getByText(/Account/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Name:/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Surname:/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Bio:/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Profession:/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Total Jobs Done:/i)).toBeInTheDocument();
-    expect(screen.getByText(/Select Profile Icon:/i)).toBeInTheDocument();
+    expect(screen.getByText(/Account Settings/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Skills/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Bio/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Profession/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Total Jobs Done/i)).toBeInTheDocument();
+    expect(screen.getByText(/Select Profile Icon/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Save Settings/i })).toBeInTheDocument();
   });
 
   test('allows updating form inputs', () => {
     render(<AboutSF />);
-    const nameInput = screen.getByLabelText(/Name:/i);
+    const nameInput = screen.getByLabelText(/Skills/i);
     fireEvent.change(nameInput, { target: { value: 'Alice' } });
     expect(nameInput.value).toBe('Alice');
 
-    const bioInput = screen.getByLabelText(/Bio:/i);
+    const bioInput = screen.getByLabelText(/Bio/i);
     fireEvent.change(bioInput, { target: { value: 'Creative designer' } });
     expect(bioInput.value).toBe('Creative designer');
   });
@@ -49,15 +48,13 @@ describe('AboutSF Component', () => {
     const saveBtn = screen.getByRole('button', { name: /Save Settings/i });
     fireEvent.click(saveBtn);
 
-    expect(screen.getByLabelText(/Name:/i)).toBeDisabled();
-    expect(screen.getByLabelText(/Surname:/i)).toBeDisabled();
-    expect(screen.getByLabelText(/Bio:/i)).toBeDisabled();
-    expect(screen.getByLabelText(/Profession:/i)).toBeDisabled();
-    expect(screen.getByLabelText(/Total Jobs Done:/i)).toBeDisabled();
+    expect(screen.getByLabelText(/Skills/i)).toBeDisabled();
+    expect(screen.getByLabelText(/Bio/i)).toBeDisabled();
+    expect(screen.getByLabelText(/Profession/i)).toBeDisabled();
+    expect(screen.getByLabelText(/Total Jobs Done/i)).toBeDisabled();
 
-    const icons = screen.getAllByRole('img', { name: /icon/i });
-    fireEvent.click(icons[2]);
-    expect(icons[2]).not.toHaveClass('selected');
+    // Icons should be hidden after saving
+    expect(screen.queryByText(/Select Profile Icon/i)).not.toBeInTheDocument();
 
     expect(screen.queryByText(/Save Settings/i)).not.toBeInTheDocument();
     expect(screen.getByAltText(/Selected Icon/i)).toBeInTheDocument();
