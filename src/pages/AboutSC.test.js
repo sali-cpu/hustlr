@@ -14,9 +14,8 @@ jest.mock('../images/s6.png', () => 'icon5.png');
 describe('AboutSC Component', () => {
   test('renders all input fields and initial UI', () => {
     render(<AboutSC />);
-    expect(screen.getByText(/Account/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Name/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Surname/i)).toBeInTheDocument();
+    expect(screen.getByText(/Account Settings/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Skills/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Bio/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Profession/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Total Jobs Done/i)).toBeInTheDocument();
@@ -26,7 +25,7 @@ describe('AboutSC Component', () => {
 
   test('handles input changes', () => {
     render(<AboutSC />);
-    const nameInput = screen.getByLabelText(/Name/i);
+    const nameInput = screen.getByLabelText(/Skills/i);
     fireEvent.change(nameInput, { target: { value: 'John' } });
     expect(nameInput.value).toBe('John');
 
@@ -49,18 +48,33 @@ describe('AboutSC Component', () => {
     fireEvent.click(saveButton);
 
     // Inputs should be disabled
-    expect(screen.getByLabelText(/Name/i)).toBeDisabled();
+    expect(screen.getByLabelText(/Skills/i)).toBeDisabled();
     expect(screen.getByLabelText(/Bio/i)).toBeDisabled();
 
-    // Icons should not be clickable anymore
-    const icons = screen.getAllByRole('img', { name: /icon/i });
-    fireEvent.click(icons[1]);
-    expect(icons[1]).not.toHaveClass('selected'); // should not change after save
+    // Icons should not be clickable anymore (they should be hidden after save)
+    expect(screen.queryByText(/Select Profile Icon/i)).not.toBeInTheDocument();
 
     // Save button should disappear
     expect(screen.queryByText(/Save Settings/i)).not.toBeInTheDocument();
 
     // Top icon should be visible
     expect(screen.getByAltText(/Selected Icon/i)).toBeInTheDocument();
+  });
+
+  test('handleChange returns early when isSaved is true', () => {
+    render(<AboutSC />);
+    
+    // First save the form
+    const saveButton = screen.getByRole('button', { name: /Save Settings/i });
+    fireEvent.click(saveButton);
+    
+    const nameInput = screen.getByLabelText(/Skills/i);
+    const initialValue = nameInput.value;
+    
+    // Try to change the input
+    fireEvent.change(nameInput, { target: { value: 'New Value' } });
+    
+    // Verify the value didn't change
+    expect(nameInput.value).toBe(initialValue);
   });
 });
