@@ -80,6 +80,146 @@ describe('FreelancerJobs Component', () => {
     });
   });
 
+  test('filters jobs by search term and category', async () => {
+  render(<FreelancerJobs />);
+  
+  await waitFor(() => {
+    // Test search filtering
+    fireEvent.change(screen.getByPlaceholderText('Search by job title'), {
+      target: { value: 'Website' }
+    });
+    expect(screen.getByText('Website Design')).toBeInTheDocument();
+    expect(screen.queryByText('App UI Mockup')).not.toBeInTheDocument();
+
+    // Test category filtering
+    fireEvent.change(screen.getByLabelText('Category'), {
+      target: { value: 'Design' }
+    });
+    expect(screen.getByText('App UI Mockup')).toBeInTheDocument();
+    expect(screen.queryByText('Website Design')).toBeInTheDocument();
+    expect(screen.queryByText('Admin Assistant')).not.toBeInTheDocument();
+  });
+});
+
+test('shows "No available jobs" when filtered list is empty', async () => {
+  firebaseDatabase.get.mockResolvedValueOnce({
+    exists: () => false
+  });
+
+  render(<FreelancerJobs />);
+  
+  await waitFor(() => {
+    expect(screen.getByText('No available jobs')).toBeInTheDocument();
+    expect(screen.getByText('No accepted jobs')).toBeInTheDocument();
+    expect(screen.getByText('No rejected jobs')).toBeInTheDocument();
+  });
+});
+
+test('shows validation errors for empty form fields', async () => {
+  render(<FreelancerJobs />);
+  
+  await waitFor(() => {
+    fireEvent.click(screen.getAllByText('Apply')[0]);
+    fireEvent.click(screen.getByText('Submit'));
+
+    expect(screen.getByText('Please fill in the name field.')).toBeInTheDocument();
+    expect(screen.getByText('Please fill in the surname field.')).toBeInTheDocument();
+    expect(screen.getByText('Please fill in the skills field.')).toBeInTheDocument();
+    expect(screen.getByText('Please fill in the motivation field.')).toBeInTheDocument();
+  });
+});
+
+test('displays milestones when they exist', async () => {
+  const mockJobsWithMilestones = {
+    job1: {
+      title: 'Website Design',
+      description: 'Redesign homepage',
+      category: 'Web Design',
+      budget: 500,
+      deadline: '2025-05-01',
+      milestones: [
+        { description: 'Design mockup', amount: 200, status: 'pending' },
+        { description: 'Final delivery', amount: 300, status: 'pending' }
+      ]
+    }
+  };
+
+  firebaseDatabase.get.mockResolvedValueOnce({
+    exists: () => true,
+    val: () => mockJobsWithMilestones
+  });
+
+  render(<FreelancerJobs />);
+  
+  await waitFor(() => {
+    expect(screen.getByText('Milestones:')).toBeInTheDocument();
+    expect(screen.getByText('Milestone 1: Design mockup')).toBeInTheDocument();
+    expect(screen.getByText('Amount: $200')).toBeInTheDocument();
+    expect(screen.getByText('Status: $pending')).toBeInTheDocument();
+  });
+});
+
+test('displays correct status labels', async () => {
+  const mockAcceptedJobs = {
+    job1: {
+      title: 'Accepted Job',
+      description: 'This job was accepted',
+      category: 'Web Design',
+      budget: 500,
+      deadline: '2025-05-01'
+    }
+  };
+
+  const mockRejectedJobs = {
+    job2: {
+      title: 'Rejected Job',
+      description: 'This job was rejected',
+      category: 'Design',
+      budget: 300,
+      deadline: '2025-06-01'
+    }
+  };
+
+  // Mock the applications data
+  jest.spyOn(Storage.prototype, 'getItem').mockImplementation((key) => {
+    if (key === "userUID") return "testUser123";
+    return null;
+  });
+
+  firebaseDatabase.get.mockImplementation((ref) => {
+    if (ref.path.includes('accepted_applications')) {
+      return Promise.resolve({
+        exists: () => true,
+        val: () => ({
+          job1: {
+            applicant1: {
+              applicant_userUID: "testUser123",
+              status: "accepted"
+            }
+          },
+          job2: {
+            applicant1: {
+              applicant_userUID: "testUser123",
+              status: "rejected"
+            }
+          }
+        })
+      });
+    }
+    return Promise.resolve({
+      exists: () => true,
+      val: () => ({ ...mockAcceptedJobs, ...mockRejectedJobs })
+    });
+  });
+
+  render(<FreelancerJobs />);
+  
+  await waitFor(() => {
+    expect(screen.getByText('✅ Accepted')).toBeInTheDocument();
+    expect(screen.getByText('❌ Rejected')).toBeInTheDocument();
+  });
+});
+
   test('opens and closes application modal', async () => {
     render(<FreelancerJobs />);
     await waitFor(() => {
@@ -94,6 +234,40 @@ describe('FreelancerJobs Component', () => {
       expect(screen.queryByText(/Apply for/i)).not.toBeInTheDocument();
     });
   });
+
+  test('shows pending status for applied jobs', async () => {
+  // Mock the applications data
+  jest.spyOn(Storage.prototype, 'getItem').mockImplementation((key) => {
+    if (key === "userUID") return "testUser123";
+    return null;
+  });
+
+  firebaseDatabase.get.mockImplementation((ref) => {
+    if (ref.path.includes('accepted_applications')) {
+      return Promise.resolve({
+        exists: () => true,
+        val: () => ({
+          job1: {
+            applicant1: {
+              applicant_userUID: "testUser123",
+              status: "pending"
+            }
+          }
+        })
+      });
+    }
+    return Promise.resolve({
+      exists: () => true,
+      val: () => mockJobs
+    });
+  });
+
+  render(<FreelancerJobs />);
+  
+  await waitFor(() => {
+    expect(screen.getByText('⏳ Application Pending')).toBeInTheDocument();
+  });
+});
 
   test('fills and submits application form', async () => {
     render(<FreelancerJobs />);
