@@ -52,4 +52,100 @@ describe('Client Component', () => {
 
     expect(screen.getByPlaceholderText(/Search for any service/i)).toBeInTheDocument();
   });
+
+  describe('Client Component Search Functionality', () => {
+  beforeEach(() => {
+    // Clear localStorage to ensure fresh state
+    localStorage.clear();
+  });
+
+  test('filters categories based on search term matching name', () => {
+    render(
+      <Router>
+        <Client />
+      </Router>
+    );
+
+    // Close welcome message first
+    fireEvent.click(screen.getByText('×'));
+
+    const searchInput = screen.getByPlaceholderText(/Search for any service/i);
+    fireEvent.change(searchInput, { target: { value: 'jobs' } });
+
+    expect(screen.getByText(/Jobs/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Contracts & Tasks/i)).not.toBeInTheDocument();
+  });
+
+  test('filters categories based on search term matching keywords', () => {
+    render(
+      <Router>
+        <Client />
+      </Router>
+    );
+
+    // Close welcome message first
+    fireEvent.click(screen.getByText('×'));
+
+    const searchInput = screen.getByPlaceholderText(/Search for any service/i);
+    fireEvent.change(searchInput, { target: { value: 'csv' } }); // 'csv' is a keyword in Payments
+
+    expect(screen.getByText(/Payments/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Jobs/i)).not.toBeInTheDocument();
+  });
+
+  test('shows "No matching categories found" when search has no results', () => {
+    render(
+      <Router>
+        <Client />
+      </Router>
+    );
+
+    // Close welcome message first
+    fireEvent.click(screen.getByText('×'));
+
+    const searchInput = screen.getByPlaceholderText(/Search for any service/i);
+    fireEvent.change(searchInput, { target: { value: 'nonexistent term' } });
+
+    expect(screen.getByText(/No matching categories found/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Jobs/i)).not.toBeInTheDocument();
+  });
+});
+test('shows all categories when search term is empty', () => {
+  render(
+    <Router>
+      <Client />
+    </Router>
+  );
+
+  fireEvent.click(screen.getByText('×'));
+  
+  const searchInput = screen.getByPlaceholderText(/Search for any service/i);
+  fireEvent.change(searchInput, { target: { value: '' } });
+
+  expect(screen.getByText(/Jobs/i)).toBeInTheDocument();
+  expect(screen.getByText(/Contracts & Tasks/i)).toBeInTheDocument();
+  expect(screen.getByText(/Payments/i)).toBeInTheDocument();
+});
+
+test('search icon button exists', () => {
+  render(
+    <Router>
+      <Client />
+    </Router>
+  );
+  
+  expect(screen.getByRole('button', { name: /🔍/ })).toBeInTheDocument();
+});
+
+test('sets hasSeenWelcome in localStorage when closing welcome message', () => {
+  render(
+    <Router>
+      <Client />
+    </Router>
+  );
+  
+  fireEvent.click(screen.getByText('×'));
+  expect(localStorage.getItem('hasSeenWelcome')).toBe('true');
+});
+
 });
