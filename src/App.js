@@ -22,7 +22,6 @@ import AboutSF  from "./pages/AboutSF";
 import ClientSettings  from "./pages/ClientSettings";
 import AboutSC  from "./pages/AboutSC";
 import ClientReports  from "./pages/ClientReports";
-import FreeReports  from "./pages/FreeReports";
 import ConTasksClients from "./pages/ConTasksClients";
 import ConTasksFreelancer from "./pages/ConTasksFreelancer";
 import FreeOngoingJobs  from "./pages/FreeOngoingJobs";
@@ -70,7 +69,6 @@ function App() {
           <Route path="/ClientSettings" element={<ClientSettings />} />
           <Route path="/AboutSC" element={<AboutSC />} />
           <Route path="/ClientReports" element={<ClientReports />} />
-          <Route path="/FreeReports" element={<FreeReports />} />
           <Route path="/ConTasksClients" element={<ConTasksClients />} />
           <Route path="/ConTasksFreelancer" element={<ConTasksFreelancer />} />
           <Route path="/FreeOngoingJobs" element={<FreeOngoingJobs />} />
