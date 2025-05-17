@@ -109,6 +109,93 @@ describe('AdminJobs Component', () => {
     expect(await screen.findByText('No jobs available.')).toBeInTheDocument();
   });
 
+  test('shows alert when no jobs exist in database', async () => {
+  // Mock get to return no jobs
+  get.mockResolvedValueOnce({
+    exists: () => false,
+    val: () => null
+  });
+
+  // Mock window.alert
+  const mockAlert = jest.spyOn(window, 'alert').mockImplementation(() => {});
+
+  render(
+    <MemoryRouter>
+      <AdminJobs />
+    </MemoryRouter>
+  );
+
+  // Wait for the component to process the empty response
+  await screen.findByText('No jobs available.');
+
+  // Verify alert was shown
+  expect(mockAlert).toHaveBeenCalledWith('No Jobs found.');
+  
+  // Clean up mock
+  mockAlert.mockRestore();
+});
+
+test('shows error alert when job deletion fails', async () => {
+  // Mock initial job data
+  get.mockResolvedValueOnce({
+    exists: () => true,
+    val: () => ({
+      job1: {
+        title: 'Test Job 1',
+        description: 'Description 1',
+        category: 'Category 1',
+        budget: '100',
+        deadline: '2025-05-01',
+      },
+    }),
+  });
+
+  // Mock remove to reject with error
+  const mockError = new Error('Deletion failed');
+  remove.mockRejectedValueOnce(mockError);
+
+  // Mock alert
+  const mockAlert = jest.spyOn(window, 'alert').mockImplementation(() => {});
+
+  render(
+    <MemoryRouter>
+      <AdminJobs />
+    </MemoryRouter>
+  );
+
+  // Click delete button
+  const deleteButton = await screen.findByText('Delete Job Permanently');
+  fireEvent.click(deleteButton);
+
+  // Verify error handling
+  expect(mockAlert).toHaveBeenCalledWith(mockError.message);
+  
+  // Verify job is still displayed (not removed from state)
+  expect(screen.getByText('Test Job 1')).toBeInTheDocument();
+
+  // Clean up mock
+  mockAlert.mockRestore();
+});
+
+test('has working home navigation link', async () => {
+  render(
+    <MemoryRouter>
+      <AdminJobs />
+    </MemoryRouter>
+  );
+
+  const homeLink = screen.getByRole('link', { name: /home/i });
+  expect(homeLink).toHaveAttribute('href', '/Admin');
+});
+
+test('renders jobs fetched from Firebase', async () => {
+  // ... existing code
+  await waitFor(() => {
+    expect(screen.getByText('Test Job 1')).toBeInTheDocument();
+  });
+});
+
+
   test('calls remove when delete button is clicked', async () => {
     get.mockResolvedValueOnce({
       exists: () => true,
