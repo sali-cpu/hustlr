@@ -34,7 +34,7 @@ class HeaderFreelancer extends React.Component {
               className="fas fa-times"
               onClick={this.toggleMenu}
             ></button>
-            <li className="nitem"><a href="#" className="nlink">Ongoing Projects</a></li>
+            <li className="nitem"><a href="/FreeOngoingJobs" className="nlink">Ongoing Projects</a></li>
             <li className="nitem"><a href="/FreelancerPayments" className="nlink">Earnings</a></li>
             <li className="nitem"><a href="/FreeSettings" className="nlink">Settings</a></li>
             <li className="nitem"><a href="/RecentActivity" className="nlink">Recent Activities</a></li>
