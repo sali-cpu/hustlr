@@ -6,7 +6,6 @@ import job from '../images/Job.png';
 import pay from '../images/Payment.png';
 import stat from '../images/Quick Stats.png';
 import con from '../images/contract.png';
-import rep from '../images/Reports.png';
 import HeaderFreelancer from '../components/HeaderFreelancer';
 import FooterClient from '../components/FooterClient';
 import { applications_db } from '../firebaseConfig';
@@ -40,13 +39,6 @@ class Freelancers extends React.Component {
       },
       { 
         id: 4,
-        name: "Reports", 
-        path: "/FreeReports", 
-        image: rep,
-        keywords: ["reports", "analytics", "data"]
-      },
-      { 
-        id: 5,
         name: "Quick Stats", 
         path: "/FQStats", 
         image: stat,
