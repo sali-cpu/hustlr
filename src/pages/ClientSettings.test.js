@@ -1,67 +1,115 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 import ClientSettings from './ClientSettings';
+import '@testing-library/jest-dom';
 
-// Mock subcomponents
-jest.mock('../components/HeaderClient', () => () => <div>MockHeaderClient</div>);
-jest.mock('../components/FooterClient', () => () => <div>MockFooterClient</div>);
-
-const mockNavigate = jest.fn();
-jest.mock('react-router-dom', () => {
-  const actual = jest.requireActual('react-router-dom');
-  return {
-    ...actual,
-    useNavigate: () => mockNavigate,
-  };
-});
+// Mock components and hooks
+jest.mock('../components/HeaderClient', () => () => <div>Header</div>);
+jest.mock('../components/FooterClient', () => () => <div>Footer</div>);
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => jest.fn(),
+}));
 
 describe('ClientSettings Component', () => {
-  beforeEach(() => {
+  test('renders all main elements', () => {
     render(
-      <MemoryRouter>
+      <BrowserRouter>
         <ClientSettings />
-      </MemoryRouter>
+      </BrowserRouter>
     );
+
+    expect(screen.getByText('Header')).toBeInTheDocument();
+    expect(screen.getByText('Footer')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Settings' })).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('Search for a setting...')).toBeInTheDocument();
+    expect(screen.getByRole('navigation')).toBeInTheDocument();
   });
 
-  test('renders header and footer components', () => {
-    expect(screen.getByText('MockHeaderClient')).toBeInTheDocument();
-    expect(screen.getByText('MockFooterClient')).toBeInTheDocument();
-  });
+  test('renders all settings options', () => {
+    render(
+      <BrowserRouter>
+        <ClientSettings />
+      </BrowserRouter>
+    );
 
-  test('renders settings title and back button', () => {
-    expect(screen.getByRole('heading', { level: 2, name: /Settings/i })).toBeInTheDocument();
-    const backButton = screen.getByRole('button', { name: /←/ });
-    expect(backButton).toBeInTheDocument();
-    fireEvent.click(backButton);
-    expect(mockNavigate).toHaveBeenCalledWith(-1);
-  });
-
-  test('renders search form with input field', () => {
-    const searchInput = screen.getByPlaceholderText(/Search for a setting/i);
-    expect(searchInput).toBeInTheDocument();
-  });
-
-  test('renders settings options list', () => {
-    expect(screen.getByRole('navigation', { name: /Settings Options/i })).toBeInTheDocument();
-
-    const options = [
-      /Account/i,
-      /Notifications/i,
-      /Appearance/i,
-      /Privacy & Security/i,
-      /Help and Support/i,
-      /About/i,
+    const settingsItems = [
+      'Account',
+      'Notifications',
+      'Appearance',
+      'Privacy & Security',
+      'Help and Support',
+      'About'
     ];
 
-    options.forEach(option => {
-      expect(screen.getByRole('button', { name: option }) || screen.getByRole('link', { name: option })).toBeInTheDocument();
+    settingsItems.forEach(item => {
+      expect(screen.getByText(item)).toBeInTheDocument();
     });
   });
 
-  test('Account option links to /AboutSC', () => {
-    const accountLink = screen.getByRole('link', { name: /Account/i });
+  test('back button calls navigate', () => {
+    const mockNavigate = jest.fn();
+    jest.spyOn(require('react-router-dom'), 'useNavigate').mockImplementation(() => mockNavigate);
+
+    render(
+      <BrowserRouter>
+        <ClientSettings />
+      </BrowserRouter>
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: '←' }));
+    expect(mockNavigate).toHaveBeenCalledWith(-1);
+  });
+
+  test('search form prevents default submission', () => {
+    const preventDefault = jest.fn();
+    render(
+      <BrowserRouter>
+        <ClientSettings />
+      </BrowserRouter>
+    );
+
+    const form = screen.getByRole('search');
+    fireEvent.submit(form, { preventDefault });
+    expect(preventDefault).toHaveBeenCalled();
+  });
+
+  test('account link navigates to correct route', () => {
+    render(
+      <BrowserRouter>
+        <ClientSettings />
+      </BrowserRouter>
+    );
+
+    const accountLink = screen.getByRole('link', { name: /Account/ });
     expect(accountLink).toHaveAttribute('href', '/AboutSC');
+  });
+
+  test('all buttons have correct structure', () => {
+    render(
+      <BrowserRouter>
+        <ClientSettings />
+      </BrowserRouter>
+    );
+
+    const buttons = screen.getAllByRole('button');
+    buttons.forEach(button => {
+      if (button.textContent !== '←') { // Skip back button
+        expect(button).toHaveClass('settings-button');
+        expect(button.querySelector('.arrow')).toHaveTextContent('›');
+      }
+    });
+  });
+
+  test('matches accessibility requirements', () => {
+    render(
+      <BrowserRouter>
+        <ClientSettings />
+      </BrowserRouter>
+    );
+
+    expect(screen.getByRole('navigation')).toHaveAttribute('aria-label', 'Settings Options');
+    expect(screen.getByRole('search')).toBeInTheDocument();
   });
 });
