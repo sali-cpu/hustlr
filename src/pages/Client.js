@@ -5,7 +5,6 @@ import job from '../images/Job.png';
 import pay from '../images/Payment.png';
 import stat from '../images/Quick Stats.png';
 import con from '../images/contract.png';
-import rep from '../images/Reports.png';
 import HeaderClient from "../components/HeaderClient";
 import '../stylesheets/Final.css';
 import { applications_db } from '../firebaseConfig';
@@ -39,13 +38,6 @@ class Client extends React.Component {
       },
       { 
         id: 4,
-        name: "Reports", 
-        path: "/ClientReports", 
-        image: rep,
-        keywords: ["reports", "analytics", "statistics", ]
-      },
-      { 
-        id: 5,
         name: "Quick Stats", 
         path: "/CQStats", 
         image: stat,
