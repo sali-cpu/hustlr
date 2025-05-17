@@ -72,6 +72,131 @@ describe('FreelancerJobs Component', () => {
     });
   });
 
+  // Add to the describe block in the test file
+
+test('handles rejected applications correctly', async () => {
+  // Mock localStorage
+  jest.spyOn(Storage.prototype, 'getItem').mockImplementation((key) => {
+    if (key === "userUID") return "testUser123";
+    return null;
+  });
+
+  // Mock rejected applications
+  firebaseDatabase.onValue.mockImplementation((ref, callback) => {
+    if (ref.path.includes('rejected_applications')) {
+      callback({
+        val: () => ({
+          job1: {
+            applicant1: {
+              applicant_userUID: "testUser123",
+              status: "rejected"
+            }
+          }
+        })
+      });
+    }
+  });
+
+  // Mock jobs data
+  firebaseDatabase.get.mockResolvedValue({
+    exists: () => true,
+    val: () => ({
+      job1: {
+        title: 'Rejected Job',
+        description: 'This job was rejected',
+        category: 'Design',
+        budget: 300,
+        deadline: '2025-06-01'
+      }
+    })
+  });
+
+  render(<FreelancerJobs />);
+  
+  await waitFor(() => {
+    expect(screen.getByText('Rejected Jobs')).toBeInTheDocument();
+    expect(screen.getByText('Rejected Job')).toBeInTheDocument();
+    expect(screen.getByText('❌ Rejected')).toBeInTheDocument();
+  });
+});
+
+test('handles jobs fetch error', async () => {
+  const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+  firebaseDatabase.get.mockRejectedValueOnce(new Error('Fetch error'));
+
+  render(<FreelancerJobs />);
+  
+  await waitFor(() => {
+    expect(errorSpy).toHaveBeenCalledWith(expect.any(Error));
+  });
+  errorSpy.mockRestore();
+});
+
+test('shows error alert when application submission fails', async () => {
+  window.alert = jest.fn();
+  firebaseDatabase.push.mockRejectedValueOnce(new Error('Submission failed'));
+
+  render(<FreelancerJobs />);
+  
+  await waitFor(() => {
+    fireEvent.click(screen.getAllByText('Apply')[0]);
+    
+    // Fill form
+    fireEvent.change(screen.getByPlaceholderText('Enter your name'), { target: { value: 'John' } });
+    fireEvent.change(screen.getByPlaceholderText('Enter your surname'), { target: { value: 'Doe' } });
+    fireEvent.change(screen.getByPlaceholderText('e.g., JavaScript, React, Firebase'), { target: { value: 'React' } });
+    fireEvent.change(screen.getByPlaceholderText('Write your motivation here...'), { target: { value: 'Motivation' } });
+    
+    fireEvent.click(screen.getByText('Submit'));
+    
+    expect(window.alert).toHaveBeenCalledWith(expect.stringContaining('Failed to submit application'));
+  });
+});
+
+test('renders modal form correctly', async () => {
+  render(<FreelancerJobs />);
+  
+  await waitFor(() => {
+    fireEvent.click(screen.getAllByText('Apply')[0]);
+    
+    expect(screen.getByLabelText('Name:')).toBeInTheDocument();
+    expect(screen.getByLabelText('Surname:')).toBeInTheDocument();
+    expect(screen.getByLabelText('Skills (comma separated):')).toBeInTheDocument();
+    expect(screen.getByLabelText('Motivation:')).toBeInTheDocument();
+    expect(screen.getByText('Cancel')).toBeInTheDocument();
+    expect(screen.getByText('Submit')).toBeInTheDocument();
+  });
+});
+
+test('shows no available jobs when filtered list is empty', async () => {
+  firebaseDatabase.get.mockResolvedValueOnce({
+    exists: () => true,
+    val: () => ({
+      job1: {
+        title: 'Web Job',
+        description: 'Description',
+        category: 'Web',
+        budget: 500,
+        deadline: '2025-05-01'
+      }
+    })
+  });
+
+  render(<FreelancerJobs />);
+  
+  await waitFor(() => {
+    // Set filters that won't match any jobs
+    fireEvent.change(screen.getByPlaceholderText('Search by job title'), {
+      target: { value: 'Non-existent job' }
+    });
+    fireEvent.change(screen.getByLabelText('Category'), {
+      target: { value: 'Admin Support' }
+    });
+    
+    expect(screen.getByText('No available jobs')).toBeInTheDocument();
+  });
+});
+
   test('renders job cards and apply buttons', async () => {
     render(<FreelancerJobs />);
     await waitFor(() => {
