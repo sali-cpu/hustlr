@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import  { useEffect, useState } from 'react';
 import '../stylesheets/FreelancerJob.css';
 import HeaderFreelancer from '../components/HeaderFreelancer';
-import { get, push, ref } from "firebase/database";
+
+import { get, push, ref, onValue } from "firebase/database";
 import { db, applications_db } from '../firebaseConfig';
 
 const FreelancerJobs = () => {
@@ -10,11 +11,12 @@ const FreelancerJobs = () => {
   const [jobs, setjobs] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
-  const [formErrors, setFormErrors] = useState({});
+
   const [appliedJobs, setAppliedJobs] = useState([]);
   const [acceptedJobs, setAcceptedJobs] = useState([]);
   const [rejectedJobs, setRejectedJobs] = useState([]);
   const [pendingJobs, setPendingJobs] = useState([]);
+
   const [applicationData, setApplicationData] = useState({
     name: '',
     surname: '',
@@ -30,55 +32,130 @@ const FreelancerJobs = () => {
     }));
   };
 
-  useEffect(() => {
-    const userUID = localStorage.getItem("userUID");
-    const jobsRef = ref(db, 'jobs');
-    const applicationsRef = ref(applications_db, 'accepted_applications');
+  useEffect(() => 
+    {
+  const userUID = localStorage.getItem("userUID");
+  const jobsRef = ref(db, 'jobs');
 
-    get(jobsRef).then((snapshot) => {
-      if (snapshot.exists()) {
-        const jobsArray = Object.entries(snapshot.val()).map(([id, data]) => ({
-          id,
-          ...data,
-        }));
-        setjobs(jobsArray);
-      }
-    });
+  const applicationsRef = ref(applications_db, 'accepted_applications');
+  const rejectedRef = ref(applications_db, `rejected_applications`);
 
-    get(applicationsRef).then((snapshot) => {
-      if (snapshot.exists()) {
-        const applicationsData = snapshot.val();
-        const userAppliedJobIds = [];
-        const userAcceptedJobIds = [];
-        const userRejectedJobIds = [];
-        const userPendingJobIds = [];
+      const pendingApplicationsRef = ref(applications_db, 'applications');
 
-        Object.entries(applicationsData).forEach(([jobId, jobApplications]) => {
-          Object.values(jobApplications).forEach((application) => {
-            if (application.applicant_userUID === userUID) {
-              userAppliedJobIds.push(jobId);
-              if (application.status === "accepted") {
+
+  get(jobsRef).then((snapshot) => {
+    if (snapshot.exists()) {
+      const jobsArray = Object.entries(snapshot.val()).map(([id, data]) => ({
+        id,
+        ...data,
+      }));
+      setjobs(jobsArray);
+    } 
+  }).catch((error) => {
+    console.error(error);
+  });
+
+  get(applicationsRef).then((snapshot) => 
+    {
+    if (snapshot.exists()) 
+      {
+      const applicationsData = snapshot.val();
+      const userAppliedJobIds = [];
+
+      const userAcceptedJobIds = [];
+      const userRejectedJobIds = [];
+
+
+      Object.entries(applicationsData).forEach(([jobId, jobApplications]) => 
+        {
+        Object.values(jobApplications).forEach((application) => 
+          {
+
+          if (application.applicant_userUID === userUID) 
+            {
+            userAppliedJobIds.push(jobId);
+
+            if (application.status === "accepted") 
+              {
+
                 userAcceptedJobIds.push(jobId);
-              } else if (application.status === "rejected") {
-                userRejectedJobIds.push(jobId);
-              } else if (application.status === "pending") {
-                userPendingJobIds.push(jobId);
-              }
+
+            } else if (application.status === "rejected") 
+            {
+              userRejectedJobIds.push(jobId);
             }
-          });
+          }
         });
+      });
 
-        setAppliedJobs(userAppliedJobIds);
-        setAcceptedJobs(userAcceptedJobIds);
-        setRejectedJobs(userRejectedJobIds);
-        setPendingJobs(userPendingJobIds);
+      setAppliedJobs(prev => [...new Set([...prev, ...userAppliedJobIds])]);
+
+      setAcceptedJobs(userAcceptedJobIds);
+    }
+  });
+
+  onValue(rejectedRef, (snapshot) => 
+    {
+    const data = snapshot.val();
+
+    if (!data) return;
+
+    const userRejectedJobIds = [];
+
+    for (const jobId in data) 
+      {
+
+      for (const applicantId in data[jobId]) 
+        {
+
+        const appData = data[jobId][applicantId];
+        
+        if (appData.applicant_userUID === userUID) 
+          {
+
+          userRejectedJobIds.push(jobId);
+        }
       }
-    });
-  }, []);
+    }
 
-  const filteredJobs = jobs.filter(job => {
+    setRejectedJobs(userRejectedJobIds);
+  });
+
+
+  get(pendingApplicationsRef).then((snapshot) => 
+    {
+    if (snapshot.exists()) 
+      {
+      const applicationsData = snapshot.val();
+
+      const userPendingJobIds = [];
+
+      Object.entries(applicationsData).forEach(([jobId, jobApplications]) => 
+        {
+        Object.values(jobApplications).forEach((application) => {
+
+          if (application.applicant_userUID === userUID && application.status === "pending") 
+            {
+
+            userPendingJobIds.push(jobId);
+          }
+        });
+      });
+
+      setPendingJobs(prev => [...new Set([...prev, ...userPendingJobIds])]);
+
+      setAppliedJobs(prev => [...new Set([...prev, ...userPendingJobIds])]);
+    }
+  });
+}, []);
+
+
+  const filteredJobs = jobs.filter(job => 
+    {
     const matchesSearch = job.title?.toLowerCase().includes(searchTerm.toLowerCase());
+
     const matchesCategory = categoryFilter === 'All' || job.category === categoryFilter;
+
     return matchesSearch && matchesCategory;
   });
 
@@ -98,21 +175,13 @@ const FreelancerJobs = () => {
     setSelectedJob(null);
   };
 
-  const handleSubmit = () => {
-    const errors = {};
-    for (const [key, value] of Object.entries(applicationData)) {
-      if (!value || value.trim?.() === "") {
-        errors[key] = `Please fill in the ${key.replace(/_/g, ' ')} field.`;
-      }
-    }
-    if (Object.keys(errors).length > 0) {
-      setFormErrors(errors);
-      return;
-    }
-    setFormErrors({});
+  const handleSubmit = () => 
+    {
+    if (appliedJobs.includes(selectedJob.id)) 
+      {
 
-    if (appliedJobs.includes(selectedJob.id)) {
       alert("You have already applied to this job.");
+
       return;
     }
     const applicationsRef = ref(applications_db, `applications/${selectedJob.id}`);
@@ -141,11 +210,14 @@ const FreelancerJobs = () => {
         <section className="header-title-area">
           <h1 className="main-title">Freelancer Job Board</h1>
         </section>
-        <nav className="main-nav">
-          <ul>
-            <li><a href="/freelancer">Home</a></li>
-          </ul>
-        </nav>
+
+        <section className="nav_section">
+          <nav className="main-nav">
+            <ul>
+              <li><a href="/freelancer">Home</a></li>
+            </ul>
+          </nav>
+        </section>
       </header>
 
       <main className="freelancer-jobs-main">
@@ -167,6 +239,7 @@ const FreelancerJobs = () => {
           </select>
         </aside>
 
+        {/* Available Jobs */}
         <section className="job-listings job-column">
           <h2>Available Jobs</h2>
           {filteredJobs.filter(job =>
@@ -179,14 +252,14 @@ const FreelancerJobs = () => {
                 !rejectedJobs.includes(job.id)
               )
               .map(job => (
-                <article key={job.id} className="job-card">
+                <section key={job.id} className="job-card">
                   <h3>{job.title}</h3>
                   <p><strong>Description:</strong> {job.description}</p>
                   <p><strong>Category:</strong> {job.category}</p>
                   <p><strong>Budget:</strong> ${job.budget}</p>
                   <p><strong>Deadline:</strong> {job.deadline}</p>
 
-                  {job.milestones?.length > 0 && (
+                  {job.milestones && job.milestones.length > 0 && (
                     <section className="milestones-section">
                       <h4>Milestones:</h4>
                       <ul>
@@ -194,7 +267,6 @@ const FreelancerJobs = () => {
                           <li key={index}>
                             <p><strong>Milestone {index + 1}:</strong> {milestone.description}</p>
                             <p><strong>Amount:</strong> ${milestone.amount}</p>
-                            <p><strong>Status:</strong> ${milestone.status}</p>
                           </li>
                         ))}
                       </ul>
@@ -206,26 +278,27 @@ const FreelancerJobs = () => {
                   ) : (
                     <button onClick={() => openModal(job)}>Apply</button>
                   )}
-                </article>
+                </section>
               ))
           ) : (
             <p>No available jobs.</p>
           )}
         </section>
 
+        {}
         <section className="job-listings job-column">
           <h2>Accepted Jobs</h2>
           {filteredJobs.filter(job => acceptedJobs.includes(job.id)).length > 0 ? (
             filteredJobs
               .filter(job => acceptedJobs.includes(job.id))
               .map(job => (
-                <article key={job.id} className="job-card accepted">
+                <section key={job.id} className="job-card accepted">
                   <h3>{job.title}</h3>
                   <p><strong>Description:</strong> {job.description}</p>
                   <p><strong>Category:</strong> {job.category}</p>
                   <p><strong>Budget:</strong> ${job.budget}</p>
                   <p><strong>Deadline:</strong> {job.deadline}</p>
-                  {job.milestones?.length > 0 && (
+                  {job.milestones && job.milestones.length > 0 && (
                     <section className="milestones-section">
                       <h4>Milestones:</h4>
                       <ul>
@@ -233,33 +306,33 @@ const FreelancerJobs = () => {
                           <li key={index}>
                             <p><strong>Milestone {index + 1}:</strong> {milestone.description}</p>
                             <p><strong>Amount:</strong> ${milestone.amount}</p>
-                            <p><strong>Status:</strong> ${milestone.status}</p>
                           </li>
                         ))}
                       </ul>
                     </section>
                   )}
                   <p className="status-label done">✅ Accepted</p>
-                </article>
+                </section>
               ))
           ) : (
             <p>No accepted jobs.</p>
           )}
         </section>
 
+        {/* Rejected Jobs */}
         <section className="job-listings job-column">
           <h2>Rejected Jobs</h2>
           {filteredJobs.filter(job => rejectedJobs.includes(job.id)).length > 0 ? (
             filteredJobs
               .filter(job => rejectedJobs.includes(job.id))
               .map(job => (
-                <article key={job.id} className="job-card rejected">
+                <section key={job.id} className="job-card rejected">
                   <h3>{job.title}</h3>
                   <p><strong>Description:</strong> {job.description}</p>
                   <p><strong>Category:</strong> {job.category}</p>
                   <p><strong>Budget:</strong> ${job.budget}</p>
                   <p><strong>Deadline:</strong> {job.deadline}</p>
-                  {job.milestones?.length > 0 && (
+                  {job.milestones && job.milestones.length > 0 && (
                     <section className="milestones-section">
                       <h4>Milestones:</h4>
                       <ul>
@@ -273,7 +346,7 @@ const FreelancerJobs = () => {
                     </section>
                   )}
                   <p className="status-label rejected">❌ Rejected</p>
-                </article>
+                </section>
               ))
           ) : (
             <p>No rejected jobs.</p>
@@ -281,6 +354,7 @@ const FreelancerJobs = () => {
         </section>
       </main>
 
+      {}
       {showModal && selectedJob && (
         <section className="modal-overlay">
           <section className="modal">
@@ -293,9 +367,7 @@ const FreelancerJobs = () => {
                 placeholder="Enter your name"
                 value={applicationData.name}
                 onChange={handleChange}
-                className={formErrors.name ? "input-error" : ""}
               />
-              {formErrors.name && <p className="error-text">{formErrors.name}</p>}
 
               <label>Surname:</label>
               <input
@@ -304,9 +376,7 @@ const FreelancerJobs = () => {
                 placeholder="Enter your surname"
                 value={applicationData.surname}
                 onChange={handleChange}
-                className={formErrors.surname ? "input-error" : ""}
               />
-              {formErrors.surname && <p className="error-text">{formErrors.surname}</p>}
 
               <label>Skills (comma separated):</label>
               <input
@@ -315,9 +385,7 @@ const FreelancerJobs = () => {
                 placeholder="e.g., JavaScript, React, Firebase"
                 value={applicationData.skills}
                 onChange={handleChange}
-                className={formErrors.skills ? "input-error" : ""}
               />
-              {formErrors.skills && <p className="error-text">{formErrors.skills}</p>}
 
               <label>Motivation:</label>
               <textarea
@@ -326,9 +394,7 @@ const FreelancerJobs = () => {
                 rows={5}
                 value={applicationData.motivation}
                 onChange={handleChange}
-                className={formErrors.motivation ? "input-error" : ""}
-              />
-              {formErrors.motivation && <p className="error-text">{formErrors.motivation}</p>}
+              ></textarea>
 
               <section className="modal-buttons">
                 <button type="button" onClick={closeModal}>Cancel</button>
