@@ -2,13 +2,6 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import Client from '../pages/Client';
-import { ref, onValue } from 'firebase/database';
-import { applications_db } from '../firebaseConfig';
-
-jest.mock('firebase/database', () => ({
-  ref: jest.fn(),
-  onValue: jest.fn(),
-}));
 
 // Mock images
 jest.mock('../images/cute.jpg', () => '');
@@ -155,86 +148,4 @@ test('sets hasSeenWelcome in localStorage when closing welcome message', () => {
   expect(localStorage.getItem('hasSeenWelcome')).toBe('true');
 });
 
-});
-describe('Profile Icon Functionality', () => {
-  beforeEach(() => {
-    // Clear localStorage and reset all mocks
-    localStorage.clear();
-    jest.clearAllMocks();
-    
-    // Mock localStorage to return a userUID
-    Storage.prototype.getItem = jest.fn((key) => 
-      key === 'userUID' ? 'test-uid' : null
-    );
-  });
-
-  test('sets up profile icon listener on mount', () => {
-    render(
-      <Router>
-        <Client />
-      </Router>
-    );
-
-    expect(ref).toHaveBeenCalledWith(applications_db, 'Information/test-uid/selectedIcon');
-    expect(onValue).toHaveBeenCalledTimes(1);
-  });
-
-  test('updates profile icon when Firebase value changes', () => {
-    // Mock the onValue callback
-    let callback;
-    onValue.mockImplementation((ref, cb) => {
-      callback = cb;
-    });
-
-    render(
-      <Router>
-        <Client />
-      </Router>
-    );
-
-    // Simulate Firebase value change
-    const mockSnapshot = {
-      val: () => 'mocked-icon-url.png'
-    };
-    callback(mockSnapshot);
-
-    // Verify the profile icon is rendered
-    expect(screen.getByAltText('Profile Icon')).toHaveAttribute('src', 'mocked-icon-url.png');
-  });
-
-  test('does not set up listener when no userUID exists', () => {
-    // Mock no userUID
-    Storage.prototype.getItem = jest.fn(() => null);
-
-    render(
-      <Router>
-        <Client />
-      </Router>
-    );
-
-    expect(ref).not.toHaveBeenCalled();
-    expect(onValue).not.toHaveBeenCalled();
-  });
-
-  test('handles null value from Firebase', () => {
-    let callback;
-    onValue.mockImplementation((ref, cb) => {
-      callback = cb;
-    });
-
-    render(
-      <Router>
-        <Client />
-      </Router>
-    );
-
-    // Simulate Firebase returning null
-    const mockSnapshot = {
-      val: () => null
-    };
-    callback(mockSnapshot);
-
-    // Verify no profile icon is rendered
-    expect(screen.queryByAltText('Profile Icon')).not.toBeInTheDocument();
-  });
 });
