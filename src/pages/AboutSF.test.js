@@ -43,6 +43,44 @@ describe('AboutSF Component', () => {
     expect(icons[1]).toHaveClass('selected');
   });
 
+  describe('selectIcon function', () => {
+  test('does not update selectedIcon when isSaved is true', () => {
+    // Mock useState to simulate isSaved=true
+    const original = React.useState;
+    const setFormDataMock = jest.fn();
+    jest.spyOn(React, 'useState')
+      .mockImplementationOnce(() => [{}, setFormDataMock])  // formData state
+      .mockImplementationOnce(() => [true, jest.fn()]);     // isSaved=true
+
+    render(<AboutSF />);
+    
+    // Try to select an icon (should be prevented)
+    const icons = screen.getAllByRole('img', { name: /icon/i });
+    fireEvent.click(icons[0]);
+    
+    // Verify setFormData was not called
+    expect(setFormDataMock).not.toHaveBeenCalled();
+    
+    // Restore original useState
+    React.useState = original;
+  });
+
+  test('updates selectedIcon when isSaved is false', () => {
+    render(<AboutSF />);
+    
+    // Verify initial selected icon (first one by default)
+    const icons = screen.getAllByRole('img', { name: /icon/i });
+    expect(icons[0]).toHaveClass('selected');
+    
+    // Select a different icon
+    fireEvent.click(icons[2]);
+    
+    // Verify the new icon is selected
+    expect(icons[2]).toHaveClass('selected');
+    expect(icons[0]).not.toHaveClass('selected');
+  });
+});
+
   test('disables inputs and icon selection after saving', () => {
     render(<AboutSF />);
     const saveBtn = screen.getByRole('button', { name: /Save Settings/i });
