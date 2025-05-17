@@ -1,33 +1,50 @@
-import React from "react";
-import { render, screen, within, waitFor } from "@testing-library/react";
-import CQStats from "../pages/CQStats";
-import { BrowserRouter } from "react-router-dom";
-import { get, ref } from 'firebase/database';
+import React from 'react';
+import { render, screen, waitFor } from '@testing-library/react';
+import CQStats from './CQStats';
+import { ref, get } from 'firebase/database';
 import { db, applications_db } from '../firebaseConfig';
+import '@testing-library/jest-dom';
 
-// Mock Firebase and components
+// Mock components and Firebase
+jest.mock('../components/HeaderClient', () => () => <div>Header</div>);
+jest.mock('../components/FooterClient', () => () => <div>Footer</div>);
 jest.mock('firebase/database', () => ({
-  get: jest.fn(),
   ref: jest.fn(),
+  get: jest.fn(),
 }));
-
 jest.mock('../firebaseConfig', () => ({
   db: {},
   applications_db: {}
 }));
 
-// Mock localStorage
-beforeAll(() => {
-  Storage.prototype.getItem = jest.fn(() => "test-user-uid");
-});
-
-describe("CQStats Component", () => {
+describe('CQStats Component', () => {
+  const mockUserUID = 'test-user-123';
+  
   beforeEach(() => {
+    // Mock localStorage
+    Storage.prototype.getItem = jest.fn(() => mockUserUID);
     jest.clearAllMocks();
   });
 
-  test("renders with default stats when no data is available", async () => {
-    // Mock empty Firebase responses
+  test('renders basic structure', () => {
+    render(<CQStats />);
+    expect(screen.getByText('Header')).toBeInTheDocument();
+    expect(screen.getByText('Footer')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Client Reports' })).toBeInTheDocument();
+    expect(screen.getByRole('navigation')).toBeInTheDocument();
+  });
+
+  test('shows warning when no userUID is found', () => {
+    Storage.prototype.getItem = jest.fn(() => null);
+    const consoleWarn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    
+    render(<CQStats />);
+    
+    expect(consoleWarn).toHaveBeenCalledWith('No userUID found.');
+    consoleWarn.mockRestore();
+  });
+
+  test('displays default stats when no data is available', async () => {
     get.mockImplementation((dbRef) => {
       if (dbRef && dbRef.path === 'jobs') {
         return Promise.resolve({ exists: () => false });
@@ -35,33 +52,29 @@ describe("CQStats Component", () => {
       return Promise.resolve({ exists: () => false });
     });
 
-    render(
-      <BrowserRouter>
-        <CQStats />
-      </BrowserRouter>
-    );
-
+    render(<CQStats />);
+    
     await waitFor(() => {
-      expect(screen.getByText("0", { selector: "p" })).toBeInTheDocument(); // jobsPosted
-      expect(screen.getByText("$0", { selector: "p" })).toBeInTheDocument(); // totalSpent
+      expect(screen.getByText('0')).toBeInTheDocument(); // jobsPosted
+      expect(screen.getByText('$0')).toBeInTheDocument(); // totalSpent
+      expect(screen.getByText('0%')).toBeInTheDocument(); // completionRate
     });
   });
 
-  test("fetches and displays client stats correctly", async () => {
-    // Mock Firebase data
+  test('fetches and displays job stats correctly', async () => {
     const mockJobs = {
-      job1: { clientUID: "test-user-uid", title: "Test Job 1" },
-      job2: { clientUID: "other-user", title: "Test Job 2" },
-      job3: { clientUID: "test-user-uid", title: "Test Job 3" }
+      job1: { clientUID: mockUserUID, title: 'Test Job 1' },
+      job2: { clientUID: 'other-user', title: 'Test Job 2' },
+      job3: { clientUID: mockUserUID, title: 'Test Job 3' }
     };
 
     const mockAcceptedApps = {
       job1: {
-        app1: { status: "accepted" },
-        app2: { status: "rejected" }
+        app1: { status: 'accepted' },
+        app2: { status: 'rejected' }
       },
       job3: {
-        app3: { status: "accepted" }
+        app3: { status: 'accepted' }
       }
     };
 
@@ -81,59 +94,60 @@ describe("CQStats Component", () => {
       return Promise.resolve({ exists: () => false });
     });
 
-    render(
-      <BrowserRouter>
-        <CQStats />
-      </BrowserRouter>
-    );
-
+    render(<CQStats />);
+    
     await waitFor(() => {
-      // Should show 2 jobs posted (job1 and job3)
-      const jobsPostedSection = screen.getByRole("heading", { name: /Jobs Posted/i }).parentElement;
-      expect(within(jobsPostedSection).getByText("2", { selector: "p" })).toBeInTheDocument();
-      
-      // Should show 2 active jobs (job1 and job3 have accepted apps)
-      const activeJobsSection = screen.getByRole("heading", { name: /Active Jobs/i }).parentElement;
-      expect(within(activeJobsSection).getByText("2", { selector: "p" })).toBeInTheDocument();
+      expect(screen.getByText('2')).toBeInTheDocument(); // jobsPosted
+      expect(screen.getByText('2')).toBeInTheDocument(); // activeJobs
     });
   });
 
-  test("handles errors when fetching data", async () => {
-    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
-    get.mockRejectedValue(new Error('Failed to fetch'));
+  test('handles Firebase errors gracefully', async () => {
+    const error = new Error('Firebase error');
+    get.mockRejectedValueOnce(error);
+    const alertMock = jest.spyOn(window, 'alert').mockImplementation(() => {});
 
-    render(
-      <BrowserRouter>
-        <CQStats />
-      </BrowserRouter>
-    );
-
+    render(<CQStats />);
+    
     await waitFor(() => {
-      expect(consoleError).toHaveBeenCalledWith("Error fetching job/application stats:", "Failed to fetch");
+      expect(alertMock).toHaveBeenCalledWith('Error fetching job/application stats:', error.message);
     });
-
-    consoleError.mockRestore();
+    alertMock.mockRestore();
   });
 
-  test("shows warning when no userUID is found", async () => {
-    Storage.prototype.getItem = jest.fn(() => null);
-    const consoleWarn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-
-    render(
-      <BrowserRouter>
-        <CQStats />
-      </BrowserRouter>
-    );
-
-    await waitFor(() => {
-      expect(consoleWarn).toHaveBeenCalledWith("No userUID found.");
+  test('renders all statistics sections', () => {
+    render(<CQStats />);
+    
+    const sections = [
+      'Jobs Posted',
+      'Active Jobs',
+      'Completed Jobs',
+      'Total Spent',
+      'Completion Rate',
+      'Payments Trend'
+    ];
+    
+    sections.forEach(section => {
+      expect(screen.getByRole('heading', { name: section })).toBeInTheDocument();
     });
-
-    consoleWarn.mockRestore();
   });
 
-  // Keep your existing rendering tests
-  test("renders without crashing", () => {
-    // ... (your existing test code)
+  test('renders accessible progress indicators', () => {
+    render(<CQStats />);
+    
+    expect(screen.getByRole('meter')).toBeInTheDocument();
+    expect(screen.getAllByRole('progressbar').length).toBe(2);
+  });
+
+  test('renders accessible charts', () => {
+    render(<CQStats />);
+    
+    expect(screen.getByRole('img', { name: /completion rate/i })).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: /earnings growth/i })).toBeInTheDocument();
+  });
+
+  test('matches snapshot with default state', () => {
+    const { asFragment } = render(<CQStats />);
+    expect(asFragment()).toMatchSnapshot();
   });
 });
