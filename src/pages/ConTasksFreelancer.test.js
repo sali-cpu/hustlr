@@ -12,7 +12,7 @@ jest.mock('../firebaseConfig', () => ({
 // Mock Firebase database functions
 jest.mock('firebase/database', () => ({
   ref: jest.fn(),
-  onValue: jest.fn(),
+  onValue: jest.fn(() => jest.fn()), // Return unsubscribe function
 }));
 
 // Mock header/footer components
@@ -69,6 +69,7 @@ describe('ConTasksFreelancer Component', () => {
         exists: () => true,
         val: () => mockData,
       });
+      return jest.fn(); // Return unsubscribe function
     });
   });
 
@@ -84,19 +85,25 @@ describe('ConTasksFreelancer Component', () => {
 
   it('displays both active and previous jobs correctly', async () => {
     render(<ConTasksFreelancer />);
-    expect(await screen.findByText('Logo Design')).toBeInTheDocument();
-    expect(screen.getByText('Old Project')).toBeInTheDocument();
+    
+    await waitFor(() => {
+      expect(screen.getByText('Logo Design')).toBeInTheDocument();
+      expect(screen.getByText('Old Project')).toBeInTheDocument();
+    });
   });
 
   it('shows correct milestone and job details when expanded', async () => {
     render(<ConTasksFreelancer />);
-    const toggleBtn = await screen.findByText('View Details');
-    fireEvent.click(toggleBtn);
+    
+    await waitFor(() => {
+      const toggleBtn = screen.getAllByText('View Details')[0];
+      fireEvent.click(toggleBtn);
 
-    expect(await screen.findByText(/Excited to work on this!/)).toBeInTheDocument();
-    expect(screen.getByText('Draft')).toBeInTheDocument();
-    expect(screen.getByText('Amount: R100')).toBeInTheDocument();
-    expect(screen.getByText('Status: pending')).toBeInTheDocument();
+      expect(screen.getByText(/Excited to work on this!/)).toBeInTheDocument();
+      expect(screen.getByText('Draft')).toBeInTheDocument();
+      expect(screen.getByText('Amount: R100')).toBeInTheDocument();
+      expect(screen.getByText('Status: pending')).toBeInTheDocument();
+    });
   });
 
   it('shows no jobs message when there are no jobs', async () => {
@@ -105,10 +112,88 @@ describe('ConTasksFreelancer Component', () => {
         exists: () => false,
         val: () => null,
       });
+      return jest.fn();
     });
 
     render(<ConTasksFreelancer />);
-    expect(await screen.findByText('No active jobs available.')).toBeInTheDocument();
-    expect(screen.getByText('No previous jobs found.')).toBeInTheDocument();
+    
+    await waitFor(() => {
+      expect(screen.getByText('No active jobs available.')).toBeInTheDocument();
+      expect(screen.getByText('No previous jobs found.')).toBeInTheDocument();
+    });
+  });
+
+  // New tests to cover uncovered lines
+  it('handles job expansion toggle correctly', async () => {
+    render(<ConTasksFreelancer />);
+    
+    await waitFor(() => {
+      const toggleButtons = screen.getAllByText('View Details');
+      expect(toggleButtons.length).toBe(2); // One for active, one for previous job
+      
+      // Toggle first job
+      fireEvent.click(toggleButtons[0]);
+      expect(screen.getByText('Hide Details')).toBeInTheDocument();
+      
+      // Toggle again to collapse
+      fireEvent.click(screen.getByText('Hide Details'));
+      expect(screen.getByText('View Details')).toBeInTheDocument();
+    });
+  });
+
+  it('correctly calculates job budget from milestones', async () => {
+    render(<ConTasksFreelancer />);
+    
+    await waitFor(() => {
+      const toggleBtn = screen.getAllByText('View Details')[0];
+      fireEvent.click(toggleBtn);
+      
+      expect(screen.getByText('Budget: R300')).toBeInTheDocument(); // 100 + 200
+    });
+  });
+
+  it('handles jobs with no milestones', async () => {
+    const mockDataNoMilestones = {
+      jobGroup1: {
+        app1: {
+          applicant_userUID: 'freelancer001',
+          jobTitle: 'No Milestones Job',
+          motivation: 'Test',
+          name: 'Test',
+          surname: 'User',
+          deadline: '2025-01-01',
+          job_milestones: {}
+        }
+      }
+    };
+
+    firebase.onValue.mockImplementation((ref, callback) => {
+      callback({
+        exists: () => true,
+        val: () => mockDataNoMilestones,
+      });
+      return jest.fn();
+    });
+
+    render(<ConTasksFreelancer />);
+    
+    await waitFor(() => {
+      expect(screen.getByText('No Milestones Job')).toBeInTheDocument();
+      const toggleBtn = screen.getByText('View Details');
+      fireEvent.click(toggleBtn);
+      
+      expect(screen.queryByText('Milestones:')).toBeInTheDocument();
+      expect(screen.queryByText('Draft')).not.toBeInTheDocument();
+    });
+  });
+
+  it('properly cleans up Firebase subscription on unmount', () => {
+    const unsubscribeMock = jest.fn();
+    firebase.onValue.mockImplementation(() => unsubscribeMock);
+    
+    const { unmount } = render(<ConTasksFreelancer />);
+    unmount();
+    
+    expect(unsubscribeMock).toHaveBeenCalled();
   });
 });
