@@ -102,6 +102,36 @@ describe('AboutSC Component', () => {
     alertMock.mockRestore();
   });
 
+  test('displays error alert when Firebase save fails', async () => {
+  // Mock Firebase to reject with an error
+  const mockError = new Error('Firebase save failed');
+  set.mockRejectedValueOnce(mockError);
+  
+  // Mock window.alert to track calls
+  const alertMock = jest.spyOn(window, 'alert').mockImplementation(() => {});
+
+  render(<AboutSC />);
+  
+  // Fill out some form data
+  fireEvent.change(screen.getByLabelText(/Bio/i), {
+    target: { value: 'Test bio', name: 'bio' }
+  });
+  
+  // Trigger save
+  fireEvent.click(screen.getByRole('button', { name: /Save Settings/i }));
+
+  await waitFor(() => {
+    // Verify error alert was shown with correct message
+    expect(alertMock).toHaveBeenCalledWith('Error saving user info:', 'Firebase save failed');
+    
+    // Verify isSaved state wasn't changed to true
+    expect(screen.getByRole('button', { name: /Save Settings/i })).toBeInTheDocument();
+  });
+
+  // Clean up mock
+  alertMock.mockRestore();
+});
+
   test('handleSave shows error alert on Firebase failure', async () => {
     const error = new Error('Firebase error');
     set.mockRejectedValueOnce(error);
