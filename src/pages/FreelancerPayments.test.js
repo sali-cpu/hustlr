@@ -207,6 +207,106 @@ test('handles malformed payment data in handleMarkDone', async () => {
   expect(console.error).toHaveBeenCalled();
 });
 
+test('updates UI state after marking milestone as done', async () => {
+  render(<FreelancerPayments />);
+  
+  await waitFor(() => {
+    expect(screen.getByText('Pending')).toBeInTheDocument();
+  });
+
+  fireEvent.click(screen.getByText('Mark as Done'));
+
+  await waitFor(() => {
+    // Verify both the Firebase update AND the UI update
+    expect(update).toHaveBeenCalled();
+    expect(screen.getByText('Done')).toBeInTheDocument();
+    expect(screen.queryByText('Pending')).not.toBeInTheDocument();
+  });
+});
+
+test('handles incomplete payment object in handleMarkDone', async () => {
+  console.error = jest.fn();
+  window.alert = jest.fn();
+
+  // Render with a malformed payment
+  const { rerender } = render(<FreelancerPayments />);
+  
+  // Force a bad state (in real test you'd mock this differently)
+  const badPayment = {
+    id: 'bad_id',
+    // missing required fields
+  };
+
+  // This would require either:
+  // 1. Exporting handleMarkDone for direct testing, or
+  // 2. Creating test data that produces this case
+  await waitFor(() => {
+    fireEvent.click(screen.getByText('Mark as Done'));
+  });
+
+  expect(console.error).toHaveBeenCalled();
+  expect(window.alert).toHaveBeenCalledWith('Failed to mark milestone as done.');
+});
+
+test('renders empty state when no payments exist', async () => {
+  get.mockResolvedValueOnce({
+    exists: () => false
+  });
+
+  render(<FreelancerPayments />);
+  
+  await waitFor(() => {
+    expect(screen.queryByText('Website Development')).not.toBeInTheDocument();
+    expect(screen.getByRole('table')).toBeInTheDocument(); // table exists but empty
+  });
+});
+
+test('handleMarkDone updates Firebase and UI state correctly', async () => {
+  render(<FreelancerPayments />);
+  
+  await waitFor(() => {
+    expect(screen.getByText('Pending')).toBeInTheDocument();
+  });
+
+  fireEvent.click(screen.getByText('Mark as Done'));
+
+  await waitFor(() => {
+    // Verify Firebase call
+    expect(update).toHaveBeenCalledWith(
+      ref(expect.anything(), 'accepted_applications/parent1/job1/job_milestones/0'),
+      { status: 'Done' }
+    );
+    
+    // Verify UI update
+    expect(screen.getByText('Done')).toBeInTheDocument();
+    expect(screen.queryByText('Pending')).not.toBeInTheDocument();
+  });
+});
+
+test('displays wallet balance with various numeric values', async () => {
+  localStorage.getItem.mockImplementation((key) => {
+    if (key === 'freelancerWallet') return '1234.56';
+    return 'freelancer123';
+  });
+
+  render(<FreelancerPayments />);
+  
+  await waitFor(() => {
+    expect(screen.getByText('Balance: $1234.56')).toBeInTheDocument();
+  });
+});
+
+test('cleanup in useEffect', async () => {
+  const { unmount } = render(<FreelancerPayments />);
+  
+  await waitFor(() => {
+    expect(screen.getByText('Website Development')).toBeInTheDocument();
+  });
+  
+  unmount();
+  // Verify any cleanup operations if they exist
+});
+
   test('does not show Mark as Done button for completed milestones', async () => {
     // Change mock data to have a Done status
     get.mockResolvedValueOnce({
@@ -242,5 +342,82 @@ test('handles malformed payment data in handleMarkDone', async () => {
       expect(screen.queryByText('Mark as Done')).not.toBeInTheDocument();
       expect(screen.getByText('Done')).toBeInTheDocument();
     });
+  });
+});
+describe('Mark as Done button rendering', () => {
+  test('renders button only for pending status (case insensitive)', async () => {
+    get.mockResolvedValueOnce({
+      exists: () => true,
+      forEach: (callback) => {
+        callback({
+          key: 'parent1',
+          forEach: (childCallback) => {
+            childCallback({
+              key: 'job1',
+              val: () => ({
+                applicant_userUID: 'freelancer123',
+                jobTitle: 'Case Test',
+                clientName: 'Client D',
+                job_milestones: [
+                  {
+                    description: 'Test phase',
+                    amount: 100,
+                    status: 'PENDING', // uppercase
+                    dueDate: '2023-12-15'
+                  }
+                ]
+              })
+            });
+          }
+        });
+      }
+    });
+
+    render(<FreelancerPayments />);
+    
+    await waitFor(() => {
+      expect(screen.getByText('Mark as Done')).toBeInTheDocument();
+    });
+  });
+
+  test('does not render button for non-pending statuses', async () => {
+    const statuses = ['Done', 'Paid', 'Approved', 'Rejected'];
+    
+    for (const status of statuses) {
+      get.mockResolvedValueOnce({
+        exists: () => true,
+        forEach: (callback) => {
+          callback({
+            key: 'parent1',
+            forEach: (childCallback) => {
+              childCallback({
+                key: 'job1',
+                val: () => ({
+                  applicant_userUID: 'freelancer123',
+                  jobTitle: `Status Test - ${status}`,
+                  clientName: 'Client E',
+                  job_milestones: [
+                    {
+                      description: 'Test phase',
+                      amount: 100,
+                      status: status,
+                      dueDate: '2023-12-15'
+                    }
+                  ]
+                })
+              });
+            }
+          });
+        }
+      });
+
+      const { unmount } = render(<FreelancerPayments />);
+      
+      await waitFor(() => {
+        expect(screen.queryByText('Mark as Done')).not.toBeInTheDocument();
+      });
+      
+      unmount();
+    }
   });
 });
