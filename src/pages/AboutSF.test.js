@@ -119,6 +119,44 @@ describe('AboutSF Component', () => {
     alertMock.mockRestore();
   });
 
+  test('handleSave properly handles Firebase errors and shows correct alert', async () => {
+  // 1. Setup Firebase mock to reject with a specific error
+  const mockError = new Error('Database write failed: permission denied');
+  set.mockRejectedValueOnce(mockError);
+  
+  // 2. Mock window.alert to verify it's called correctly
+  const alertMock = jest.spyOn(window, 'alert').mockImplementation(() => {});
+  
+  // 3. Render component and fill out some form data
+  render(<AboutSF />);
+  fireEvent.change(screen.getByLabelText(/Skills/i), {
+    target: { value: 'React, Node', name: 'skills' }
+  });
+  
+  // 4. Trigger save action
+  fireEvent.click(screen.getByRole('button', { name: /Save Settings/i }));
+
+  // 5. Verify the error handling
+  await waitFor(() => {
+    // Verify Firebase was called correctly
+    expect(ref).toHaveBeenCalledWith(applications_db, 'Information/test-uid');
+    expect(set).toHaveBeenCalled();
+    
+    // Verify the exact error alert format
+    expect(alertMock).toHaveBeenCalledWith(
+      'Error saving user info:', 
+      'Database write failed: permission denied'
+    );
+    
+    // Verify state wasn't changed to saved
+    expect(screen.getByRole('button', { name: /Save Settings/i })).toBeInTheDocument();
+    expect(screen.getByLabelText(/Skills/i)).not.toBeDisabled();
+  });
+
+  // 6. Clean up mock
+  alertMock.mockRestore();
+});
+
   test('renders Link component around save button', () => {
     render(<AboutSF />);
     const saveButton = screen.getByRole('button', { name: /Save Settings/i });
