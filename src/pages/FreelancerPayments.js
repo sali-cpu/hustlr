@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import '../stylesheets/FreelancerPayments.css';
-import { ref, get,update } from "firebase/database";
+import { ref, get, update } from "firebase/database";
 import { applications_db } from '../firebaseConfig';
 
 const FreelancerPayments = () => {
@@ -25,22 +25,19 @@ const FreelancerPayments = () => {
               const data = jobSnap.val();
               if (data.applicant_userUID === userUID && Array.isArray(data.job_milestones)) {
                 data.job_milestones.forEach((milestone, index) => {
-
-                  const id = jobSnap.key + "_ms_" + index;
+                  const id = jobSnap.key + "ms" + index;
                   jobList.push({
-                  id,
-                  jobTitle: data.jobTitle,
-                  client: data.clientName || 'Unknown',
-                  milestone: milestone.description,
-                  amount: milestone.amount,
-                  status: milestone.status || 'Pending',
-                  dueDate: milestone.dueDate || 'N/A',
-                  parentKey: parentSnap.key,
-                  jobKey: jobSnap.key,
-                  milestoneIndex: index
-                });
-
-
+                    id,
+                    jobTitle: data.jobTitle,
+                    client: data.clientName || 'Unknown',
+                    milestone: milestone.description,
+                    amount: milestone.amount,
+                    status: milestone.status || 'Pending',
+                    dueDate: milestone.duedate || 'N/A',
+                    parentKey: parentSnap.key,
+                    jobKey: jobSnap.key,
+                    milestoneIndex: index
+                  });
                 });
               }
             });
@@ -54,22 +51,36 @@ const FreelancerPayments = () => {
 
     fetchAcceptedJobs();
   }, []);
-const handleMarkDone = async (payment) => {
-  try {
-    const jobRef = ref(applications_db, `accepted_applications/${payment.parentKey}/${payment.jobKey}/job_milestones/${payment.milestoneIndex}`);
-    await update(jobRef, { status: "Done" });
 
-    // Update UI state
-    setPayments(prev =>
-      prev.map(p => p.id === payment.id ? { ...p, status: "Done" } : p)
-    );
-  } catch (err) {
-    console.error("Failed to update milestone status:", err);
-    alert("Failed to mark milestone as done.");
-  }
-};
+  const handleMarkDone = async (payment) => {
+    try {
+      const jobRef = ref(applications_db, `accepted_applications/${payment.parentKey}/${payment.jobKey}/job_milestones/${payment.milestoneIndex}`);
+      await update(jobRef, { status: "Done" });
 
+      // Update UI state
+      setPayments(prev =>
+        prev.map(p => p.id === payment.id ? { ...p, status: "Done" } : p)
+      );
+    } catch (err) {
+      console.error("Failed to update milestone status:", err);
+      alert("Failed to mark milestone as done.");
+    }
+  };
 
+  const handleMarkInProgress = async (payment) => {
+    try {
+      const jobRef = ref(applications_db, `accepted_applications/${payment.parentKey}/${payment.jobKey}/job_milestones/${payment.milestoneIndex}`);
+      await update(jobRef, { status: "In-Progress" });
+
+      // Update UI state
+      setPayments(prev =>
+        prev.map(p => p.id === payment.id ? { ...p, status: "In-Progress" } : p)
+      );
+    } catch (err) {
+      console.error("Failed to update milestone status:", err);
+      alert("Failed to mark milestone as in-progress.");
+    }
+  };
 
   return (
     <main className="client-payments-main">
@@ -129,11 +140,27 @@ const handleMarkDone = async (payment) => {
                 <td><span className={`status ${payment.status.toLowerCase()}`}>{payment.status}</span></td>
                 <td>{payment.dueDate}</td>
                 <td>
-                  {payment.status == 'pending' && (
-                <button className="mark-paid-btn" onClick={() => handleMarkDone(payment)}>
-                  Mark as Done
+                {["pending", "In-Progress"].includes(payment.status) ? (
+                <>
+                {payment.status !== "In-Progress" && (
+                <button
+                  className="mark-in-progress-btn"
+                  onClick={() => handleMarkInProgress(payment)}
+                >
+                Mark as In-Progress
                 </button>
                 )}
+
+                <button
+                className="mark-done-btn"
+                onClick={() => handleMarkDone(payment)}
+                >
+                Mark as Done
+                </button>
+                </>
+                ) : (
+                <span>{payment.status}</span>
+                  )}
 
                 </td>
               </tr>
