@@ -171,3 +171,53 @@ describe('SignUp Component', () => {
     });
   });
 });
+describe('Additional SignUp Tests', () => {
+  test('goToPage shows alert for unknown role', () => {
+    // Mock window.alert
+    window.alert = jest.fn();
+    
+    // Get the goToPage function from the component
+    const { goToPage } = renderWithRouter(<SignUp />)
+      .container.firstChild.props.children.props.children.props.children[1].type;
+
+    // Test unknown role
+    goToPage('unknown');
+    expect(window.alert).toHaveBeenCalledWith('Unknown role selected.');
+  });
+
+  test('goToPage navigates to admin page for admin role', () => {
+    // Get the goToPage function from the component
+    const { goToPage } = renderWithRouter(<SignUp />)
+      .container.firstChild.props.children.props.children.props.children[1].type;
+
+    // Test admin role
+    goToPage('admin');
+    expect(mockNavigate).toHaveBeenCalledWith('/Admin');
+  });
+
+  test('Google sign-in shows error message on failure', async () => {
+    // Mock the signInWithPopup to reject
+    signInWithPopup.mockRejectedValue(new Error('Google sign-in failed'));
+    window.alert = jest.fn();
+
+    renderWithRouter(<SignUp />);
+    fireEvent.click(screen.getByLabelText('Client'));
+    
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /sign in with google/i }));
+    });
+
+    expect(window.alert).toHaveBeenCalledWith(expect.stringContaining('Error signing in'));
+  });
+
+  test('Microsoft sign-in shows alert when no role is selected', async () => {
+    window.alert = jest.fn();
+    renderWithRouter(<SignUp />);
+    
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /sign in with microsoft/i }));
+    });
+    
+    expect(window.alert).toHaveBeenCalledWith('Please select a role before signing up.');
+  });
+});
