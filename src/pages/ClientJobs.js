@@ -13,9 +13,9 @@ const initialFormData = {
   budget: '',
   deadline: '',
   milestones: [
-    { description: '', amount: '' },
-    { description: '', amount: '' },
-    { description: '', amount: '' }
+    { description: '', amount: '', status: 'pending', duedate: ''},
+    { description: '', amount: '', status: 'pending', duedate: ''},
+    { description: '', amount: '', status: 'pending', duedate: ''}
   ] 
 };
 
@@ -53,9 +53,9 @@ const ClientJobs = () => {
       budget: jobToEdit.budget,
       deadline: jobToEdit.deadline,
       milestones: jobToEdit.milestones ?? [
-        { description: '', amount: '' },
-        { description: '', amount: '' },
-        { description: '', amount: '' }
+       {description: '', amount: '', duedate: ''},
+       {description: '', amount: '', duedate: ''},
+       {description: '', amount: '', duedate: ''}
       ]
     });
     formSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -202,7 +202,7 @@ const ClientJobs = () => {
   };
   
 
-const handleDelete = async (jobIdToDelete) => {
+ const handleDelete = async (jobIdToDelete) => {
   if (!window.confirm('Are you sure you want to delete this job?')) return;
 
   try {
@@ -243,7 +243,7 @@ const handleDelete = async (jobIdToDelete) => {
 
     for (const milestone of formData.milestones) 
       {
-      if (!milestone.description || !milestone.amount) 
+      if (!milestone.description || !milestone.amount || !milestone.duedate) 
         {
           setError('Please fill in all milestone fields.');
           return;
@@ -345,8 +345,8 @@ const handleDelete = async (jobIdToDelete) => {
 
                   {job.milestones.map((milestone, index) => (
                     <li key={index}>
-                    <strong>Description:</strong> {milestone.description} <br />
-                    <strong>Amount:</strong> ${parseFloat(milestone.amount).toLocaleString()}
+                    <strong>Amount:</strong> ${parseFloat(milestone.amount).toLocaleString()} <br />
+                    <strong>Due Date:</strong> {milestone.duedate}
                   </li>
                     ))}
                  </ul>
@@ -464,6 +464,16 @@ const handleDelete = async (jobIdToDelete) => {
         onChange={(e) => handleMilestoneChange(index, 'amount', e.target.value)}
         required
       />
+    </label>
+        <label>
+      Due Date:
+      <input
+        type="date"
+        name={`milestone_duedate_${index}`}
+        value={milestone.duedate}
+        onChange={(e) => handleMilestoneChange(index, 'duedate', e.target.value)}
+        required
+      /> 
     </label>
   </section>
 ))}
