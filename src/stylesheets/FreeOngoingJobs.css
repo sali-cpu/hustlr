@@ -1,0 +1,196 @@
+/* Base Styles */
+.ongoing-jobs {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: 'Inter', system-ui, sans-serif;
+  color: #1a1a1a;
+  line-height: 1.6;
+}
+
+.jobs-header {
+  text-align: center;
+  margin-bottom: 4rem;
+  background-color: #1a1a1a;
+}
+
+.jobs-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  color: #ffffff;
+}
+
+.jobs-header p {
+  font-size: 1.15rem;
+  color: #ffffff;
+}
+
+/* Job Cards */
+.jobs-list {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.job-card {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.job-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.job-card header {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #eee;
+}
+
+.job-card header h2 {
+  font-size: 1.6rem;
+  margin-bottom: 0.5rem;
+  color: #1a1a1a;
+}
+
+.job-card header p {
+  color: #666;
+  margin-bottom: 0;
+  font-size: 0.95rem;
+}
+
+.job-card > p {
+  margin-bottom: 1rem;
+  color: #444;
+  font-size: 1rem;
+}
+
+.job-card > p strong {
+  color: #1a1a1a;
+}
+
+.job-description {
+  color: #333;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+  flex-grow: 1;
+}
+
+.job-description strong {
+  color: #1a1a1a;
+}
+
+/* Progress Tracking */
+.job-progress {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #eee;
+}
+
+.job-progress ol {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 2rem;
+}
+
+.job-progress li {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #eee;
+  position: relative;
+  padding-left: 2rem;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.job-progress li:last-child {
+  border-bottom: none;
+}
+
+.job-progress li strong {
+  color: #1a1a1a;
+  font-weight: 600;
+}
+
+.job-progress li time,
+.job-progress li small {
+  display: inline-block;
+  margin-right: 1rem;
+  color: #777;
+  font-size: 0.85rem;
+}
+
+.job-progress li:before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 1rem;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid #ddd;
+  border-radius: 50%;
+  background-color: white;
+}
+
+.job-progress li.completed:before {
+  background: #10b981;
+  border-color: #10b981;
+}
+
+.job-progress li.completed:after {
+  content: "✓";
+  position: absolute;
+  left: 0.25rem;
+  top: 0.75rem;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: bold;
+  padding-top: 3px;
+}
+
+.job-progress p {
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-top: 1.5rem;
+}
+
+.job-progress p strong {
+  color: #10b981;
+}
+
+/* Financials */
+.job-financial {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #eee;
+}
+
+.job-financial h3 {
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  color: #1a1a1a;
+}
+
+.job-financial p {
+  margin: 0.75rem 0;
+  color: #444;
+  font-size: 1rem;
+}
+
+.job-financial p strong {
+  color: #1a1a1a;
+}
+
+/* Style for "No ongoing jobs found." */
+.ongoing-jobs > p {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #666;
+  margin-top: 3rem;
+}
