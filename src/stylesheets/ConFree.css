@@ -1,0 +1,171 @@
+/* --- Overall Page Layout --- */
+html {
+  overflow-y: scroll;
+}
+
+.contracts-tasks-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 150px 2rem 2rem 2rem;
+  background-color: #d7e5f4;
+  min-height: 100vh;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* --- Header Styles --- */
+.contracts-header {
+  width: 100%;
+  background-color: #000;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  height: 150px;
+  z-index: 1000;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 1rem 2rem;
+}
+
+/* --- Section Layout --- */
+.contracts-section {
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 2rem;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+/* --- Section Title --- */
+.contracts-section h2 {
+  text-align: center;
+  font-size: 1.8rem;
+  color: #333;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 0.8rem;
+}
+
+/* --- Job Cards (Both Client & Freelancer) --- */
+.job-contract-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1.2rem;
+  margin-bottom: 1.5rem;
+  background-color: #fdfdfd;
+  transition: box-shadow 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+.job-contract-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* --- Header Inside Card --- */
+.job-contract-card h3 {
+  margin-top: 0;
+  color: #0056b3;
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.job-contract-card p {
+  font-size: 0.95rem;
+  color: #555;
+  margin: 0.25rem 0;
+}
+
+/* --- Expanded Section (Milestones/Tasks) --- */
+.milestone-section {
+  margin-top: 1rem;
+  background-color: #f7faff;
+  border-top: 1px solid #e0e0e0;
+  padding-top: 1rem;
+}
+
+.milestone {
+  padding: 0.8rem 1rem;
+  margin-bottom: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #ffffff;
+}
+
+.milestone h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+  color: #333;
+}
+
+.milestone p {
+  font-size: 0.9rem;
+  margin: 0.25rem 0;
+  color: #555;
+}
+
+.milestone strong {
+  color: #444;
+}
+
+/* --- Expand/Collapse Toggle --- */
+.expand-toggle {
+  background: none;
+  border: none;
+  color: #007bff;
+  font-weight: 500;
+  font-size: 0.95rem;
+  margin-top: 0.75rem;
+  cursor: pointer;
+  padding: 0;
+}
+
+.expand-toggle:hover {
+  text-decoration: underline;
+}
+
+/* --- Empty Message --- */
+.no-jobs-message p {
+  text-align: center;
+  font-style: italic;
+  padding: 2rem;
+  color: #666;
+}
+
+/* --- Footer Actions (Optional) --- */
+.contracts-footer {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.contracts-footer button {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.contracts-footer .end-btn {
+  background-color: #dc3545;
+  color: white;
+}
+
+.contracts-footer .end-btn:hover {
+  background-color: #c82333;
+}
+
+.contracts-footer .edit-btn {
+  background-color: #007bff;
+  color: white;
+}
+
+.contracts-footer .edit-btn:hover {
+  background-color: #0069d9;
+}

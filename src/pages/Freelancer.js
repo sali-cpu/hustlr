@@ -26,7 +26,7 @@ class Freelancers extends React.Component {
       { 
         id: 2,
         name: "Contracts & Tasks", 
-        path: "", 
+        path: "/ConTasksFreelancer", 
         image: con,
         keywords: ["contracts", "tasks", "agreements"]
       },

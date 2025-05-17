@@ -25,7 +25,7 @@ class Client extends React.Component {
       { 
         id: 2,
         name: "Contracts & Tasks", 
-        path: "", 
+        path: "/ConTasksClients", 
         image: con,
         keywords: ["contracts", "tasks", "agreements"]
       },
