@@ -1,11 +1,9 @@
-
 import '../stylesheets/CQStats.css';
 import HeaderClient from "../components/HeaderClient";
 import FooterClient from "../components/FooterClient";
 import { useEffect, useState } from 'react';
 import { ref, get } from 'firebase/database';
 import { db, applications_db } from '../firebaseConfig';
-
 
 const userUID = localStorage.getItem("userUID");
 const CQStats = ( ) => {
@@ -14,8 +12,6 @@ const CQStats = ( ) => {
     activeJobs: 0,
     completedJobs: 0,
     totalSpent: 0,
-    completionRate: 0,
-    earningsOverTime: [], // dummy data if needed: [0, 100, 200]
   });
 
 useEffect(() => {
@@ -35,7 +31,6 @@ useEffect(() => {
 
       if (jobsSnapshot.exists()) {
         const allJobs = jobsSnapshot.val();
-        //console.log("Fetched jobs:", allJobs);
 
         Object.entries(allJobs).forEach(([jobId, job]) => {
           if (job.clientUID === userUID) {
@@ -43,39 +38,61 @@ useEffect(() => {
             jobsByClient[jobId] = job;
           }
         });
-        //console.log("Jobs posted by client:", jobsPosted);
       } else {
         alert("No jobs found.");
       }
 
-      // Step 2: Fetch accepted applications
       const appsRef = ref(applications_db, 'accepted_applications');
       const appsSnapshot = await get(appsRef);
 
       let activeJobs = 0;
+      let completedJobs=0;
+      let totalSpent=0;
 
       if (appsSnapshot.exists()) {
         const applicationsData = appsSnapshot.val();
         
-
         Object.entries(applicationsData).forEach(([jobId, jobApplications]) => {
           if (jobsByClient[jobId]) {
             Object.values(jobApplications).forEach((application) => {
-              if (application.status === "accepted") {
+              if (application.status === "accepted") 
+                {
                 activeJobs++;
+
+                if (application.job_milestones) 
+                  {
+                  const milestones = Object.values(application.job_milestones);
+
+                  if (milestones[2].status==="Done" && milestones[1].status==="Done" && milestones[0].status==="Done") {
+                    completedJobs++;
+                  }
+                  
+                  if (milestones[2].status==="Done") {
+                    totalSpent=totalSpent+parseFloat(milestones[2].amount);
+                  }
+                  
+                  if (milestones[1].status==="Done") {
+                    totalSpent=totalSpent+parseFloat(milestones[1].amount);
+                  }
+                  if (milestones[0].status==="Done") {
+                    totalSpent=totalSpent+parseFloat(milestones[0].amount);
+                  }
+                }
               }
             });
           }
         });
-        //alert("Active jobs accepted:", activeJobs);
+        
       } else {
         alert("No accepted_applications found.");
       }
-
+        
       setStats(prev => ({
         ...prev,
         jobsPosted,
-        activeJobs
+        activeJobs,
+        completedJobs,
+        totalSpent
       }));
     } catch (error) {
       alert("Error fetching job/application stats:", error.message);
@@ -139,58 +156,6 @@ useEffect(() => {
         <article aria-labelledby="total-spent-heading">
           <h2 id="total-spent-heading">Total Spent</h2>
           <p>${stats.totalSpent.toLocaleString()}</p>
-        </article>
-
-        <article aria-labelledby="completion-rate-heading">
-          <h2 id="completion-rate-heading">Completion Rate</h2>
-          <p>{stats.completionRate}%</p>
-          <svg 
-            viewBox="0 0 36 36" 
-            className="circular-chart"
-            aria-labelledby="completion-rate-heading completion-rate-desc"
-            role="img"
-          >
-            <title id="completion-rate-desc">A circular chart showing {stats.completionRate}% completion rate</title>
-            <path
-              className="circle-bg"
-              d="M18 2.0845
-                a 15.9155 15.9155 0 0 1 0 31.831
-                a 15.9155 15.9155 0 0 1 0 -31.831"
-            />
-            <path
-              className="circle-fill"
-              strokeDasharray={`${stats.completionRate}, 100`}
-              d="M18 2.0845
-                a 15.9155 15.9155 0 0 1 0 31.831
-                a 15.9155 15.9155 0 0 1 0 -31.831"
-            />
-            <text x="18" y="20.5" className="percentage">{stats.completionRate}%</text>
-          </svg>
-        </article>
-
-        <article aria-labelledby="earnings-trend-heading">
-          <h2 id="earnings-trend-heading">Payments Trend</h2>
-          <figure>
-            <svg 
-              viewBox="0 0 100 40" 
-              className="line-chart"
-              aria-labelledby="earnings-trend-heading earnings-trend-desc"
-              role="img"
-            >
-              <title id="earnings-trend-desc">Line chart showing earnings growth over time</title>
-              <polyline
-                fill="none"
-                stroke="#007bff"
-                strokeWidth="2"
-                points={stats.earningsOverTime.map((value, i) => {
-                  const x = (i * 100) / (stats.earningsOverTime.length - 1);
-                  const y = 40 - (value / Math.max(...stats.earningsOverTime)) * 35;
-                  return `${x},${y}`;
-                }).join(' ')}
-              />
-            </svg>
-            <figcaption className="visually-hidden">Earnings growth over {stats.earningsOverTime.length} periods</figcaption>
-          </figure>
         </article>
       </section>
     </main>
