@@ -9,34 +9,30 @@ const MOCK_DATA = {
     total_spent: 18500,
     currency: "USD",
     by_category: [
-      { name: "Web Development", amount: 8500, percentage: 46 },
-      { name: "Graphic Design", amount: 4200, percentage: 23 },
-      { name: "Content Writing", amount: 3800, percentage: 20 },
-      { name: "SEO", amount: 2000, percentage: 11 }
+      { name: "Web Development", amount: 8500,  },
+      { name: "Graphic Design", amount: 4200,},
+      { name: "Content Writing", amount: 3800,  },
+      { name: "SEO", amount: 2000, }
     ],
     monthly_trends: [
-      { month: "2025-01", total: 4200, change: "+5%" },
-      { month: "2025-02", total: 5100, change: "+21%" },
-      { month: "2025-03", total: 4800, change: "-6%" },
-      { month: "2025-04", total: 4400, change: "-8%" }
+      { month: "2025-01", total: 4200,  },
+      { month: "2025-02", total: 5100,},
+      { month: "2025-03", total: 4800, },
+      { month: "2025-04", total: 4400, }
     ]
   },
   jobs_analysis: {
     by_status: [
-      { status: "completed", count: 12, percentage: 75 },
-      { status: "in_progress", count: 3, percentage: 19 },
-      { status: "pending", count: 1, percentage: 6 }
+      { status: "Completed", count: 12, },
+      { status: "In Progress", count: 3, },
+      { status: "Pending", count: 1,  }
     ],
     completion_timelines: [
       { job_id: 101, duration_days: 14, on_time: true },
       { job_id: 102, duration_days: 21, on_time: false },
       { job_id: 103, duration_days: 7, on_time: true }
     ],
-    freelancer_ratings: [
-      { job_id: 101, rating: 4.8, feedback: "Excellent communication" },
-      { job_id: 102, rating: 3.5, feedback: "Missed some deadlines" },
-      { job_id: 103, rating: 5.0, feedback: "Perfect delivery" }
-    ]
+    
   },
   freelancer_performance: {
     completion_rates: [
@@ -44,15 +40,10 @@ const MOCK_DATA = {
       { freelancer_id: 2, name: "Mike Chen", completed: 5, total: 6, rate: 83 },
       { freelancer_id: 3, name: "Emma Wilson", completed: 3, total: 3, rate: 100 }
     ],
-    average_ratings: [
-      { freelancer_id: 1, name: "Sarah Johnson", avg_rating: 4.9, count: 8 },
-      { freelancer_id: 2, name: "Mike Chen", avg_rating: 4.2, count: 5 },
-      { freelancer_id: 3, name: "Emma Wilson", avg_rating: 4.7, count: 3 }
-    ],
     delivery_stats: [
-      { freelancer_id: 1, on_time: 8, late: 0, percentage: 100 },
-      { freelancer_id: 2, on_time: 4, late: 1, percentage: 80 },
-      { freelancer_id: 3, on_time: 3, late: 0, percentage: 100 }
+      { freelancer_id: 1, on_time: 8, late: 0,  },
+      { freelancer_id: 2, on_time: 4, late: 1, },
+      { freelancer_id: 3, on_time: 3, late: 0, }
     ]
   }
 };
@@ -110,7 +101,7 @@ const ClientReports = () => {
       <ul>
         {reportData?.by_category?.map(cat => (
           <li key={cat.name}>
-            {cat.name}: {cat.percentage}% (${cat.amount?.toLocaleString()})
+            {cat.name}:  (${cat.amount?.toLocaleString()})
           </li>
         ))}
       </ul>
@@ -120,7 +111,7 @@ const ClientReports = () => {
           <tr>
             <th>Month</th>
             <th>Total</th>
-            <th>Change</th>
+            
           </tr>
         </thead>
         <tbody>
@@ -128,7 +119,6 @@ const ClientReports = () => {
             <tr key={m.month}>
               <td>{m.month}</td>
               <td>${m.total.toLocaleString()}</td>
-              <td>{m.change}</td>
             </tr>
           ))}
         </tbody>
@@ -141,7 +131,7 @@ const ClientReports = () => {
       <ul>
         {reportData?.by_status?.map(stat => (
           <li key={stat.status}>
-            {stat.status.replace('_', ' ')}: {stat.count} ({stat.percentage}%)
+            {stat.status.replace('_', ' ')}: {stat.count} 
           </li>
         ))}
       </ul>
@@ -189,8 +179,8 @@ const ClientReports = () => {
           {reportData?.completion_rates?.map((f, idx) => (
             <tr key={f.freelancer_id}>
               <td>{f.name}</td>
-              <td>{reportData?.average_ratings?.[idx]?.avg_rating?.toFixed(1)}</td>
-              <td>{reportData?.delivery_stats?.[idx]?.percentage}%</td>
+             
+              
             </tr>
           ))}
         </tbody>
@@ -205,6 +195,12 @@ const ClientReports = () => {
         <header className="reports-header">
           <h1>Client Performance Reports</h1>
           <p>Detailed analytics and historical performance data</p>
+          
+          <nav className="main-nav">
+            <ul>
+              <li><a href="/Client">Home</a></li> 
+            </ul>
+          </nav>
 
           <section className="dev-toggle">
             <label>
@@ -232,7 +228,7 @@ const ClientReports = () => {
             <select name="report_type" value={formData.report_type} onChange={handleInputChange}>
               <option value="financial">Financial</option>
               <option value="jobs">Jobs</option>
-              <option value="freelancer">Freelancer</option>
+              
             </select>
           </label>
           <button type="submit" disabled={isLoading}>
@@ -246,7 +242,6 @@ const ClientReports = () => {
             <>
               {formData.report_type === 'financial' && renderFinancialReport()}
               {formData.report_type === 'jobs' && renderJobsReport()}
-              {formData.report_type === 'freelancer' && renderFreelancerReport()}
             </>
           )}
         </section>
