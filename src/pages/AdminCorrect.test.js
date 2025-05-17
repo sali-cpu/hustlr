@@ -15,6 +15,25 @@ describe('AdminCorrect Component', () => {
     expect(screen.getByText(/Admin Homepage/i)).toBeInTheDocument();
   });
 
+  test('toggles menu visibility when toggleMenu is called', () => {
+  render(<AdminCorrect />, { wrapper: MemoryRouter });
+  
+  // Initial state should be false (menu hidden)
+  expect(screen.queryByTestId('nav-menu')).not.toBeInTheDocument(); // Add test-id to your menu in component
+  
+  // Simulate clicking the menu button
+  fireEvent.click(screen.getByText('☰'));
+  
+  // After click, menu should be visible
+  expect(screen.getByTestId('nav-menu')).toBeInTheDocument();
+  
+  // Click again to close
+  fireEvent.click(screen.getByText('☰'));
+  
+  // Menu should be hidden again
+  expect(screen.queryByTestId('nav-menu')).not.toBeInTheDocument();
+});
+
   test('displays welcome box by default', () => {
     render(<AdminCorrect />, { wrapper: MemoryRouter });
     expect(screen.getByText(/Welcome, Admin!/i)).toBeInTheDocument();
