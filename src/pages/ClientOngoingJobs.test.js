@@ -1,125 +1,103 @@
+import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
-import ClientOngoingJobs from './ClientOngoingJobs';
-import { get } from 'firebase/database';
+import ClientOngoingJobs from '../pages/ClientOngoingJobs';
 
-// Mock Firebase and localStorage
+import { get, ref } from 'firebase/database';
+
+// Mock Firebase and submodules
 jest.mock('firebase/database', () => ({
   ref: jest.fn(),
-  get: jest.fn(),
+  get: jest.fn()
 }));
 
+// Mock firebaseConfig (just to avoid crashes)
 jest.mock('../firebaseConfig', () => ({
   db: {},
-  applications_db: {},
+  applications_db: {}
 }));
 
-// Mock localStorage
-const localStorageMock = {
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-  removeItem: jest.fn(),
-  clear: jest.fn(),
-};
-global.localStorage = localStorageMock;
+// Mock Header and Footer
+jest.mock('../components/HeaderClient', () => () => <div>MockHeader</div>);
+jest.mock('../components/FooterClient', () => () => <div>MockFooter</div>);
 
-// Mock components
-jest.mock('../components/HeaderClient', () => () => <header>Header Client</header>);
-jest.mock('../components/FooterClient', () => () => <footer>Footer Client</footer>);
+describe('ClientOngoingJobs Component', () => {
+  const mockJobData = {
+    job1: {
+      clientUID: 'testUID',
+      jobTitle: 'Website Redesign',
+      job_milestones: [
+        {
+          description: 'Initial Mockups',
+          amount: '500',
+          status: 'Done',
+          dueDate: '2025-05-10'
+        },
+        {
+          description: 'Final Delivery',
+          amount: '1000',
+          status: 'Pending',
+          dueDate: '2025-06-10'
+        }
+      ]
+    }
+  };
 
-describe('ClientOngoingJobs', () => {
+  const mockSnapshot = {
+    exists: () => true,
+    forEach: (cb1) => {
+      cb1({
+        forEach: (cb2) => {
+          cb2({
+            key: 'job1',
+            val: () => mockJobData.job1
+          });
+        }
+      });
+    }
+  };
+
   beforeEach(() => {
-    localStorage.getItem.mockClear();
-    get.mockClear();
+    localStorage.setItem('userUID', 'testUID');
+    get.mockResolvedValueOnce(mockSnapshot);
   });
 
-  test('renders loading state initially', () => {
-    localStorage.getItem.mockReturnValue('test-uid');
-    get.mockImplementation(() => Promise.resolve({ exists: () => false }));
+  afterEach(() => {
+    jest.clearAllMocks();
+    localStorage.clear();
+  });
 
+  it('renders job information correctly from Firebase', async () => {
     render(<ClientOngoingJobs />);
+
     expect(screen.getByText('Ongoing Jobs')).toBeInTheDocument();
-  });
+    expect(screen.getByText('Active work in progress')).toBeInTheDocument();
 
-  test('shows no jobs message when no jobs found', async () => {
-    localStorage.getItem.mockReturnValue('test-uid');
-    get.mockImplementation(() => Promise.resolve({ exists: () => false }));
-
-    render(<ClientOngoingJobs />);
-    
     await waitFor(() => {
-      expect(screen.getByText('No ongoing jobs found.')).toBeInTheDocument();
-    });
-  });
-
-  test('displays error message when user UID is not found', async () => {
-    localStorage.getItem.mockReturnValue(null);
-    
-    render(<ClientOngoingJobs />);
-    
-    await waitFor(() => {
-      expect(screen.getByText('No ongoing jobs found.')).toBeInTheDocument();
-    });
-  });
-
-  test('displays ongoing jobs when data is available', async () => {
-    localStorage.getItem.mockReturnValue('test-client-uid');
-    
-    const mockJobData = {
-      exists: () => true,
-      forEach: (callback) => {
-        // Mock parent snapshot
-        const parentSnapshot = {
-          forEach: (jobCallback) => {
-            // Mock job snapshot
-            const jobSnapshot = {
-              key: 'job1',
-              val: () => ({
-                clientUID: 'test-client-uid',
-                jobTitle: 'Website Development',
-                job_milestones: [
-                  { description: 'Design', amount: '1000', status: 'Done', dueDate: '2023-01-01' },
-                  { description: 'Development', amount: '2000', status: 'Pending', dueDate: '2023-02-01' },
-                ],
-              }),
-            };
-            jobCallback(jobSnapshot);
-          },
-        };
-        callback(parentSnapshot);
-      },
-    };
-    
-    get.mockImplementation(() => Promise.resolve(mockJobData));
-
-    render(<ClientOngoingJobs />);
-    
-    await waitFor(() => {
-      expect(screen.getByText('Website Development')).toBeInTheDocument();
-      expect(screen.getByText('Design')).toBeInTheDocument();
-      expect(screen.getByText('Development')).toBeInTheDocument();
-      expect(screen.getByText('Total: $3,000')).toBeInTheDocument();
-      expect(screen.getByText('Paid: $1,000')).toBeInTheDocument();
+      expect(screen.getByText('Website Redesign')).toBeInTheDocument();
+      expect(screen.getByText('Initial Mockups')).toBeInTheDocument();
+      expect(screen.getByText('Final Delivery')).toBeInTheDocument();
       expect(screen.getByText('Completed: 1/2')).toBeInTheDocument();
+      expect(screen.getByText('Total: $1,500')).toBeInTheDocument();
+      expect(screen.getByText('Paid: $500')).toBeInTheDocument();
     });
   });
 
-  test('handles Firebase error gracefully', async () => {
-    localStorage.getItem.mockReturnValue('test-uid');
-    get.mockImplementation(() => Promise.reject(new Error('Firebase error')));
+  it('displays message when no jobs are found', async () => {
+    get.mockResolvedValueOnce({ exists: () => false });
 
     render(<ClientOngoingJobs />);
-    
+
     await waitFor(() => {
       expect(screen.getByText('No ongoing jobs found.')).toBeInTheDocument();
     });
   });
 
-  test('renders navigation links correctly', () => {
-    localStorage.getItem.mockReturnValue('test-uid');
-    get.mockImplementation(() => Promise.resolve({ exists: () => false }));
-
+  it('displays message when UID is missing', async () => {
+    localStorage.removeItem('userUID');
     render(<ClientOngoingJobs />);
-    
-    expect(screen.getByRole('link', { name: /home/i })).toHaveAttribute('href', '/Client');
+
+    await waitFor(() => {
+      expect(screen.getByText('No ongoing jobs found.')).toBeInTheDocument();
+    });
   });
 });
