@@ -44,6 +44,54 @@ describe('Freelancers Component', () => {
     expect(screen.getByText(/Payments/i)).toBeInTheDocument();
     expect(screen.getByText(/Quick Stats/i)).toBeInTheDocument();
   });
+  test('handles search form submission', () => {
+  render(
+    <Router>
+      <Freelancers />
+    </Router>
+  );
+
+  const searchInput = screen.getByPlaceholderText(/Search for any service/i);
+  const searchForm = searchInput.closest('form');
+  const preventDefault = jest.fn();
+
+  fireEvent.change(searchInput, { target: { value: 'jobs' } });
+  fireEvent.submit(searchForm, { preventDefault });
+
+  expect(preventDefault).toHaveBeenCalled();
+});
+
+test('shows all categories when no search term', () => {
+  render(
+    <Router>
+      <Freelancers />
+    </Router>
+  );
+
+  // Close welcome box first
+  fireEvent.click(screen.getByText('×'));
+
+  // Should show all 5 categories by default
+  expect(screen.getAllByTestId('category-card').length).toBe(5);
+});
+
+test('filters categories by keywords', () => {
+  render(
+    <Router>
+      <Freelancers />
+    </Router>
+  );
+
+  const searchInput = screen.getByPlaceholderText(/Search for any service/i);
+  
+  // Search using a keyword ('csv' is in Payments keywords)
+  fireEvent.change(searchInput, { target: { value: 'csv' } });
+  
+  // Should only show Payments category
+  expect(screen.getByText(/Payments/i)).toBeInTheDocument();
+  expect(screen.queryByText(/Jobs/i)).not.toBeInTheDocument();
+  expect(screen.queryByText(/Reports/i)).not.toBeInTheDocument();
+});
 
   test('search box is always visible', () => {
     render(
