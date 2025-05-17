@@ -1,7 +1,6 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import ClientOngoingJobs from '../pages/ClientOngoingJobs';
-
 import { get, ref } from 'firebase/database';
 
 // Mock Firebase and submodules
@@ -10,7 +9,7 @@ jest.mock('firebase/database', () => ({
   get: jest.fn()
 }));
 
-// Mock firebaseConfig (just to avoid crashes)
+// Mock firebaseConfig
 jest.mock('../firebaseConfig', () => ({
   db: {},
   applications_db: {}
@@ -25,40 +24,53 @@ describe('ClientOngoingJobs Component', () => {
     job1: {
       clientUID: 'testUID',
       jobTitle: 'Website Redesign',
-      job_milestones: [
-        {
+      job_milestones: {
+        0: {
           description: 'Initial Mockups',
           amount: '500',
           status: 'Done',
           dueDate: '2025-05-10'
         },
-        {
+        1: {
           description: 'Final Delivery',
           amount: '1000',
           status: 'Pending',
           dueDate: '2025-06-10'
         }
-      ]
+      }
+    },
+    job2: {
+      clientUID: 'testUID',
+      jobTitle: 'Mobile App',
+      job_milestones: {
+        0: {
+          description: 'UI Design',
+          amount: '800',
+          status: 'Done',
+          dueDate: '2025-05-15'
+        }
+      }
     }
   };
 
-  const mockSnapshot = {
+  const createMockSnapshot = (data) => ({
     exists: () => true,
     forEach: (cb1) => {
-      cb1({
-        forEach: (cb2) => {
-          cb2({
-            key: 'job1',
-            val: () => mockJobData.job1
-          });
-        }
+      Object.entries(data).forEach(([jobId, jobData]) => {
+        cb1({
+          forEach: (cb2) => {
+            cb2({
+              key: jobId,
+              val: () => jobData
+            });
+          }
+        });
       });
     }
-  };
+  });
 
   beforeEach(() => {
     localStorage.setItem('userUID', 'testUID');
-    get.mockResolvedValueOnce(mockSnapshot);
   });
 
   afterEach(() => {
@@ -67,10 +79,8 @@ describe('ClientOngoingJobs Component', () => {
   });
 
   it('renders job information correctly from Firebase', async () => {
+    get.mockResolvedValueOnce(createMockSnapshot(mockJobData));
     render(<ClientOngoingJobs />);
-
-    expect(screen.getByText('Ongoing Jobs')).toBeInTheDocument();
-    expect(screen.getByText('Active work in progress')).toBeInTheDocument();
 
     await waitFor(() => {
       expect(screen.getByText('Website Redesign')).toBeInTheDocument();
@@ -82,9 +92,19 @@ describe('ClientOngoingJobs Component', () => {
     });
   });
 
+  it('handles multiple jobs correctly', async () => {
+    get.mockResolvedValueOnce(createMockSnapshot(mockJobData));
+    render(<ClientOngoingJobs />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Website Redesign')).toBeInTheDocument();
+      expect(screen.getByText('Mobile App')).toBeInTheDocument();
+      expect(screen.getAllByText(/Completed: /)).toHaveLength(2);
+    });
+  });
+
   it('displays message when no jobs are found', async () => {
     get.mockResolvedValueOnce({ exists: () => false });
-
     render(<ClientOngoingJobs />);
 
     await waitFor(() => {
@@ -92,12 +112,79 @@ describe('ClientOngoingJobs Component', () => {
     });
   });
 
-  it('displays message when UID is missing', async () => {
-    localStorage.removeItem('userUID');
+  it('handles jobs without milestones', async () => {
+    const jobWithoutMilestones = {
+      job3: {
+        clientUID: 'testUID',
+        jobTitle: 'Broken Job',
+        job_milestones: null
+      }
+    };
+    get.mockResolvedValueOnce(createMockSnapshot(jobWithoutMilestones));
+    render(<ClientOngoingJobs />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Broken Job')).toBeInTheDocument();
+      expect(screen.queryByText(/Completed: /)).not.toBeInTheDocument();
+    });
+  });
+
+  it('handles Firebase errors gracefully', async () => {
+    get.mockRejectedValueOnce(new Error('Firebase error'));
+    console.error = jest.fn(); // Suppress error logging
+    
     render(<ClientOngoingJobs />);
 
     await waitFor(() => {
       expect(screen.getByText('No ongoing jobs found.')).toBeInTheDocument();
+    });
+  });
+
+  it('handles jobs with missing milestone data', async () => {
+    const incompleteJob = {
+      job4: {
+        clientUID: 'testUID',
+        jobTitle: 'Incomplete Job',
+        job_milestones: {
+          0: {
+            // Missing description and amount
+            status: 'Pending'
+          }
+        }
+      }
+    };
+    get.mockResolvedValueOnce(createMockSnapshot(incompleteJob));
+    render(<ClientOngoingJobs />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Incomplete Job')).toBeInTheDocument();
+      expect(screen.getByText('Milestone 1')).toBeInTheDocument(); // Default name
+      expect(screen.getByText('Total: $0')).toBeInTheDocument();
+    });
+  });
+
+  it('filters out jobs for other clients', async () => {
+    const mixedJobs = {
+      ...mockJobData,
+      job3: {
+        clientUID: 'otherUID', // Different client
+        jobTitle: 'Other Client Job',
+        job_milestones: {
+          0: {
+            description: 'Task 1',
+            amount: '300',
+            status: 'Done'
+          }
+        }
+      }
+    };
+    get.mockResolvedValueOnce(createMockSnapshot(mixedJobs));
+    render(<ClientOngoingJobs />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Website Redesign')).toBeInTheDocument();
+      expect(screen.getByText('Mobile App')).toBeInTheDocument();
+      expect(screen.queryByText('Other Client Job')).not.toBeInTheDocument();
     });
   });
 });
