@@ -99,6 +99,117 @@ describe('ClientJobs Component', () => {
     expect(screen.getByText("You haven't posted any jobs yet.")).toBeInTheDocument();
   });
 
+  it('handles milestone changes', async () => {
+  render(<ClientJobs />);
+  
+  // Get all milestone inputs
+  const milestoneDescriptions = screen.getAllByLabelText(/Description:/);
+  const milestoneAmounts = screen.getAllByLabelText(/Amount:/);
+  
+  // Change first milestone description
+  fireEvent.change(milestoneDescriptions[0], { 
+    target: { value: 'New Milestone Description' } 
+  });
+  
+  // Verify the change was handled
+  expect(milestoneDescriptions[0]).toHaveValue('New Milestone Description');
+  
+  // Change first milestone amount
+  fireEvent.change(milestoneAmounts[0], { 
+    target: { value: '500' } 
+  });
+  
+  // Verify the change was handled
+  expect(milestoneAmounts[0]).toHaveValue('500');
+});
+
+it('handles editing a job with existing milestones', async () => {
+  const mockJob = {
+    id: 'job1',
+    title: 'Existing Job',
+    description: 'Job description',
+    category: 'Design',
+    budget: 1000,
+    deadline: '2025-12-31',
+    clientUID: 'test-user-123',
+    milestones: [
+      { description: 'Design', amount: '300' },
+      { description: 'Development', amount: '500' },
+      { description: 'Testing', amount: '200' }
+    ]
+  };
+
+  render(<ClientJobs />);
+  
+  // Simulate clicking edit on a job
+  act(() => {
+    handleEditClick(mockJob);
+  });
+
+  // Verify form is populated correctly
+  expect(screen.getByLabelText('Job Title')).toHaveValue('Existing Job');
+  expect(screen.getByLabelText('Description')).toHaveValue('Job description');
+  
+  // Verify milestones are populated
+  const milestoneDescriptions = screen.getAllByLabelText(/Description:/);
+  expect(milestoneDescriptions[0]).toHaveValue('Design');
+  expect(milestoneDescriptions[1]).toHaveValue('Development');
+  expect(milestoneDescriptions[2]).toHaveValue('Testing');
+});
+
+it('handles editing a job without milestones', async () => {
+  const mockJob = {
+    id: 'job2',
+    title: 'Job Without Milestones',
+    description: 'No milestones',
+    category: 'Writing',
+    budget: 500,
+    deadline: '2025-06-30',
+    clientUID: 'test-user-123'
+    // No milestones property
+  };
+
+  render(<ClientJobs />);
+  
+  act(() => {
+    handleEditClick(mockJob);
+  });
+
+  // Verify form is populated
+  expect(screen.getByLabelText('Job Title')).toHaveValue('Job Without Milestones');
+  
+  // Verify default milestones are created
+  const milestoneDescriptions = screen.getAllByLabelText(/Description:/);
+  expect(milestoneDescriptions[0]).toHaveValue('');
+  expect(milestoneDescriptions[1]).toHaveValue('');
+  expect(milestoneDescriptions[2]).toHaveValue('');
+});
+
+it('scrolls to form when editing', async () => {
+  const mockScroll = jest.fn();
+  const mockJob = {
+    id: 'job3',
+    title: 'Scroll Test Job',
+    description: 'Test scrolling',
+    category: 'Marketing',
+    budget: 800,
+    deadline: '2025-09-15',
+    clientUID: 'test-user-123'
+  };
+
+  // Mock the form section ref
+  const formSectionRef = { current: { scrollIntoView: mockScroll } };
+  
+  // You'll need to modify your component to accept ref as a prop for testing
+  render(<ClientJobs formSectionRef={formSectionRef} />);
+  
+  act(() => {
+    handleEditClick(mockJob);
+  });
+
+  expect(mockScroll).toHaveBeenCalledWith({ behavior: 'smooth' });
+});
+
   it('displays form validation errors', async () => {
     render(<ClientJobs />);
     fireEvent.click(screen.getByText('Create Job'));
@@ -361,4 +472,193 @@ describe('ClientJobs Component', () => {
 
     expect(screen.getByText('Post a New Job')).toBeInTheDocument();
   });
+
+  //Lines to test 65-105
+  it('loads applicants successfully', async () => {
+  const mockJobId = 'job1';
+  const mockJobTitle = 'Test Job';
+  const mockApplications = {
+    'app1': {
+      applicant_userUID: 'user1',
+      name: 'John',
+      surname: 'Doe',
+      motivation: 'I want this job',
+      skills: 'React, Node',
+      status: 'pending',
+      email: 'john@example.com'
+    },
+    'app2': {
+      applicant_userUID: 'user2',
+      name: 'Jane',
+      surname: 'Smith',
+      motivation: 'I need this job',
+      skills: 'Design',
+      status: 'accepted',
+      email: 'jane@example.com'
+    }
+  };
+
+  get.mockResolvedValueOnce({
+    exists: () => true,
+    val: () => mockApplications
+  });
+
+  render(<ClientJobs />);
+  
+  await act(async () => {
+    handleViewApplicants(mockJobId, mockJobTitle);
+  });
+
+  expect(setViewingApplicantsJobId).toHaveBeenCalledWith(mockJobId);
+  expect(setSelectedJobTitle).toHaveBeenCalledWith(mockJobTitle);
+  expect(setApplicants).toHaveBeenCalledWith([
+    {
+      id: 'app1',
+      user_UID: 'user1',
+      name: 'John',
+      surname: 'Doe',
+      motivation: 'I want this job',
+      skills: 'React, Node',
+      status: 'pending',
+      email: 'client@example.com' // From localStorage mock
+    },
+    {
+      id: 'app2',
+      user_UID: 'user2',
+      name: 'Jane',
+      surname: 'Smith',
+      motivation: 'I need this job',
+      skills: 'Design',
+      status: 'accepted',
+      email: 'client@example.com'
+    }
+  ]);
+});
+
+it('handles no applicants case', async () => {
+  const mockJobId = 'job2';
+  const mockJobTitle = 'Empty Job';
+
+  get.mockResolvedValueOnce({
+    exists: () => false,
+    val: () => null
+  });
+
+  render(<ClientJobs />);
+  
+  await act(async () => {
+    handleViewApplicants(mockJobId, mockJobTitle);
+  });
+
+  expect(setApplicants).toHaveBeenCalledWith([]);
+});
+
+it('handles error when loading applicants', async () => {
+  const mockJobId = 'job3';
+  const mockJobTitle = 'Error Job';
+  const errorMessage = 'Failed to fetch';
+
+  get.mockRejectedValueOnce(new Error(errorMessage));
+  window.alert = jest.fn();
+
+  render(<ClientJobs />);
+  
+  await act(async () => {
+    handleViewApplicants(mockJobId, mockJobTitle);
+  });
+
+  expect(window.alert).toHaveBeenCalledWith(
+    expect.stringContaining("Failed to load applicants.")
+  );
+});
+
+it('filters out rejected applicants', async () => {
+  const mockJobId = 'job4';
+  const mockJobTitle = 'Filter Job';
+  const mockApplications = {
+    'app1': {
+      status: 'pending'
+    },
+    'app2': {
+      status: 'accepted'
+    },
+    'app3': {
+      status: 'rejected'
+    }
+  };
+
+  get.mockResolvedValueOnce({
+    exists: () => true,
+    val: () => mockApplications
+  });
+
+  render(<ClientJobs />);
+  
+  await act(async () => {
+    handleViewApplicants(mockJobId, mockJobTitle);
+  });
+
+  // Should only include pending and accepted
+  expect(setApplicants).toHaveBeenCalledWith([
+    expect.objectContaining({ id: 'app1' }),
+    expect.objectContaining({ id: 'app2' })
+  ]);
+  expect(setApplicants.mock.calls[0][0]).toHaveLength(2);
+});
+
+it('handles missing applicant fields with defaults', async () => {
+  const mockJobId = 'job5';
+  const mockJobTitle = 'Defaults Job';
+  const mockApplications = {
+    'app1': {
+      status: 'pending'
+    }
+  };
+
+  get.mockResolvedValueOnce({
+    exists: () => true,
+    val: () => mockApplications
+  });
+
+  render(<ClientJobs />);
+  
+  await act(async () => {
+    handleViewApplicants(mockJobId, mockJobTitle);
+  });
+
+  expect(setApplicants).toHaveBeenCalledWith([
+    expect.objectContaining({
+      user_UID: '',
+      name: '',
+      surname: '',
+      motivation: '',
+      skills: '',
+      status: 'pending',
+      email: 'client@example.com'
+    })
+  ]);
+});
+
+it('scrolls to form when viewing applicants', async () => {
+  const mockJobId = 'job6';
+  const mockJobTitle = 'Scroll Job';
+  const mockScroll = jest.fn();
+
+  // Mock the form section ref
+  const formSectionRef = { current: { scrollIntoView: mockScroll } };
+  
+  get.mockResolvedValueOnce({
+    exists: () => false,
+    val: () => null
+  });
+
+  render(<ClientJobs formSectionRef={formSectionRef} />);
+  
+  await act(async () => {
+    handleViewApplicants(mockJobId, mockJobTitle);
+  });
+
+  expect(mockScroll).toHaveBeenCalledWith({ behavior: 'smooth' });
+});
+
 });
