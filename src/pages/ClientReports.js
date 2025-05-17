@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import { useEffect, useState } from "react";
+import { ref, onValue } from "firebase/database";
+import { applications_db } from '../firebaseConfig';
 import HeaderClient from '../components/HeaderClient';
 import FooterClient from '../components/FooterClient';
 import '../stylesheets/ClientReports.css';
@@ -49,6 +51,63 @@ const MOCK_DATA = {
 };
 
 const ClientReports = () => {
+
+   const [activeJobs, setActiveJobs] = useState([]);
+  const [previousJobs, setPreviousJobs] = useState([]);
+
+
+
+useEffect(() => {
+  const unsub = onValue(ref(applications_db, 'accepted_applications'), snapshot => {
+    if (!snapshot.exists()) return;
+
+    const applications = snapshot.val();
+    const currentUID = localStorage.getItem("userUID");
+
+    const active = [];
+    const previous = [];
+
+    Object.values(applications).forEach(jobGroup => {
+      Object.entries(jobGroup).forEach(([appId, appData]) => {
+        if (appData.applicant_userUID !== currentUID) return;
+
+        const milestones = appData.job_milestones || {};
+        const milestoneList = Object.values(milestones);
+
+        const hasActiveMilestone = milestoneList.some(m => {
+          const status = m.status?.toLowerCase();
+          return status === "pending" || status === "in-progress";
+        });
+
+        const job = {
+          title: appData.jobTitle,
+          description: appData.motivation,
+          partnerName: `${appData.name} ${appData.surname}`,
+          deadline: appData.deadline || "N/A",
+          milestones: milestoneList.map(m => ({
+            description: m.description,
+            amount: m.amount,
+            status: m.status,
+          })),
+          budget: milestoneList.reduce((sum, m) => sum + Number(m.amount || 0), 0),
+        };
+
+        if (hasActiveMilestone) {
+          active.push(job);
+        } else {
+          previous.push(job);
+        }
+      });
+    });
+
+    setActiveJobs(active);
+    setPreviousJobs(previous);
+  });
+
+  return () => unsub(); // Cleanup on unmount
+}, []);
+
+
   const [formData, setFormData] = useState({
     start_date: '2025-01-01',
     end_date: '2025-04-30',

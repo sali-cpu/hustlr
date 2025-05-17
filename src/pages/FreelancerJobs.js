@@ -190,8 +190,8 @@ const FreelancerJobs = () => {
       applicant_userUID: localStorage.getItem("userUID"),
       jobTitle: selectedJob.title,
       status: "pending",
+      clientUID : selectedJob.clientUID,
       job_milestones: selectedJob.milestones,
-      timestamp: Date.now(),
     }).then(() => {
       alert("✅ Thank you for applying. You will hear a response soon.");
       setAppliedJobs(prev => [...prev, selectedJob.id]);
