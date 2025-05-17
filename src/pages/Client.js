@@ -40,7 +40,7 @@ class Client extends React.Component {
       { 
         id: 4,
         name: "Reports", 
-        path: "", 
+        path: "/ClientReports", 
         image: rep,
         keywords: ["reports", "analytics", "statistics", ]
       },
