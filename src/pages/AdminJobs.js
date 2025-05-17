@@ -30,21 +30,29 @@ const AdminJobs = () => {
       });
   }, []);
 
-  const handleDelete = (jobId) => 
-    {
-      //get job by idd
+   const handleDelete = async (jobId) => {
+  try {
+    // References to all locations where the job might exist
     const jobRef = ref(db, `jobs/${jobId}`);
+    const applicationRef = ref(db, `applications/${jobId}`);
+    const acceptedAppRef = ref(db, `accepted_applications/${jobId}`);
+    const rejectedAppRef = ref(db, `rejected_applications/${jobId}`);
 
-    remove(jobRef)
-      .then(() => {
-        setJobs((prevJobs) => prevJobs.filter((job) => job.id !== jobId));
-        alert('Job deleted successfully.');
-      })
-      .catch((error) => 
-        {
-        alert(error.message);
-      });
-  };
+    // Delete from all relevant database paths
+    await remove(jobRef);
+    await remove(applicationRef);
+    await remove(acceptedAppRef);
+    await remove(rejectedAppRef);
+
+    // Remove from local state
+    setJobs((prevJobs) => prevJobs.filter((job) => job.id !== jobId));
+
+    alert('Job and all associated applications deleted successfully.');
+  } catch (error) {
+    alert(`Error deleting job: ${error.message}`);
+  }
+};
+
 
 return (
   <>
