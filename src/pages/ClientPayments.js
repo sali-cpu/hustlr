@@ -38,11 +38,11 @@ const ClientPayments = () => {
                               jobSnapKey: parentSnap.key + '/' + jobSnap.key,
                               index,
                               jobTitle: data.jobTitle,
-                              client: data.clientName || 'Unknown',
+                              client: data.name || 'Unknown',
                               milestone: milestone.description,
                               amount: milestone.amount,
                               status: milestone.status || 'Pending',
-                              dueDate: milestone.dueDate || 'N/A'
+                              dueDate: milestone.duedate || 'N/A'
                     });
                 });
               }
