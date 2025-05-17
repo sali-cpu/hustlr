@@ -13,9 +13,9 @@ const initialFormData = {
   budget: '',
   deadline: '',
   milestones: [
-    { description: '', amount: '', status: 'pending', duedate: ''},
-    { description: '', amount: '', status: 'pending', duedate: ''},
-    { description: '', amount: '', status: 'pending', duedate: ''}
+    { description: '', amount: '' },
+    { description: '', amount: '' },
+    { description: '', amount: '' }
   ] 
 };
 
@@ -53,9 +53,9 @@ const ClientJobs = () => {
       budget: jobToEdit.budget,
       deadline: jobToEdit.deadline,
       milestones: jobToEdit.milestones ?? [
-       {description: '', amount: '', duedate: ''},
-       {description: '', amount: '', duedate: ''},
-       {description: '', amount: '', duedate: ''}
+        { description: '', amount: '' },
+        { description: '', amount: '' },
+        { description: '', amount: '' }
       ]
     });
     formSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -202,12 +202,29 @@ const ClientJobs = () => {
   };
   
 
-  const handleDelete = async (jobIdToDelete) => {
-    if (!window.confirm('Are you sure you want to delete this job?')) return;
+const handleDelete = async (jobIdToDelete) => {
+  if (!window.confirm('Are you sure you want to delete this job?')) return;
+
+  try {
+    // References to delete
     const jobRef = ref(db, `jobs/${jobIdToDelete}`);
-    await remove(jobRef);
-    //alert("Job deleted from Firebase");
-  };
+    const applicationsRef = ref(applications_db, `applications/${jobIdToDelete}`);
+    const acceptedRef = ref(applications_db, `accepted_applications/${jobIdToDelete}`);
+    const rejectedRef = ref(applications_db, `rejected_applications/${jobIdToDelete}`);
+
+    // Perform deletion
+    await Promise.all([
+      remove(jobRef),
+      remove(applicationsRef),
+      remove(acceptedRef),
+      remove(rejectedRef)
+    ]);
+
+    alert('Job and all related application data have been deleted.');
+  } catch (error) {
+    alert('Failed to delete job and related data: ' + error.message);
+  }
+};
 
   const handleCancelEdit = () => {
     setEditingJobId(null);
@@ -217,7 +234,7 @@ const ClientJobs = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    //alert("User UID during submit: " + userUID);
+    
 
     if (!formData.title || !formData.description || !formData.category || !formData.budget || !formData.deadline) {
       setError('Please fill in all fields.');
@@ -226,7 +243,7 @@ const ClientJobs = () => {
 
     for (const milestone of formData.milestones) 
       {
-      if (!milestone.description || !milestone.amount || !milestone.duedate) 
+      if (!milestone.description || !milestone.amount) 
         {
           setError('Please fill in all milestone fields.');
           return;
@@ -329,8 +346,7 @@ const ClientJobs = () => {
                   {job.milestones.map((milestone, index) => (
                     <li key={index}>
                     <strong>Description:</strong> {milestone.description} <br />
-                    <strong>Amount:</strong> ${parseFloat(milestone.amount).toLocaleString()} <br />
-                    <strong>Due Date:</strong> {milestone.duedate}
+                    <strong>Amount:</strong> ${parseFloat(milestone.amount).toLocaleString()}
                   </li>
                     ))}
                  </ul>
@@ -379,6 +395,7 @@ const ClientJobs = () => {
             {applicant.status.toLowerCase() === "accepted" ? (
               <section className="accepted-message" style={{ backgroundColor: '#d4edda', padding: '10px', borderRadius: '8px', marginTop: '10px' }}>
                 <strong>You have accepted this applicant for the job.</strong>
+                
               </section>
             ) : (
               <section className="pending-message" style={{ marginTop: '10px' }}>
@@ -448,17 +465,6 @@ const ClientJobs = () => {
         required
       />
     </label>
-    <label>
-      Due Date:
-      <input
-        type="date"
-        name={`milestone_duedate_${index}`}
-        value={milestone.duedate}
-        onChange={(e) => handleMilestoneChange(index, 'duedate', e.target.value)}
-        required
-      /> 
-    </label>
-    
   </section>
 ))}
 </fieldset>
