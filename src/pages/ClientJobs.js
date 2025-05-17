@@ -13,9 +13,9 @@ const initialFormData = {
   budget: '',
   deadline: '',
   milestones: [
-    { description: '', amount: '', status: 'pending', duedate: ''},
-    { description: '', amount: '', status: 'pending', duedate: ''},
-    { description: '', amount: '', status: 'pending', duedate: ''}
+    { description: '', amount: '', duedate: '', status: 'pending'},
+    { description: '', amount: '', duedate: '', status: 'pending'},
+    { description: '', amount: '', duedate: '', status: 'pending'}
   ] 
 };
 
@@ -258,6 +258,7 @@ const ClientJobs = () => {
         const jobRef = ref(db, `jobs/${editingJobId}`);
         await update(jobRef, {
           ...formData,
+          client_userUID: localStorage.getItem("userUID"),
           budget: parseFloat(formData.budget),
         });
       
@@ -346,7 +347,8 @@ const ClientJobs = () => {
                   {job.milestones.map((milestone, index) => (
                     <li key={index}>
                     <strong>Amount:</strong> ${parseFloat(milestone.amount).toLocaleString()} <br />
-                    <strong>Due Date:</strong> {milestone.duedate}
+                    <strong>Due Date:</strong> {milestone.duedate} <br />
+                    <strong>Status:</strong> {milestone.status}
                   </li>
                     ))}
                  </ul>

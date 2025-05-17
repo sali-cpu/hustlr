@@ -1,17 +1,17 @@
 import { useEffect, useState } from 'react';
 import { ref, get /*, update */ } from "firebase/database";
-import { db,applications_db } from '../firebaseConfig';
+import { applications_db } from '../firebaseConfig';
 import HeaderClient from '../components/HeaderClient';
 import '../stylesheets/ClientOngoingJobs.css';
 import FooterClient from '../components/FooterClient';
 
 const ClientOngoingJobs = () => {
   const [ongoingJobs, setOngoingJobs] = useState([]);
+  
 
   useEffect(() => {
       const fetchAcceptedJobs = async () => {
       const userUID = localStorage.getItem("userUID");
-      
       
       if (!userUID) {
         console.error("User UID not found in localStorage.");
@@ -19,7 +19,7 @@ const ClientOngoingJobs = () => {
         return;
       }
       
-      const acceptedRef = ref(db, 'ClientJobs');
+      const acceptedRef = ref(applications_db, 'accepted_applications');
       const jobsMap = {};
 
       try {
@@ -30,39 +30,39 @@ const ClientOngoingJobs = () => {
             parentSnap.forEach(jobSnap => {
               const data = jobSnap.val();
 
-              if (
-                data.clientUID === userUID &&
-                Array.isArray(data.job_milestones)
-              ) {
-                const jobKey = jobSnap.key;
-                
+            if (
+              data.clientUID === userUID &&
+              typeof data.job_milestones === 'object'
+            ) {
+               const jobKey = jobSnap.key;
 
-                jobsMap[jobKey] = {
-                id: jobKey,
-                title: data.jobTitle || 'Untitled Job',
-                milestones: [],
-                totalAmount: 0,
-                paidAmount: 0
-                };
+              jobsMap[jobKey] = {
+              id: jobKey,
+              title: data.jobTitle || 'Untitled Job',
+              milestones: [],
+              totalAmount: 0,
+              paidAmount: 0
+            };
 
-                data.job_milestones.forEach((milestone, index) => {
-                  const milestoneAmount = parseFloat(milestone.amount) || 0;
+            Object.values(data.job_milestones).forEach((milestone, index) => {
+            const milestoneAmount = parseFloat(milestone.amount) || 0;
 
-                  jobsMap[jobKey].milestones.push({
-                    name: milestone.description || `Milestone ${index + 1}`,
-                    completed: milestone.status === 'Done',
-                    amount: milestoneAmount,
-                    status: milestone.status || 'Pending',
-                    dueDate: milestone.dueDate || 'N/A'
-                  });
+            jobsMap[jobKey].milestones.push({
+              name: milestone.description || `Milestone ${index + 1}`,
+              completed: milestone.status === 'Done',
+              amount: milestoneAmount,
+              status: milestone.status || 'Pending',
+              dueDate: milestone.dueDate || 'N/A'
+          });
 
-                  jobsMap[jobKey].totalAmount += milestoneAmount;
+          jobsMap[jobKey].totalAmount += milestoneAmount;
 
-                  if (milestone.status === 'Done') {
-                    jobsMap[jobKey].paidAmount += milestoneAmount;
-                  }
-                });
-              }
+          if (milestone.status === 'Done') {
+            jobsMap[jobKey].paidAmount += milestoneAmount;
+          }
+      });
+          }
+
             });
           });
 
@@ -91,7 +91,7 @@ const ClientOngoingJobs = () => {
           <p>Active work in progress</p>
           <nav className="main-nav">
             <ul>
-              <li><a href="/Client">Home</a></li> 
+              <li><a href="/Freelancer">Home</a></li> 
             </ul>
           </nav>
         
