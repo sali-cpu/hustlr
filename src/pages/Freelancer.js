@@ -8,6 +8,7 @@ import stat from '../images/Quick Stats.png';
 import con from '../images/contract.png';
 import rep from '../images/Reports.png';
 import HeaderFreelancer from '../components/HeaderFreelancer';
+import FooterClient from '../components/FooterClient';
 import { applications_db } from '../firebaseConfig';
 import { ref, onValue } from "firebase/database";
 class Freelancers extends React.Component {
@@ -83,11 +84,6 @@ class Freelancers extends React.Component {
     this.setState({ searchTerm: e.target.value.toLowerCase() });
   };
 
-  handleSearchSubmit = (e) => {
-    e.preventDefault();
-    // Search is already handled by the filteredCategories function
-  };
-
   filterCategories = () => {
     const { searchTerm } = this.state;
     if (!searchTerm) return this.categories;
@@ -105,7 +101,7 @@ class Freelancers extends React.Component {
       <>
         <HeaderFreelancer />
         
-        <form onSubmit={this.handleSearchSubmit} className="search-container">
+        <form className="search-container">
           <section className="search-box">
             <input 
               type="text" 
@@ -113,8 +109,6 @@ class Freelancers extends React.Component {
               onChange={this.handleSearchChange}
               value={this.state.searchTerm}
             />
-            <button type="submit" className="search-icon">🔍</button>
-
              <button className="search-icon">🔍</button>
     {this.state.profileIcon && (
       <img 
@@ -164,6 +158,7 @@ class Freelancers extends React.Component {
             )}
           </section>
         )}
+          <FooterClient/>
       </>
     );
   }
