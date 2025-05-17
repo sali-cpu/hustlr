@@ -386,7 +386,6 @@ const ClientJobs = () => {
             {applicant.status.toLowerCase() === "accepted" ? (
               <section className="accepted-message" style={{ backgroundColor: '#d4edda', padding: '10px', borderRadius: '8px', marginTop: '10px' }}>
                 <strong>You have accepted this applicant for the job.</strong>
-                <p>Please contact them at: <a href={`mailto:${applicant.email}`}>{applicant.email}</a></p>
               </section>
             ) : (
               <section className="pending-message" style={{ marginTop: '10px' }}>
