@@ -8,7 +8,8 @@ import con from '../images/contract.png';
 import rep from '../images/Reports.png';
 import HeaderClient from "../components/HeaderClient";
 import '../stylesheets/Final.css';
-
+import { applications_db } from '../firebaseConfig';
+import { ref, onValue } from "firebase/database";
 class Client extends React.Component {
   constructor(props) {
     super(props);
@@ -39,7 +40,7 @@ class Client extends React.Component {
       { 
         id: 4,
         name: "Reports", 
-        path: "/ClientReports", 
+        path: "", 
         image: rep,
         keywords: ["reports", "analytics", "statistics", ]
       },
@@ -53,10 +54,24 @@ class Client extends React.Component {
     ];
 
     this.state = {
-      showWelcomeBox: !hasSeenWelcome,
-      searchTerm: ""
-    };
+  showWelcomeBox: !hasSeenWelcome,
+  searchTerm: "",
+  profileIcon: null  
+};
   }
+
+  componentDidMount() {
+  const uid = localStorage.getItem("userUID");
+  if (!uid) return;
+
+  const iconRef = ref(applications_db, `Information/${uid}/selectedIcon`);
+  onValue(iconRef, (snapshot) => {
+    const iconUrl = snapshot.val();
+    if (iconUrl) {
+      this.setState({ profileIcon: iconUrl });
+    }
+  });
+}
   
   closeWelcomeMessage = () => {
     localStorage.setItem('hasSeenWelcome', 'true');
@@ -84,17 +99,25 @@ class Client extends React.Component {
       <>
         <HeaderClient />
 
-        <section className="search-container">
-          <section className="search-box">
-            <input 
-              type="text" 
-              placeholder="Search for any service..." 
-              onChange={this.handleSearchChange}
-              value={this.state.searchTerm}
-            />
-            <button className="search-icon">🔍</button>
-          </section>
-        </section>
+<section className="search-container">
+  <section className="search-box">
+    <input 
+      type="text" 
+      placeholder="Search for any service..." 
+      onChange={this.handleSearchChange}
+      value={this.state.searchTerm}
+    />
+    <button className="search-icon">🔍</button>
+    {this.state.profileIcon && (
+      <img 
+        src={this.state.profileIcon} 
+        alt="Profile Icon"
+        className="profile-icon"
+      />
+    )}
+  </section>
+
+</section>
 
         <main className="client-main">
           {this.state.showWelcomeBox ? (

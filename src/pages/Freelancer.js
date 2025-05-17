@@ -8,8 +8,8 @@ import stat from '../images/Quick Stats.png';
 import con from '../images/contract.png';
 import rep from '../images/Reports.png';
 import HeaderFreelancer from '../components/HeaderFreelancer';
-import FooterClient from "../components/FooterClient";
-
+import { applications_db } from '../firebaseConfig';
+import { ref, onValue } from "firebase/database";
 class Freelancers extends React.Component {
   constructor(props) {
     super(props);
@@ -40,7 +40,7 @@ class Freelancers extends React.Component {
       { 
         id: 4,
         name: "Reports", 
-        path: "/FreeReports", 
+        path: "", 
         image: rep,
         keywords: ["reports", "analytics", "data"]
       },
@@ -53,11 +53,26 @@ class Freelancers extends React.Component {
       }
     ];
 
-    this.state = {
-      showWelcomeBox: !hasSeenWelcome,
-      searchTerm: "",
-    };
+   this.state = {
+  showWelcomeBox: !hasSeenWelcome,
+  searchTerm: "",
+  profileIcon: null 
+};
   }
+
+ componentDidMount() {
+  const uid = localStorage.getItem("userUID");
+  if (!uid) return;
+
+  const iconRef = ref(applications_db, `Information/${uid}/selectedIcon`);
+  onValue(iconRef, (snapshot) => {
+    const iconUrl = snapshot.val();
+    if (iconUrl) {
+      this.setState({ profileIcon: iconUrl });
+    }
+  });
+}
+
 
   closeWelcomeMessage = () => {
     localStorage.setItem('hasSeenWelcome', 'true');
@@ -99,6 +114,15 @@ class Freelancers extends React.Component {
               value={this.state.searchTerm}
             />
             <button type="submit" className="search-icon">🔍</button>
+
+             <button className="search-icon">🔍</button>
+    {this.state.profileIcon && (
+      <img 
+        src={this.state.profileIcon} 
+        alt="Profile Icon"
+        className="profile-icon"
+      />
+    )}
           </section>
         </form>
 
@@ -140,7 +164,6 @@ class Freelancers extends React.Component {
             )}
           </section>
         )}
-          <FooterClient />
       </>
     );
   }
