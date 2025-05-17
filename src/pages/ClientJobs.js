@@ -13,9 +13,9 @@ const initialFormData = {
   budget: '',
   deadline: '',
   milestones: [
-    { description: '', amount: '', duedate: ''},
-    { description: '', amount: '', duedate: ''},
-    { description: '', amount: '', duedate: ''}
+    { description: '', amount: '', status: 'pending', duedate: ''},
+    { description: '', amount: '', status: 'pending', duedate: ''},
+    { description: '', amount: '', status: 'pending', duedate: ''}
   ] 
 };
 
