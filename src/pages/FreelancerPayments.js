@@ -129,7 +129,7 @@ const handleMarkDone = async (payment) => {
                 <td><span className={`status ${payment.status.toLowerCase()}`}>{payment.status}</span></td>
                 <td>{payment.dueDate}</td>
                 <td>
-                  {payment.status !== 'Done' && (
+                  {payment.status == 'pending' && (
                 <button className="mark-paid-btn" onClick={() => handleMarkDone(payment)}>
                   Mark as Done
                 </button>
