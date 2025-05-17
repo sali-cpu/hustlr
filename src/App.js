@@ -25,6 +25,9 @@ import ClientReports  from "./pages/ClientReports";
 import FreeReports  from "./pages/FreeReports";
 import ConTasksClients from "./pages/ConTasksClients";
 import ConTasksFreelancer from "./pages/ConTasksFreelancer";
+import FreeOngoingJobs  from "./pages/FreeOngoingJobs";
+import ClientOngoingJobs  from "./pages/ClientOngoingJobs";
+
 
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -70,6 +73,8 @@ function App() {
           <Route path="/FreeReports" element={<FreeReports />} />
           <Route path="/ConTasksClients" element={<ConTasksClients />} />
           <Route path="/ConTasksFreelancer" element={<ConTasksFreelancer />} />
+          <Route path="/FreeOngoingJobs" element={<FreeOngoingJobs />} />
+          <Route path="/ClientOngoingJobs" element={<ClientOngoingJobs />} />
 
         </Routes>
       </section>
