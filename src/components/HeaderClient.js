@@ -34,7 +34,7 @@ class HeaderClient extends React.Component {
               className="fas fa-times"
               onClick={this.toggleMenu}
             ></button>
-            <li className="nitem"><a href="#" className="nlink">Ongoing Projects</a></li>
+            <li className="nitem"><a href="/ClientOngoingJobs" className="nlink">Ongoing Projects</a></li>
             <li className="nitem"><a href="/ClientPayments" className="nlink">Payments</a></li>
             <li className="nitem"><a href="/ClientSettings" className="nlink">Settings</a></li>
             <li className="nitem"><a href="/RecentActivity" className="nlink">Recent Activities</a></li>
