@@ -118,4 +118,11 @@
   .mark-paid-btn:hover {
     background-color: #218838;
   }
-  
+   .mark-in-progress-btn,
+.mark-done-btn {
+  margin: 2px;
+  padding: 5px 10px;
+  font-size: 0.9rem;
+  background-color: #218838;
+  cursor: pointer;
+}
