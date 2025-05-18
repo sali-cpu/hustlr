@@ -341,6 +341,7 @@ const FreelancerJobs = () => {
                           <li key={index}>
                             <p><strong>Milestone {index + 1}:</strong> {milestone.description}</p>
                             <p><strong>Amount:</strong> ${milestone.amount}</p>
+                            <strong>Due Date:</strong> {milestone.duedate} <br />
                           </li>
                         ))}
                       </ul>
