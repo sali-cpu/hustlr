@@ -73,6 +73,37 @@ describe('FQStats Component', () => {
     });
   });
 
+  test('calculates stats from milestones correctly', async () => {
+  const mockApplications = {
+    job123: {
+      app456: {
+        applicant_userUID: 'test-user-123',
+        status: 'accepted',
+        job_milestones: {
+          milestone1: { status: 'Done', amount: '100' },
+          milestone2: { status: 'Done', amount: '150' },
+          milestone3: { status: 'Done', amount: '200' }
+        }
+      }
+    }
+  };
+
+  get.mockResolvedValue({
+    exists: () => true,
+    val: () => mockApplications
+  });
+
+  render(<FQStats />);
+
+  await waitFor(() => {
+    expect(screen.getByText('1')).toBeInTheDocument(); // jobsApplied
+    expect(screen.getByText('1')).toBeInTheDocument(); // completedJobs
+    expect(screen.getByText('$450')).toBeInTheDocument(); // totalEarned
+    expect(screen.getByText('0')).toBeInTheDocument(); // activeJobs should be 0 after job completion
+  });
+});
+
+
   test('handles errors when fetching data', async () => {
     const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
     get.mockRejectedValue(new Error('Failed to fetch'));
