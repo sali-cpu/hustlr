@@ -38,6 +38,7 @@ const AboutSF = () => {
 
  const handleSave = () => {
   const uid = localStorage.getItem("userUID");
+    const user_role = localStorage.getItem('role_passed');
   if (!uid) {
     alert("User UID not found in local storage!");
     return;
@@ -48,6 +49,8 @@ const AboutSF = () => {
   const dataToSave = {
     ...formData,
     selectedIcon: formData.selectedIcon, 
+      role : user_role,
+      user_UID : uid
   };
 
   set(infoRef, dataToSave)
