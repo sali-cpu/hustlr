@@ -346,9 +346,9 @@ const ClientJobs = () => {
 
                   {job.milestones.map((milestone, index) => (
                     <li key={index}>
+                    <p><strong>Milestone {index + 1}:</strong> {milestone.description}</p>
                     <strong>Amount:</strong> ${parseFloat(milestone.amount).toLocaleString()} <br />
                     <strong>Due Date:</strong> {milestone.duedate} <br />
-                    <strong>Status:</strong> {milestone.status}
                   </li>
                     ))}
                  </ul>
