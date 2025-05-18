@@ -184,6 +184,151 @@ test('does not show Mark as Done for lowercase pending status', async () => {
   });
 });
 
+  test('handles error when fetching jobs fails', async () => {
+  get.mockRejectedValue(new Error('Fetch failed'));
+  console.error = jest.fn();
+  
+  render(<FreelancerPayments />);
+  
+  await waitFor(() => {
+    expect(console.error).toHaveBeenCalledWith("Error fetching jobs:", expect.any(Error));
+  });
+});
+
+  test('handles marking milestone as in-progress', async () => {
+  render(<FreelancerPayments />);
+  
+  await waitFor(() => {
+    fireEvent.click(screen.getByText('Mark as In-Progress'));
+  });
+  
+  expect(update).toHaveBeenCalledWith(
+    ref(expect.anything(), 'accepted_applications/parent1/job1/job_milestones/0'),
+    { status: 'In-Progress' }
+  );
+  
+  await waitFor(() => {
+    expect(screen.getByText('In-Progress')).toBeInTheDocument();
+  });
+});
+
+test('handles error when marking in-progress fails', async () => {
+  update.mockRejectedValue(new Error('Update failed'));
+  console.error = jest.fn();
+  window.alert = jest.fn();
+  
+  render(<FreelancerPayments />);
+  
+  await waitFor(() => {
+    fireEvent.click(screen.getByText('Mark as In-Progress'));
+  });
+  
+  expect(console.error).toHaveBeenCalledWith(
+    'Failed to update milestone status:',
+    expect.any(Error)
+  );
+  expect(window.alert).toHaveBeenCalledWith('Failed to mark milestone as in-progress.');
+});
+
+  test('exports to CSV correctly', async () => {
+  const mockCreateObjectURL = jest.fn();
+  const mockClick = jest.fn();
+  
+  global.URL.createObjectURL = mockCreateObjectURL;
+  
+  document.createElement = jest.fn().mockImplementation((tagName) => {
+    if (tagName === 'a') {
+      return {
+        setAttribute: jest.fn(),
+        click: mockClick,
+        style: {},
+        href: ''
+      };
+    }
+    return {};
+  });
+  
+  render(<FreelancerPayments />);
+  
+  await waitFor(() => {
+    fireEvent.click(screen.getByText('Export CSV'));
+  });
+  
+  expect(mockCreateObjectURL).toHaveBeenCalled();
+  expect(mockClick).toHaveBeenCalled();
+});
+
+  test('applies search filter correctly', async () => {
+  render(<FreelancerPayments />);
+  
+  await waitFor(() => {
+    fireEvent.change(screen.getByPlaceholderText('Search by freelancer or job title'), {
+      target: { value: 'Website' }
+    });
+    
+    expect(screen.getByText('Website Development')).toBeInTheDocument();
+    expect(screen.queryByText('Other Project')).not.toBeInTheDocument();
+  });
+});
+
+test('applies status filter correctly', async () => {
+  render(<FreelancerPayments />);
+  
+  await waitFor(() => {
+    fireEvent.change(screen.getByRole('combobox'), {
+      target: { value: 'Pending' }
+    });
+    
+    expect(screen.getByText('Pending')).toBeInTheDocument();
+    expect(screen.queryByText('Done')).not.toBeInTheDocument();
+  });
+});
+
+  test('shows correct buttons for In-Progress status', async () => {
+  get.mockResolvedValueOnce({
+    exists: () => true,
+    forEach: (callback) => {
+      callback({
+        key: 'parent1',
+        forEach: (childCallback) => {
+          childCallback({
+            key: 'job1',
+            val: () => ({
+              applicant_userUID: 'freelancer123',
+              jobTitle: 'In Progress Project',
+              clientName: 'Client F',
+              job_milestones: [
+                {
+                  description: 'Development phase',
+                  amount: 750,
+                  status: 'In-Progress',
+                  dueDate: '2023-12-20'
+                }
+              ]
+            })
+          });
+        }
+      });
+    }
+  });
+  
+  render(<FreelancerPayments />);
+  
+  await waitFor(() => {
+    expect(screen.getByText('Mark as Done')).toBeInTheDocument();
+    expect(screen.queryByText('Mark as In-Progress')).not.toBeInTheDocument();
+  });
+});
+
+test('shows both buttons for Pending status', async () => {
+  render(<FreelancerPayments />);
+  
+  await waitFor(() => {
+    expect(screen.getByText('Mark as In-Progress')).toBeInTheDocument();
+    expect(screen.getByText('Mark as Done')).toBeInTheDocument();
+  });
+});
+
 test('handles malformed payment data in handleMarkDone', async () => {
   console.error = jest.fn();
   window.alert = jest.fn();
