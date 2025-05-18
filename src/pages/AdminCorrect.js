@@ -52,15 +52,19 @@ class AdminCorrect extends React.Component {
             </section>
           </Link>
 
+            <Link to="/AdminContracts">
           <section className="category-card">
             <img src={con} alt="Contracts & Tasks" />
             <p>View all Contracts & Tasks</p>
           </section>
+          </Link>
 
+           <Link to="/adminReports">
           <section className="category-card">
             <img src={rep} alt="Reports" />
             <p>Admin Reports</p>
           </section>
+          </Link>
 
           <section className="category-card">
             <img src={stat} alt="Quick Stats" />
