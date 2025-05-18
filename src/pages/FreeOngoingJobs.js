@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ref, get /*, update */ } from "firebase/database";
 import { applications_db } from '../firebaseConfig';
-import HeaderClient from '../components/HeaderClient';
+import HeaderFreelancer from '../components/HeaderFreelancer';
 import FooterClient from '../components/FooterClient';
 import '../stylesheets/FreeOngoingJobs.css';
 
@@ -83,7 +83,7 @@ const FreeOngoingJobs = () => {
 
   return (
     <>
-      <HeaderClient />
+      <HeaderFreelancer />
 
       <main className="ongoing-jobs">
         <header className="jobs-header">
