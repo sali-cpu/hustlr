@@ -3,6 +3,25 @@ import '@testing-library/jest-dom';
 import HeaderClient from "./HeaderClient";
 import React from "react";
 
+// Mock localStorage
+const localStorageMock = {
+  getItem: jest.fn(),
+  setItem: jest.fn(),
+  removeItem: jest.fn(),
+  clear: jest.fn(),
+};
+global.localStorage = localStorageMock;
+
+// Mock Firebase
+jest.mock('../firebaseConfig', () => ({
+  applications_db: {},
+}));
+
+jest.mock('firebase/database', () => ({
+  ref: jest.fn(),
+  onValue: jest.fn(),
+}));
+
 test("menu toggle opens and closes mobile menu", () => {
   render(<HeaderClient />);
 
