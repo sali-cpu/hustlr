@@ -11,6 +11,7 @@ const FreelancerJobs = () => {
   const [jobs, setjobs] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
+  const [formErrors, setFormErrors] = useState({});
 
   const [appliedJobs, setAppliedJobs] = useState([]);
   const [acceptedJobs, setAcceptedJobs] = useState([]);
@@ -177,6 +178,17 @@ const FreelancerJobs = () => {
 
   const handleSubmit = () => 
     {
+      const errors = {};
+      for (const [key, value] of Object.entries(applicationData)) {
+        if (!value || value.trim?.() === "") {
+          errors[key] = `Please fill in the ${key.replace(/_/g, ' ')} field.`;
+        }
+      }
+      if (Object.keys(errors).length > 0) {
+        setFormErrors(errors);
+        return;
+      }
+      setFormErrors({}); //for error handling
     if (appliedJobs.includes(selectedJob.id)) 
       {
 
@@ -370,7 +382,9 @@ const FreelancerJobs = () => {
                 placeholder="Enter your name"
                 value={applicationData.name}
                 onChange={handleChange}
+                className={formErrors.name ? "input-error" : ""}
               />
+              {formErrors.name && <p className="error-text">{formErrors.name}</p>}
 
               <label>Surname:</label>
               <input
@@ -379,7 +393,9 @@ const FreelancerJobs = () => {
                 placeholder="Enter your surname"
                 value={applicationData.surname}
                 onChange={handleChange}
+                className={formErrors.surname ? "input-error" : ""}
               />
+              {formErrors.surname && <p className="error-text">{formErrors.surname}</p>}
 
               <label>Skills (comma separated):</label>
               <input
@@ -388,7 +404,9 @@ const FreelancerJobs = () => {
                 placeholder="e.g., JavaScript, React, Firebase"
                 value={applicationData.skills}
                 onChange={handleChange}
+                className={formErrors.skills ? "input-error" : ""}
               />
+              {formErrors.skills && <p className="error-text">{formErrors.skills}</p>}
 
               <label>Motivation:</label>
               <textarea
@@ -397,8 +415,11 @@ const FreelancerJobs = () => {
                 rows={5}
                 value={applicationData.motivation}
                 onChange={handleChange}
+                className={formErrors.motivation ? "input-error" : ""}
               ></textarea>
 
+              {formErrors.motivation && <p className="error-text">{formErrors.motivation}</p>}
+              
               <section className="modal-buttons">
                 <button type="button" onClick={closeModal}>Cancel</button>
                 <button type="button" className="submit-button" onClick={handleSubmit}>
