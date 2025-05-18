@@ -45,7 +45,7 @@ const ClientPayments = () => {
                     jobSnapKey: parentSnap.key + '/' + jobSnap.key,
                     index,
                     jobTitle: data.jobTitle,
-                    freelancer: data.name || 'Unknown',
+                    
                     milestone: milestone.description,
                     amount: milestone.amount,
                     status: status,
@@ -125,7 +125,7 @@ const ClientPayments = () => {
 
   // Export to CSV function
   const exportToCSV = () => {
-    const headers = ['Job Title', 'Freelancer', 'Milestone', 'Amount', 'Status', 'Due Date'];
+    const headers = ['Job Title', 'Milestone', 'Amount', 'Status', 'Due Date'];
     const csvRows = [];
     
     // Add headers
@@ -135,7 +135,6 @@ const ClientPayments = () => {
     filteredPayments.forEach(payment => {
       const values = [
         `"${payment.jobTitle}"`,
-        `"${payment.freelancer}"`,
         `"${payment.milestone}"`,
         payment.amount,
         payment.status,
@@ -191,7 +190,7 @@ const ClientPayments = () => {
           <section className="filters">
             <input 
               type="text" 
-              placeholder="Search by freelancer or job title" 
+              placeholder="Search by job title" 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -223,7 +222,7 @@ const ClientPayments = () => {
             <thead>
               <tr>
                 <th>Job Title</th>
-                <th>Freelancer</th>
+                
                 <th>Milestone</th>
                 <th>Amount</th>
                 <th>Status</th>
@@ -238,7 +237,7 @@ const ClientPayments = () => {
                 filteredPayments.map(job => (
                   <tr key={job.id}>
                     <td>{job.jobTitle}</td>
-                    <td>{job.freelancer}</td>
+                    
                     <td>{job.milestone}</td>
                     <td>${job.amount}</td>
                     <td><span className={`status ${job.status.toLowerCase()}`}>{job.status}</span></td>
