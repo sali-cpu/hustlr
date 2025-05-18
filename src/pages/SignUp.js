@@ -59,10 +59,17 @@ const SignUp = () => {
             return;
           }
          
-            const role = document.querySelector('input[name="role"]:checked')?.value;
-            if (!role) {
+             let role = null;
+          const roleRadio = document.querySelector('input[name="role"]:checked');
+          if (roleRadio) 
+            {
+                role = roleRadio.value;
+                localStorage.setItem("role_passed", role);
+            } 
+            else 
+            {
               alert("Please select a role before signing up.");
-              return;
+            return;
             }
   
             // Save new user only if they don't already exist
@@ -96,19 +103,25 @@ const SignUp = () => {
         navigate("/SignIn"); 
         return;
       }
-  
-     
-        const role = document.querySelector('input[name="role"]:checked')?.value;
-        if (!role) {
-          alert("Please select a role before signing up.");
-          return;
-        }
+
+          let role = null;
+          const roleRadio = document.querySelector('input[name="role"]:checked');
+          if (roleRadio) 
+            {
+                role = roleRadio.value;
+                localStorage.setItem("role_passed", role);
+            } 
+            else 
+            {
+              alert("Please select a role before signing up.");
+            return;
+            }
   
         // savee new user 
+         
         await set(userRef, {
           role: role
         });
-  
         goToPage(role);
       
   
