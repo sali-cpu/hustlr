@@ -33,7 +33,7 @@ const ClientPayments = () => {
           snapshot.forEach(parentSnap => {
             parentSnap.forEach(jobSnap => {
               const data = jobSnap.val();
-              if (data.applicant_userUID === userUID && Array.isArray(data.job_milestones)) {
+               if (data.clientUID === userUID && Array.isArray(data.job_milestones)) {
                 data.job_milestones.forEach((milestone, index) => {
                   const id = jobSnap.key + "_ms_" + index;
                   let status = milestone.status || 'Pending';
