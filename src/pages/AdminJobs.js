@@ -34,9 +34,9 @@ const AdminJobs = () => {
   try {
     // References to all locations where the job might exist
     const jobRef = ref(db, `jobs/${jobId}`);
-    const applicationRef = ref(db, `applications/${jobId}`);
-    const acceptedAppRef = ref(db, `accepted_applications/${jobId}`);
-    const rejectedAppRef = ref(db, `rejected_applications/${jobId}`);
+    const applicationRef = ref(applications_db, `applications/${jobId}`);
+    const acceptedAppRef = ref(applications_db, `accepted_applications/${jobId}`);
+    const rejectedAppRef = ref(applications_db, `rejected_applications/${jobId}`);
 
     // Delete from all relevant database paths
     await remove(jobRef);
