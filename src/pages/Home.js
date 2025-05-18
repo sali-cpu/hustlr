@@ -1,6 +1,5 @@
-
-import  { useEffect } from 'react';
-import { Link } from "react-router-dom";
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../stylesheets/Landing.css';
 import hero1 from '../images/HeroJPG.jpg';
 import hero2 from '../images/NewHero.jpg';
@@ -16,6 +15,8 @@ import paypal from '../images/paypal-logo.jpg';
 import payoneer from '../images/payoneer-logo.jpg';
 
 function Home() {
+  const navigate = useNavigate();
+
   useEffect(() => {
     const toggle = document.getElementById('dashboard-toggle');
     const sidebar = document.getElementById('sidebar');
@@ -37,16 +38,12 @@ function Home() {
           <input type="text" placeholder="Search for any service..." />
           <button className="search-icon">🔍</button>
         </section>
-        
-        <section  className="cta-buttons">
-          <Link to="/SignUp">
-          <button className="cta">Find work</button>
-          </Link>
-          <Link to="/SignUp">
-          <button className="cta">Hire talent</button>
-          </Link>
+
+        <section className="cta-buttons">
+          <button className="cta" onClick={() => navigate('/SignIn')}>Find work</button>
+          <button className="cta" onClick={() => navigate('/SignIn')}>Hire talent</button>
         </section>
-        
+
         <section className="trusted-by">
           <strong>Trusted by:</strong>
           {[google, netflix, pg, paypal, payoneer].map((logo, i) => (
@@ -66,29 +63,24 @@ function Home() {
       <section className="categories">
         <h2>Explore Categories</h2>
         <section className="category-grid">
-          <Link to="/SignUp">
-          <article className="category-card">
+          <article className="category-card" onClick={() => navigate('/SignIn')} style={{ cursor: 'pointer' }}>
             <img src={job} alt="Job Icon" />
             <p>Post and Apply for Jobs</p>
           </article>
-        </Link>
-        <Link to="/SignUp">
-          <article className="category-card">
+
+          <article className="category-card" onClick={() => navigate('/SignIn')} style={{ cursor: 'pointer' }}>
             <img src={task} alt="Tasks Icon" />
             <p>Manage Tasks & Milestones</p>
           </article>
-        </Link>
-        <Link to="/SignUp">
-          <article className="category-card">
+
+          <article className="category-card" onClick={() => navigate('/SignIn')} style={{ cursor: 'pointer' }}>
             <img src={payment} alt="Payment Icon" />
             <p>Secure Milestone-Based Payment</p>
           </article>
-          </Link>
         </section>
       </section>
     </main>
   );
 }
-
 
 export default Home;
