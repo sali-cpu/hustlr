@@ -26,6 +26,7 @@ import ConTasksClients from "./pages/ConTasksClients";
 import ConTasksFreelancer from "./pages/ConTasksFreelancer";
 import FreeOngoingJobs  from "./pages/FreeOngoingJobs";
 import ClientOngoingJobs  from "./pages/ClientOngoingJobs";
+import AdminReports from "./pages/AdminReports";
 
 
 import React from "react";
