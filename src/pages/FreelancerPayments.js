@@ -36,7 +36,6 @@ const FreelancerPayments = () => {
                   jobList.push({
                     id,
                     jobTitle: data.jobTitle,
-                    client: data.clientName || 'Unknown',
                     milestone: milestone.description,
                     amount: milestone.amount,
                     status: milestone.status || 'Pending',
@@ -112,7 +111,7 @@ const FreelancerPayments = () => {
 
   // Export to CSV function
   const exportToCSV = () => {
-    const headers = ['Job Title', 'Client', 'Milestone', 'Amount', 'Status', 'Due Date'];
+    const headers = ['Job Title', 'Milestone', 'Amount', 'Status', 'Due Date'];
     const csvRows = [];
     
     // Add headers
@@ -122,7 +121,6 @@ const FreelancerPayments = () => {
     filteredPayments.forEach(payment => {
       const values = [
         `"${payment.jobTitle}"`,
-        `"${payment.client}"`,
         `"${payment.milestone}"`,
         payment.amount,
         payment.status,
@@ -199,7 +197,6 @@ const FreelancerPayments = () => {
             <thead>
               <tr>
                 <th>Job Title</th>
-                <th>Client</th>
                 <th>Milestone</th>
                 <th>Amount</th>
                 <th>Status</th>
@@ -211,7 +208,6 @@ const FreelancerPayments = () => {
               {filteredPayments.map(payment => (
                 <tr key={payment.id}>
                   <td>{payment.jobTitle}</td>
-                  <td>{payment.client}</td>
                   <td>{payment.milestone}</td>
                   <td>${payment.amount}</td>
                   <td><span className={`status ${payment.status.toLowerCase()}`}>{payment.status}</span></td>
