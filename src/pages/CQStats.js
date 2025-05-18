@@ -77,6 +77,10 @@ useEffect(() => {
                   if (milestones[0].status==="Done") {
                     totalSpent=totalSpent+parseFloat(milestones[0].amount);
                   }
+                      if (milestones[0].status==="Done" &&  milestones[1].status==="Done" && milestones[2].status==="Done")
+                  {
+                      activeJobs--;
+                  }
                 }
               }
             });
