@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import '../stylesheets/FreelancerPayments.css';
 import { ref, get, update } from "firebase/database";
 import { applications_db } from '../firebaseConfig';
+import HeaderClient from '../components/HeaderClient';
+import FooterClient from '../components/FooterClient';
 
 const FreelancerPayments = () => {
   const [payments, setPayments] = useState([]);
@@ -83,6 +85,10 @@ const FreelancerPayments = () => {
   };
 
   return (
+    <>
+    
+    <HeaderClient/>
+
     <main className="client-payments-main">
       <header className="client-jobs-header">
         <section className="header-title-area">
@@ -169,6 +175,9 @@ const FreelancerPayments = () => {
         </table>
       </section>
     </main>
+    <FooterClient/>
+    </>
+
   );
 };
 
