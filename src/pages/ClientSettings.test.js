@@ -102,6 +102,20 @@ describe('ClientSettings Component', () => {
     });
   });
 
+  test('back button calls navigate', () => {
+  const mockNavigate = jest.fn();
+  jest.spyOn(require('react-router-dom'), 'useNavigate').mockImplementation(() => mockNavigate);
+
+  render(
+    <BrowserRouter>
+      <ClientSettings />
+    </BrowserRouter>
+  );
+
+  fireEvent.click(screen.getByRole('button', { name: '←' }));
+  expect(mockNavigate).toHaveBeenCalledWith(-1);
+});
+
   test('matches accessibility requirements', () => {
     render(
       <BrowserRouter>
