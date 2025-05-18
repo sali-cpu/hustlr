@@ -5,6 +5,37 @@ import { ref, get, push, set, update, remove, onValue } from 'firebase/database'
 import { db, applications_db } from '../firebaseConfig';
 import '@testing-library/jest-dom';
 
+onSnapshot: jest.fn((query, callback) => {
+  callback({
+    docs: [],
+    forEach: jest.fn(), // in case component loops over it
+  });
+  return jest.fn(); // unsubscribe
+}),
+
+jest.mock('firebase/database', () => ({
+  ref: jest.fn((db, path) => ({ path })),
+  get: jest.fn(() => Promise.resolve({ exists: () => false })),
+  push: jest.fn(() => ({ key: 'mock-key' })),
+  set: jest.fn(() => Promise.resolve()),
+  update: jest.fn(() => Promise.resolve()),
+  remove: jest.fn(() => Promise.resolve()),
+  onValue: jest.fn(),
+}));
+
+beforeEach(() => {
+  // Clear all mocks
+  jest.clearAllMocks();
+  
+  // Mock localStorage
+  Storage.prototype.getItem = jest.fn((key) => {
+    if (key === 'userUID') return 'test-user-uid';
+    if (key === 'userEmail') return 'test@example.com';
+    return null;
+  });
+});
+
+
 // Mock components and Firebase
 jest.mock('../components/HeaderClient', () => () => <div>Header</div>);
 jest.mock('../components/FooterClient', () => () => <div>Footer</div>);
@@ -21,6 +52,21 @@ jest.mock('../firebaseConfig', () => ({
   db: {},
   applications_db: {}
 }));
+
+jest.mock('firebase/firestore', () => ({
+  onSnapshot: jest.fn((query, callback) => {
+    callback({ docs: [] }); // mimic snapshot with empty docs
+    return jest.fn(); // mock unsubscribe
+  }),
+}));
+
+beforeEach(() => {
+  // Mock localStorage
+  Storage.prototype.getItem = jest.fn((key) => {
+    if (key === 'userUID') return 'test-user-uid';
+    return null;
+  });
+});
 
 describe('ClientJobs Component', () => {
   const mockUserUID = 'test-user-123';
@@ -47,14 +93,14 @@ describe('ClientJobs Component', () => {
     expect(screen.getByText('Post a New Job')).toBeInTheDocument();
   });
 
-  test('shows empty state when no jobs', () => {
-    onValue.mockImplementation((ref, callback) => {
-      callback({ val: () => null });
-    });
+test('shows empty state when no jobs', async () => {
+  render(<ClientJobs />);
 
-    render(<ClientJobs />);
+  await waitFor(() => {
     expect(screen.getByText("You haven't posted any jobs yet.")).toBeInTheDocument();
   });
+});
+
 
   test('displays jobs list', async () => {
     const mockJobs = {
@@ -96,7 +142,7 @@ describe('ClientJobs Component', () => {
   test('handles milestone changes', () => {
     render(<ClientJobs />);
     
-    const milestoneInputs = screen.getAllByLabelText('Description:');
+    const milestoneInputs = screen.getAllByLabelText(/Description:/i);
     fireEvent.change(milestoneInputs[0], { target: { value: 'First milestone' } });
     expect(milestoneInputs[0].value).toBe('First milestone');
   });
@@ -262,5 +308,61 @@ describe('ClientJobs Component', () => {
 
     fireEvent.click(screen.getByText('Cancel Edit'));
     expect(screen.getByText('Post a New Job')).toBeInTheDocument();
+  });
+});
+test('renders ClientJobs component and accesses userUID from localStorage', () => {
+  render(<ClientJobs />);
+  
+  // Assert that the page renders main elements (simple way to confirm execution)
+  expect(screen.getByText(/Jobs for Clients/i)).toBeInTheDocument();
+
+  // Optional: You could also verify the mock was called
+  expect(localStorage.getItem).toHaveBeenCalledWith('userUID');
+});
+
+// Update the delete test in your test file
+test('deletes job', async () => {
+  // Mock window.confirm
+  window.confirm = jest.fn(() => true);
+  
+  // Mock jobs data
+  const mockJobs = {
+    job123: { 
+      title: 'Test Job', 
+      clientUID: 'test-user-uid' // This must match your mock userUID
+    }
+  };
+
+  // Mock the onValue implementation for jobs
+  onValue.mockImplementation((ref, callback) => {
+    if (ref.path.includes('jobs')) {
+      callback({ val: () => mockJobs });
+    }
+  });
+
+  // Mock the remove function to resolve successfully
+  remove.mockImplementation(() => Promise.resolve());
+
+  render(<ClientJobs />);
+  
+  // Wait for the component to load and render the job
+  await waitFor(() => {
+    expect(screen.getByText('Test Job')).toBeInTheDocument();
+  });
+
+  // Click the delete button
+  fireEvent.click(screen.getByText('Delete'));
+
+  // Verify confirm was called
+  expect(window.confirm).toHaveBeenCalledWith('Are you sure you want to delete this job?');
+
+  // Wait for the delete operation to complete
+  await waitFor(() => {
+    // Verify remove was called for all relevant paths
+    expect(remove).toHaveBeenCalledTimes(4); // job + applications + accepted + rejected
+    
+    // You can also verify specific paths if needed
+    expect(ref).toHaveBeenCalledWith(db, 'jobs/job123');
+    expect(ref).toHaveBeenCalledWith(applications_db, 'applications/job123');
   });
 });
