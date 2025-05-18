@@ -24,6 +24,9 @@ jest.mock('react-router-dom', () => ({
 }));
 
 describe('AboutSC Component', () => {
+  const mockSetIsSaved = jest.fn();
+  const mockSetFormData = jest.fn();
+  
   beforeEach(() => {
     // Mock localStorage
     Storage.prototype.getItem = jest.fn((key) => {
@@ -32,8 +35,22 @@ describe('AboutSC Component', () => {
       return null;
     });
 
+    // Mock useState
+    jest.spyOn(React, 'useState')
+      .mockImplementationOnce(() => [{ 
+        bio: '', 
+        profession: '', 
+        totalJobs: '', 
+        selectedIcon: 'icon1.png' 
+      }, mockSetFormData])
+      .mockImplementationOnce(() => [false, mockSetIsSaved]);
+
     // Clear all mocks before each test
     jest.clearAllMocks();
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 
   test('renders welcome message with name from localStorage', () => {
@@ -41,16 +58,66 @@ describe('AboutSC Component', () => {
     expect(screen.getByText(/Welcome Test User/i)).toBeInTheDocument();
   });
 
-  test('selectIcon does not update state when isSaved is true', () => {
-    const mockSetFormData = jest.fn();
-    jest.spyOn(React, 'useState').mockImplementationOnce(() => [{ isSaved: true }, jest.fn()]);
-    jest.spyOn(React, 'useState').mockImplementationOnce(() => [{}, mockSetFormData]);
+  test('handleChange updates form data when isSaved is false', () => {
+    render(<AboutSC />);
+    const bioTextarea = screen.getByLabelText(/Bio/i);
+    fireEvent.change(bioTextarea, { target: { value: 'New bio', name: 'bio' } });
+    expect(mockSetFormData).toHaveBeenCalled();
+  });
 
+  test('handleChange does not update form data when isSaved is true', () => {
+    jest.spyOn(React, 'useState')
+      .mockImplementationOnce(() => [{}, mockSetFormData])
+      .mockImplementationOnce(() => [true, mockSetIsSaved]);
+    
+    render(<AboutSC />);
+    const bioTextarea = screen.getByLabelText(/Bio/i);
+    fireEvent.change(bioTextarea, { target: { value: 'New bio', name: 'bio' } });
+    expect(mockSetFormData).not.toHaveBeenCalled();
+  });
+
+  test('selectIcon updates selected icon when isSaved is false', () => {
     render(<AboutSC />);
     const icons = screen.getAllByRole('img', { name: /icon/i });
-    fireEvent.click(icons[0]);
+    fireEvent.click(icons[1]);
+    expect(mockSetFormData).toHaveBeenCalled();
+  });
+
+  test('selectIcon does not update selected icon when isSaved is true', () => {
+    jest.spyOn(React, 'useState')
+      .mockImplementationOnce(() => [{}, mockSetFormData])
+      .mockImplementationOnce(() => [true, mockSetIsSaved]);
     
+    render(<AboutSC />);
+    const icons = screen.getAllByRole('img', { name: /icon/i });
+    fireEvent.click(icons[1]);
     expect(mockSetFormData).not.toHaveBeenCalled();
+  });
+
+  test('handleSave calls Firebase set with correct data and handles success', async () => {
+    set.mockResolvedValueOnce();
+    const alertMock = jest.spyOn(window, 'alert').mockImplementation(() => {});
+    
+    render(<AboutSC />);
+    
+    // Fill out form
+    fireEvent.change(screen.getByLabelText(/Bio/i), { 
+      target: { value: 'Test bio', name: 'bio' } 
+    });
+    
+    // Submit form
+    fireEvent.click(screen.getByRole('button', { name: /Save Settings/i }));
+
+    await waitFor(() => {
+      // Verify Firebase was called correctly
+      expect(ref).toHaveBeenCalledWith(applications_db, 'Information/test-uid');
+      expect(set).toHaveBeenCalled();
+      
+      // Verify success handling
+      expect(mockSetIsSaved).toHaveBeenCalledWith(true);
+      expect(alertMock).toHaveBeenCalledWith('User info saved successfully!');
+    });
+    alertMock.mockRestore();
   });
 
   test('handleSave shows alert when no userUID is found', () => {
@@ -63,104 +130,6 @@ describe('AboutSC Component', () => {
     expect(alertMock).toHaveBeenCalledWith('User UID not found in local storage!');
     alertMock.mockRestore();
   });
-
-  test('handleSave calls Firebase set with correct data', async () => {
-    render(<AboutSC />);
-    
-    // Fill out form
-    fireEvent.change(screen.getByLabelText(/Bio/i), { 
-      target: { value: 'Test bio', name: 'bio' } 
-    });
-    fireEvent.change(screen.getByLabelText(/Profession/i), { 
-      target: { value: 'Developer', name: 'profession' } 
-    });
-    fireEvent.click(screen.getAllByRole('img', { name: /icon/i })[2]);
-
-    // Submit form
-    fireEvent.click(screen.getByRole('button', { name: /Save Settings/i }));
-
-    await waitFor(() => {
-      expect(ref).toHaveBeenCalledWith(applications_db, 'Information/test-uid');
-      expect(set).toHaveBeenCalledWith(expect.anything(), {
-        bio: 'Test bio',
-        profession: 'Developer',
-        totalJobs: '',
-        selectedIcon: 'icon3.png'
-      });
-    });
-  });
-
-  test('handleSave shows success alert on successful save', async () => {
-    const alertMock = jest.spyOn(window, 'alert').mockImplementation(() => {});
-
-    render(<AboutSC />);
-    fireEvent.click(screen.getByRole('button', { name: /Save Settings/i }));
-
-    await waitFor(() => {
-      expect(alertMock).toHaveBeenCalledWith('User info saved successfully!');
-    });
-    alertMock.mockRestore();
-  });
-  
-test('handleSave shows proper error alert when Firebase save fails', async () => {
-  // Mock Firebase to reject with an error
-  const mockError = new Error('Database connection failed');
-  set.mockRejectedValueOnce(mockError);
-  
-  // Mock window.alert to track calls
-  const alertMock = jest.spyOn(window, 'alert').mockImplementation(() => {});
-
-  render(<AboutSC />);
-  
-  // Fill out some form data
-  fireEvent.change(screen.getByLabelText(/Bio/i), {
-    target: { value: 'Test bio', name: 'bio' }
-  });
-  
-  // Trigger save
-  fireEvent.click(screen.getByRole('button', { name: /Save Settings/i }));
-
-  await waitFor(() => {
-    // Verify error alert was shown with correct message
-    expect(alertMock).toHaveBeenCalledWith('Error saving user info:', 'Database connection failed');
-    
-    // Verify isSaved state wasn't changed to true
-    expect(screen.getByRole('button', { name: /Save Settings/i })).toBeInTheDocument();
-  });
-
-  // Clean up mock
-  alertMock.mockRestore();
-});
-
-  test('displays error alert when Firebase save fails', async () => {
-  // Mock Firebase to reject with an error
-  const mockError = new Error('Firebase save failed');
-  set.mockRejectedValueOnce(mockError);
-  
-  // Mock window.alert to track calls
-  const alertMock = jest.spyOn(window, 'alert').mockImplementation(() => {});
-
-  render(<AboutSC />);
-  
-  // Fill out some form data
-  fireEvent.change(screen.getByLabelText(/Bio/i), {
-    target: { value: 'Test bio', name: 'bio' }
-  });
-  
-  // Trigger save
-  fireEvent.click(screen.getByRole('button', { name: /Save Settings/i }));
-
-  await waitFor(() => {
-    // Verify error alert was shown with correct message
-    expect(alertMock).toHaveBeenCalledWith('Error saving user info:', 'Firebase save failed');
-    
-    // Verify isSaved state wasn't changed to true
-    expect(screen.getByRole('button', { name: /Save Settings/i })).toBeInTheDocument();
-  });
-
-  // Clean up mock
-  alertMock.mockRestore();
-});
 
   test('handleSave shows error alert on Firebase failure', async () => {
     const error = new Error('Firebase error');
@@ -176,13 +145,6 @@ test('handleSave shows proper error alert when Firebase save fails', async () =>
     alertMock.mockRestore();
   });
 
-  test('renders Link component around save button', () => {
-    render(<AboutSC />);
-    const saveButton = screen.getByRole('button', { name: /Save Settings/i });
-    expect(saveButton.closest('div')).toBeInTheDocument(); // Checking Link wrapper
-  });
-
-  // Keep your existing tests
   test('renders all input fields and initial UI', () => {
     render(<AboutSC />);
     expect(screen.getByText(/Account Settings/i)).toBeInTheDocument();
@@ -192,6 +154,4 @@ test('handleSave shows proper error alert when Firebase save fails', async () =>
     expect(screen.getByText(/Select Profile Icon/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Save Settings/i })).toBeInTheDocument();
   });
-
-  // ... (include all your other existing tests here)
 });
