@@ -119,3 +119,9 @@ button {
 .logo-text{
    margin-right: 500px;
 }
+.profile-icon{
+   border-radius: 50%;
+   width: 100px;
+   height: 100px;
+   padding-right: 5px;
+}
