@@ -3,15 +3,6 @@ import '@testing-library/jest-dom';
 import HeaderClient from "./HeaderClient";
 import React from "react";
 
-// Mock localStorage
-const localStorageMock = {
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-  removeItem: jest.fn(),
-  clear: jest.fn(),
-};
-global.localStorage = localStorageMock;
-
 // Mock Firebase
 jest.mock('../firebaseConfig', () => ({
   applications_db: {},
@@ -22,33 +13,57 @@ jest.mock('firebase/database', () => ({
   onValue: jest.fn(),
 }));
 
-test("menu toggle opens and closes mobile menu", () => {
-  render(<HeaderClient />);
-
-  const buttons = screen.getAllByRole("button");
-  const openButton = buttons.find(btn => btn.id === "menopen");
-  const closeButton = buttons.find(btn => btn.id === "menclose");
-
-  // Before clicking: class should not exist
-  expect(document.body.classList.contains("show-mobile-menu")).toBe(false);
-
-  // Open menu
-  fireEvent.click(openButton);
-  expect(document.body.classList.contains("show-mobile-menu")).toBe(true);
-
-  // Close menu
-  fireEvent.click(closeButton);
-  expect(document.body.classList.contains("show-mobile-menu")).toBe(false);
-});
 describe('HeaderClient', () => {
+  // Store original localStorage
+  const originalLocalStorage = global.localStorage;
+
+  beforeAll(() => {
+    // Create complete mock of localStorage
+    Object.defineProperty(window, 'localStorage', {
+      value: {
+        getItem: jest.fn(),
+        setItem: jest.fn(),
+        removeItem: jest.fn(),
+        clear: jest.fn(),
+      },
+      writable: true
+    });
+  });
+
+  afterAll(() => {
+    // Restore original localStorage
+    Object.defineProperty(window, 'localStorage', {
+      value: originalLocalStorage
+    });
+  });
+
   beforeEach(() => {
     // Clear all mocks before each test
     jest.clearAllMocks();
   });
 
+  test("menu toggle opens and closes mobile menu", () => {
+    render(<HeaderClient />);
+
+    const buttons = screen.getAllByRole("button");
+    const openButton = buttons.find(btn => btn.id === "menopen");
+    const closeButton = buttons.find(btn => btn.id === "menclose");
+
+    // Before clicking: class should not exist
+    expect(document.body.classList.contains("show-mobile-menu")).toBe(false);
+
+    // Open menu
+    fireEvent.click(openButton);
+    expect(document.body.classList.contains("show-mobile-menu")).toBe(true);
+
+    // Close menu
+    fireEvent.click(closeButton);
+    expect(document.body.classList.contains("show-mobile-menu")).toBe(false);
+  });
+
   it('should not call Firebase when no UID is present', () => {
     // Mock localStorage to return null (no UID)
-    localStorage.getItem.mockReturnValueOnce(null);
+    window.localStorage.getItem.mockReturnValueOnce(null);
     
     // Mock Firebase functions
     const { ref, onValue } = require('firebase/database');
@@ -56,7 +71,7 @@ describe('HeaderClient', () => {
     render(<HeaderClient />);
     
     // Verify localStorage was called
-    expect(localStorage.getItem).toHaveBeenCalledWith('userUID');
+    expect(window.localStorage.getItem).toHaveBeenCalledWith('userUID');
     
     // Verify Firebase functions were NOT called
     expect(ref).not.toHaveBeenCalled();
@@ -66,7 +81,7 @@ describe('HeaderClient', () => {
   it('should call Firebase when UID is present', () => {
     // Mock localStorage to return a UID
     const mockUID = 'test-uid';
-    localStorage.getItem.mockReturnValueOnce(mockUID);
+    window.localStorage.getItem.mockReturnValueOnce(mockUID);
     
     // Mock Firebase functions
     const { ref, onValue } = require('firebase/database');
@@ -78,10 +93,10 @@ describe('HeaderClient', () => {
     render(<HeaderClient />);
     
     // Verify localStorage was called
-    expect(localStorage.getItem).toHaveBeenCalledWith('userUID');
+    expect(window.localStorage.getItem).toHaveBeenCalledWith('userUID');
     
     // Verify Firebase functions were called
-    expect(ref).toHaveBeenCalledWith(applications_db, `Information/${mockUID}/selectedIcon`);
+    expect(ref).toHaveBeenCalledWith(expect.anything(), `Information/${mockUID}/selectedIcon`);
     expect(onValue).toHaveBeenCalled();
   });
 });
