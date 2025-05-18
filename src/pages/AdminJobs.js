@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import '../stylesheets/AdminJobs.css';
 import HeaderAdmin from "../components/HeaderAdmin";
 import { get, ref, remove } from 'firebase/database';
-import { db } from '../firebaseConfig';
+import { db,applications_db } from '../firebaseConfig';
 
 const AdminJobs = () => {
   const [jobs, setJobs] = useState([]);
