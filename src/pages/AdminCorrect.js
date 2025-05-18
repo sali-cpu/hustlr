@@ -66,10 +66,6 @@ class AdminCorrect extends React.Component {
           </section>
           </Link>
 
-          <section className="category-card">
-            <img src={stat} alt="Quick Stats" />
-            <p>Quick Stats</p>
-          </section>
         </section>
       </section>
     )}
