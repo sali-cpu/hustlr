@@ -15,6 +15,7 @@ const pathLabels = {
   '/Client': 'Client Dashboard',
    '/client': 'Client Dashboard',
   '/Freelancer': 'Freelancer Dashboard',
+  '/freelancer': 'Freelancer Dashboard',
   '/Admin': 'Admin Panel',
   '/ClientJobs': 'Client Jobs',
   '/ClientPayments': 'Client Payments',
