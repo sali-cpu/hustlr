@@ -188,3 +188,38 @@ describe('ClientOngoingJobs Component', () => {
     });
   });
 });
+
+describe('ClientOngoingJobs Initial State', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    jest.clearAllMocks();
+  });
+
+  test('initializes with empty ongoingJobs array', () => {
+    render(<ClientOngoingJobs />);
+    
+    // Verify no jobs are shown initially (before data loads)
+    expect(screen.getByText('No ongoing jobs found.')).toBeInTheDocument();
+  });
+
+  test('shows loading state before data is fetched', async () => {
+    // Mock a delayed response to test initial render
+    get.mockImplementation(() => new Promise(() => {})); // Never resolves
+    
+    render(<ClientOngoingJobs />);
+    
+    // Should show empty state initially
+    expect(screen.getByText('No ongoing jobs found.')).toBeInTheDocument();
+  });
+
+  test('handles missing userUID in localStorage', async () => {
+    localStorage.clear(); // Ensure no userUID
+    
+    render(<ClientOngoingJobs />);
+    
+    await waitFor(() => {
+      expect(screen.getByText('No ongoing jobs found.')).toBeInTheDocument();
+      expect(get).not.toHaveBeenCalled(); // Shouldn't try to fetch without userUID
+    });
+  });
+});
