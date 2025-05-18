@@ -27,6 +27,7 @@ import ConTasksFreelancer from "./pages/ConTasksFreelancer";
 import FreeOngoingJobs  from "./pages/FreeOngoingJobs";
 import ClientOngoingJobs  from "./pages/ClientOngoingJobs";
 import AdminReports from "./pages/AdminReports";
+import AdminContracts from "./pages/AdminContracts"
 
 
 import React from "react";
@@ -74,6 +75,8 @@ function App() {
           <Route path="/ConTasksFreelancer" element={<ConTasksFreelancer />} />
           <Route path="/FreeOngoingJobs" element={<FreeOngoingJobs />} />
           <Route path="/ClientOngoingJobs" element={<ClientOngoingJobs />} />
+          <Route path="/AdminReports" element={<AdminReports />} />
+          <Route path="/AdminContracts" element={<AdminContracts />} />
 
         </Routes>
       </section>
