@@ -12,7 +12,8 @@ const pathLabels = {
   '/SignIn': 'Sign In',
   '/SignUp': 'Sign Up',
   '/Land': 'Landing Page',
-  '/client': 'Client Dashboard',
+  '/Client': 'Client Dashboard',
+   '/client': 'Client Dashboard',
   '/Freelancer': 'Freelancer Dashboard',
   '/Admin': 'Admin Panel',
   '/ClientJobs': 'Client Jobs',
@@ -20,6 +21,17 @@ const pathLabels = {
   '/FreelancerJobs': 'Freelancer Jobs',
   '/FreelancerPayments': 'Freelancer Payments',
   '/RecentActivity': 'Recent Activity',
+  '/AdminJobs': 'Admin Jobs',
+  '/CQStats': 'Stats',
+  '/FQStats': 'Stats',
+  '/FreeSettings': 'Settings',
+  '/ClientSettings': 'Settings',
+  '/AboutSC': 'About',
+  '/AboutSF': 'About',
+  '/ConTasksClients': 'Contracts & Tasks',
+  '/ConTasksFreelancer': 'Contracts & Tasks',
+  '/FreeOngoingJobs': 'Ongoing Jobs',
+  '/ClientOngoingJobs': 'Ongoing Jobs',
 };
 
 const formatDate = isoString => {
