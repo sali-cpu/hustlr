@@ -149,3 +149,47 @@ test('sets hasSeenWelcome in localStorage when closing welcome message', () => {
 });
 
 });
+describe('Client Component Initial State', () => {
+  beforeEach(() => {
+    // Clear localStorage before each test
+    localStorage.clear();
+  });
+
+  test('initializes state correctly when hasSeenWelcome is not set', () => {
+    render(
+      <Router>
+        <Client />
+      </Router>
+    );
+
+    // Welcome box should be visible when hasSeenWelcome is not set
+    expect(screen.getByText(/Welcome, Client!/i)).toBeInTheDocument();
+  });
+
+  test('initializes state correctly when hasSeenWelcome is set', () => {
+    // Set hasSeenWelcome before rendering
+    localStorage.setItem('hasSeenWelcome', 'true');
+    
+    render(
+      <Router>
+        <Client />
+      </Router>
+    );
+
+    // Welcome box should not be visible when hasSeenWelcome is set
+    expect(screen.queryByText(/Welcome, Client!/i)).not.toBeInTheDocument();
+    // Verify categories are shown instead
+    expect(screen.getByText(/Jobs/i)).toBeInTheDocument();
+  });
+
+  test('initializes searchTerm as empty string', () => {
+    const { container } = render(
+      <Router>
+        <Client />
+      </Router>
+    );
+
+    const searchInput = screen.getByPlaceholderText(/Search for any service/i);
+    expect(searchInput.value).toBe('');
+  });
+});
