@@ -157,7 +157,7 @@ useEffect(() =>
       setClients(enrichedClients);
       setFreelancers(enrichedFreelancers);
     } catch (error) {
-      alert("Error fetching data:", error.message);
+      console.log("Error fetching data");
     }
   };
 
