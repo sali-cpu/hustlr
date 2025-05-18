@@ -1,13 +1,29 @@
 import React from "react";
 import "../stylesheets/Final.css";
+import { applications_db } from '../firebaseConfig';
+import { ref, onValue } from "firebase/database";
 
 class HeaderFreelancer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       isMobileMenuOpen: false,
+      profileIcon: null
     };
   }
+  componentDidMount() {
+      const uid = localStorage.getItem("userUID");
+      if (!uid) return;
+    
+      const iconRef = ref(applications_db, `Information/${uid}/selectedIcon`);
+      onValue(iconRef, (snapshot) => {
+        const iconUrl = snapshot.val();
+        if (iconUrl) {
+          this.setState({ profileIcon: iconUrl });
+        }
+      });
+    }
+  
 
   toggleMenu = () => {
     this.setState((prevState) => ({
@@ -25,6 +41,13 @@ class HeaderFreelancer extends React.Component {
     return (
       <header className="head">
         <nav className="nbar">
+          {this.state.profileIcon && (
+            <img 
+              src={this.state.profileIcon} 
+              alt="Profile Icon"
+              className="profile-icon"
+            />
+          )}
           <a href="#" className="nlogo">
             <h2 className="logo-text">Hustlr.</h2>
           </a>
@@ -40,6 +63,7 @@ class HeaderFreelancer extends React.Component {
             <li className="nitem"><a href="/RecentActivity" className="nlink">Recent Activities</a></li>
             <li className="nitem"><a href="/" className="nlink">Sign Out</a></li>
           </ul>
+          
           <button
             id="menopen"
             className="fas fa-bars"
