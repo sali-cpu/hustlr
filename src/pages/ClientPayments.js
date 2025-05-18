@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import '../stylesheets/ClientPayments.css';
 import { ref, get,update } from "firebase/database";
 import { applications_db } from '../firebaseConfig';
+import HeaderClient from '../components/HeaderClient';
+import FooterClient from '../components/FooterClient';
+
 
 const ClientPayments = () => {
   const [payments, setPayments] = useState([]);
@@ -101,7 +104,10 @@ const ClientPayments = () => {
 
 
 
-  return (
+ return (
+  <>
+    <HeaderClient />
+
     <main className="client-payments-main">
       <header className="client-jobs-header">
         <section className="header-title-area">
@@ -164,7 +170,7 @@ const ClientPayments = () => {
                   <td>{job.client}</td>
                   <td>{job.milestone}</td>
                   <td>${job.amount}</td>
-                  <td><span className={`status ${job.status.toLowerCase()}`}>{job.status}</span></td>
+                  <td><strong className={`status ${job.status.toLowerCase()}`}>{job.status}</strong></td>
                   <td>{job.dueDate}</td>
                   <td>
                     {job.status === 'Done' && (
@@ -180,7 +186,11 @@ const ClientPayments = () => {
         </table>
       </section>
     </main>
-  );
+
+    <FooterClient />
+  </>
+);
+
 };
 
 export default ClientPayments;
