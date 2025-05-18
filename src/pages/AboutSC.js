@@ -21,6 +21,7 @@ const AboutSC = () => {
     selectedIcon: icon1
   });
  const name_surname = localStorage.getItem("nameSur");
+ const role_read = localStorage.getItem('role_passed');
   const [isSaved, setIsSaved] = useState(false);
 
   const handleChange = (e) => {
@@ -46,12 +47,14 @@ const AboutSC = () => {
     const dataToSave = {
       ...formData,
       selectedIcon: formData.selectedIcon, 
+      role : role_read,
+      user_UID : uid
     };
   
     set(infoRef, dataToSave)
       .then(() => {
         setIsSaved(true);
-        alert("User info saved successfully!");
+        //alert("User info saved successfully!");
       })
       .catch((error) => {
         alert("Error saving user info:", error.message);
