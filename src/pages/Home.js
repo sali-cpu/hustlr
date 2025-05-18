@@ -1,5 +1,6 @@
 
 import  { useEffect } from 'react';
+import { Link } from "react-router-dom";
 import '../stylesheets/Landing.css';
 import hero1 from '../images/HeroJPG.jpg';
 import hero2 from '../images/NewHero.jpg';
@@ -36,12 +37,16 @@ function Home() {
           <input type="text" placeholder="Search for any service..." />
           <button className="search-icon">🔍</button>
         </section>
-
-        <section className="cta-buttons">
+        
+        <section  className="cta-buttons">
+          <Link to="/SignUp">
           <button className="cta">Find work</button>
+          </Link>
+          <Link to="/SignUp">
           <button className="cta">Hire talent</button>
+          </Link>
         </section>
-
+        
         <section className="trusted-by">
           <strong>Trusted by:</strong>
           {[google, netflix, pg, paypal, payoneer].map((logo, i) => (
@@ -61,20 +66,24 @@ function Home() {
       <section className="categories">
         <h2>Explore Categories</h2>
         <section className="category-grid">
+          <Link to="/SignUp">
           <article className="category-card">
             <img src={job} alt="Job Icon" />
             <p>Post and Apply for Jobs</p>
           </article>
-
+        </Link>
+        <Link to="/SignUp">
           <article className="category-card">
             <img src={task} alt="Tasks Icon" />
             <p>Manage Tasks & Milestones</p>
           </article>
-
+        </Link>
+        <Link to="/SignUp">
           <article className="category-card">
             <img src={payment} alt="Payment Icon" />
             <p>Secure Milestone-Based Payment</p>
           </article>
+          </Link>
         </section>
       </section>
     </main>
