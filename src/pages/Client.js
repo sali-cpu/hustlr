@@ -6,9 +6,9 @@ import pay from '../images/Payment.png';
 import stat from '../images/Quick Stats.png';
 import con from '../images/contract.png';
 import HeaderClient from "../components/HeaderClient";
+import FooterClient from "../components/FooterClient";
 import '../stylesheets/Final.css';
-import { applications_db } from '../firebaseConfig';
-import { ref, onValue } from "firebase/database";
+
 class Client extends React.Component {
   constructor(props) {
     super(props);
@@ -48,22 +48,9 @@ class Client extends React.Component {
     this.state = {
   showWelcomeBox: !hasSeenWelcome,
   searchTerm: "",
-  profileIcon: null  
 };
   }
 
-  componentDidMount() {
-  const uid = localStorage.getItem("userUID");
-  if (!uid) return;
-
-  const iconRef = ref(applications_db, `Information/${uid}/selectedIcon`);
-  onValue(iconRef, (snapshot) => {
-    const iconUrl = snapshot.val();
-    if (iconUrl) {
-      this.setState({ profileIcon: iconUrl });
-    }
-  });
-}
   
   closeWelcomeMessage = () => {
     localStorage.setItem('hasSeenWelcome', 'true');
@@ -100,13 +87,6 @@ class Client extends React.Component {
       value={this.state.searchTerm}
     />
     <button className="search-icon">🔍</button>
-    {this.state.profileIcon && (
-      <img 
-        src={this.state.profileIcon} 
-        alt="Profile Icon"
-        className="profile-icon"
-      />
-    )}
   </section>
 
 </section>
@@ -150,6 +130,7 @@ class Client extends React.Component {
             </section>
           )}
         </main>
+        <FooterClient/>
       </>
     );
   }
