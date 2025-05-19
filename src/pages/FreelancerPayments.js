@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import '../stylesheets/FreelancerPayments.css';
 import { ref, get, update } from "firebase/database";
 import { applications_db } from '../firebaseConfig';
-import HeaderClient from '../components/HeaderFreelancer';
+import HeaderFreelancer from '../components/HeaderFreelancer';
 import FooterClient from '../components/FooterClient';
 
 const FreelancerPayments = () => {
