@@ -49,7 +49,7 @@ const ClientOngoingJobs = () => {
 
             jobsMap[jobKey].milestones.push({
               name: milestone.description || `Milestone ${index + 1}`,
-              completed: milestone.status === 'Done',
+              completed: milestone.status === 'Done' ||  milestone.status === 'Paid',
               amount: milestoneAmount,
               status: milestone.status || 'Pending',
               dueDate: milestone.dueDate || 'N/A'
@@ -57,7 +57,7 @@ const ClientOngoingJobs = () => {
 
           jobsMap[jobKey].totalAmount += milestoneAmount;
 
-          if (milestone.status === 'Done') {
+          if (milestone.status === 'Paid') {
             jobsMap[jobKey].paidAmount += milestoneAmount;
           }
       });
