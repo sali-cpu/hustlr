@@ -1,64 +1,103 @@
 import { useState, useEffect } from 'react';
-import { db } from '../firebaseConfig';
+import { applications_db } from '../firebaseConfig';
 import { ref, onValue } from 'firebase/database';
 import "../stylesheets/ConClients.css";
 import HeaderClient from '../components/HeaderClient';
 import FooterClient from '../components/FooterClient';
 
 const ConTasksClients = () => {
-  const userUID = localStorage.getItem('userUID');
-  const userRole = localStorage.getItem('userRole'); // 'client' or 'freelancer'
-
+  const [expandedJobId, setExpandedJobId] = useState(null);
   const [activeJobs, setActiveJobs] = useState([]);
   const [previousJobs, setPreviousJobs] = useState([]);
-  const [expandedJobId, setExpandedJobId] = useState(null);
 
   useEffect(() => {
-    const contractsRef = ref(db, 'contracts');
-    onValue(contractsRef, snapshot => {
-      const data = snapshot.val();
-      const current = [], previous = [];
+    const unsub = onValue(ref(applications_db, 'accepted_applications'), snapshot => {
+      if (!snapshot.exists()) return;
 
-      for (const id in data) {
-        const job = { id, ...data[id] };
-        const isUserJob = userRole === 'client' ? job.clientUID === userUID : job.freelancerUID === userUID;
+      const applications = snapshot.val();
+      const currentUID = localStorage.getItem("userUID");
 
-        if (isUserJob) {
-          if (job.status === 'active') current.push(job);
-          else previous.push(job);
-        }
-      }
+      const active = [];
+      const previous = [];
 
-      setActiveJobs(current);
+      Object.values(applications).forEach(jobGroup => {
+        Object.entries(jobGroup).forEach(([appId, appData]) => {
+          if (appData.clientUID !== currentUID) return;
+
+          const milestones = appData.job_milestones || {};
+          const milestoneList = Object.values(milestones);
+
+          const hasActiveMilestone = milestoneList.some(m => {
+            const status = m.status?.toLowerCase();
+            return status === "pending" || status === "in-progress";
+          });
+
+          const job = {
+            id: appId,
+            title: appData.jobTitle,
+            description: appData.job_description,
+            partnerName: `${appData.freelancer_name} ${appData.freelancer_surname}`,
+            deadline: appData.deadline || "N/A",
+            milestones: milestoneList.map(m => ({
+              description: m.description,
+              amount: m.amount,
+              status: m.status,
+            })),
+            budget: milestoneList.reduce((sum, m) => sum + Number(m.amount || 0), 0),
+          };
+
+          if (hasActiveMilestone) {
+            active.push(job);
+          } else {
+            previous.push(job);
+          }
+        });
+      });
+
+      setActiveJobs(active);
       setPreviousJobs(previous);
     });
-  }, [userUID, userRole]);
+
+    return () => unsub();
+  }, []);
 
   const toggleExpand = (jobId) => {
     setExpandedJobId(expandedJobId === jobId ? null : jobId);
   };
 
-  
-
-  const renderJobDetails = (job) => (
-    <div className="job-details">
-      <p><strong>Description:</strong> {job.description}</p>
-      <p><strong>Budget:</strong> R{job.budget}</p>
-      <p><strong>Deadline:</strong> {job.deadline}</p>
-      <p><strong>{userRole === 'freelancer' ? 'Client' : 'Freelancer'}:</strong> {job.partnerName}</p>
-      <h4>Milestones:</h4>
-      <ul>
-        {job.milestones?.map((m, i) => (
-          <li key={i}>{m.description} - R{m.amount} - {m.status}</li>
-        ))}
-      </ul>
-    </div>
+  const renderJobCard = (job) => (
+    <section className="job-contract-card" key={job.id}>
+      <h3>{job.title}</h3>
+      <button className="expand-toggle" onClick={() => toggleExpand(job.id)}>
+        {expandedJobId === job.id ? 'Hide Details' : 'View Details'}
+      </button>
+      {expandedJobId === job.id && (
+        <section className="job-details">
+          <p><strong>Description:</strong> {job.description}</p>
+          <p><strong>Budget:</strong> R{job.budget}</p>
+          <p><strong>Deadline:</strong> {job.deadline}</p>
+          <h4>Milestones:</h4>
+          <section className="milestone-section">
+            <ul>
+              {job.milestones.map((m, index) => (
+                <li key={index} className="milestone">
+                  <h4>{m.description}</h4>
+                  <p><strong>Amount:</strong> R{m.amount}</p>
+                  <p><strong>Status:</strong> {m.status}</p>
+                </li>
+              ))}
+            </ul>
+          </section>
+        </section>
+      )}
+    </section>
   );
 
   return (
     <>
       <HeaderClient />
-<header className="client-jobs-header">
+
+      <header className="client-jobs-header">
         <section className="header-title-area">
           <h1 className="main-title">Contracts and Tasks</h1>
         </section>
@@ -71,33 +110,26 @@ const ConTasksClients = () => {
         </section>
       </header>
 
-      <main className="manage-contracts-container">
+      <main className="contracts-tasks-container">
         <section className="contracts-section">
           <h2>Current Jobs</h2>
-          {activeJobs.length === 0 && <p>No active jobs found.</p>}
-          {activeJobs.map(job => (
-            <div key={job.id} className="job-card">
-              <button onClick={() => toggleExpand(job.id)}>
-                {job.title}
-              </button>
-              {expandedJobId === job.id && renderJobDetails(job)}
-            </div>
-          ))}
+          {activeJobs.length === 0 ? (
+            <p className="no-jobs-message">No active jobs available.</p>
+          ) : (
+            activeJobs.map(renderJobCard)
+          )}
         </section>
 
         <section className="contracts-section">
           <h2>Previous Jobs</h2>
-          {previousJobs.length === 0 && <p>No previous jobs found.</p>}
-          {previousJobs.map(job => (
-            <div key={job.id} className="job-card">
-              <button onClick={() => toggleExpand(job.id)}>
-                {job.title}
-              </button>
-              {expandedJobId === job.id && renderJobDetails(job)}
-            </div>
-          ))}
+          {previousJobs.length === 0 ? (
+            <p className="no-jobs-message">No previous jobs found.</p>
+          ) : (
+            previousJobs.map(renderJobCard)
+          )}
         </section>
       </main>
+
       <FooterClient />
     </>
   );

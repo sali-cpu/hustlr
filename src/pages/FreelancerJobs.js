@@ -201,6 +201,8 @@ const FreelancerJobs = () => {
       ...applicationData,
       applicant_userUID: localStorage.getItem("userUID"),
       jobTitle: selectedJob.title,
+      deadline: selectedJob.deadline,
+      job_description: selectedJob.description,
       status: "pending",
       clientUID : selectedJob.clientUID,
       job_milestones: selectedJob.milestones,

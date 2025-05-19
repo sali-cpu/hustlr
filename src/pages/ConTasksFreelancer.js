@@ -6,7 +6,6 @@ import FooterClient from '../components/FooterClient';
 import { applications_db } from '../firebaseConfig';
 
 const ConTasksFreelancer = () => {
-  const userRole = 'freelancer';
   const [expandedJobId, setExpandedJobId] = useState(null);
   const [activeJobs, setActiveJobs] = useState([]);
   const [previousJobs, setPreviousJobs] = useState([]);
@@ -103,7 +102,7 @@ useEffect(() => {
                     <p><strong>Description:</strong> {job.description}</p>
                     <p><strong>Budget:</strong> R{job.budget}</p>
                     <p><strong>Deadline:</strong> {job.deadline}</p>
-                    <p><strong>Client:</strong> {job.partnerName}</p>
+            
                     <h4>Milestones:</h4>
                     <section className="milestone-section">
                         <ul>
@@ -140,7 +139,7 @@ useEffect(() => {
                     <p><strong>Description:</strong> {job.description}</p>
                     <p><strong>Budget:</strong> R{job.budget}</p>
                     <p><strong>Deadline:</strong> {job.deadline}</p>
-                    <p><strong>Client:</strong> {job.partnerName}</p>
+                    
                     <h4>Milestones:</h4>
                     <section className="milestone-section">
                         <ul>
