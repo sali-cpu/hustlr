@@ -86,7 +86,7 @@ useEffect(() =>
           if (acceptedApp && acceptedApp.job_milestones) 
             {
             const milestones = Object.values(acceptedApp.job_milestones);
-            const allDone = milestones.every((m) => m.status === 'Done');
+            const allDone = milestones.every((m) => m.status === 'Done' || m.status === 'Paid');
 
             const jobWithFreelancer = {
               ...job,
@@ -120,7 +120,7 @@ useEffect(() =>
         Object.entries(jobApplications).forEach(([freelancerUID, application]) => {
           if (application.status === 'accepted') {
             const milestones = Object.values(application.job_milestones || {});
-            const isCompleted = milestones.every((m) => m.status === 'Done');
+            const isCompleted = milestones.every((m) => m.status === 'Done' || m.status === 'Paid');
             const category = isCompleted ? 'completed' : 'active';
 
             if (!freelancerJobsMap[freelancerUID]) {
