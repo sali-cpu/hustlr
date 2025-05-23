@@ -1,20 +1,19 @@
 import { useEffect, useState } from 'react';
-import { ref, get /*, update */ } from "firebase/database";
+import { ref, get } from "firebase/database";
 import { applications_db } from '../firebaseConfig';
 import HeaderFreelancer from '../components/HeaderFreelancer';
 import FooterClient from '../components/FooterClient';
 import '../stylesheets/FreeOngoingJobs.css';
 
-const FreeOngoingJobs = () => {
+const FreeOngoingJobs = () => 
+  {
   const [ongoingJobs, setOngoingJobs] = useState([]);
-  
 
   useEffect(() => {
       const fetchAcceptedJobs = async () => {
       const userUID = localStorage.getItem("userUID");
       
       if (!userUID) {
-        console.error("User UID not found in localStorage.");
         setOngoingJobs([]);
         return;
       }
@@ -68,12 +67,14 @@ const FreeOngoingJobs = () => {
 
           const jobList = Object.values(jobsMap);
           setOngoingJobs(jobList);
-        } else {
-          console.log("No accepted jobs found for this user.");
+        } 
+        else 
+        {
           setOngoingJobs([]);
         }
-      } catch (error) {
-        console.error("Error fetching jobs:", error);
+      } 
+      catch (error) 
+      {
         setOngoingJobs([]);
       }
     };
