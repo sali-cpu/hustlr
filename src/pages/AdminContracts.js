@@ -82,7 +82,13 @@ useEffect(() =>
             );
           }
 
-          const freelancerName = acceptedApp?.name || 'Unknown Freelancer';
+          let freelancerName = ''; 
+
+          if (acceptedApp && acceptedApp.name) 
+            {
+          freelancerName = acceptedApp.name;
+            }
+
           if (acceptedApp && acceptedApp.job_milestones) 
             {
             const milestones = Object.values(acceptedApp.job_milestones);
@@ -121,11 +127,23 @@ useEffect(() =>
           if (application.status === 'accepted') {
             const milestones = Object.values(application.job_milestones || {});
             const isCompleted = milestones.every((m) => m.status === 'Done' || m.status === 'Paid');
-            const category = isCompleted ? 'completed' : 'active';
+            let category;
 
-            if (!freelancerJobsMap[freelancerUID]) {
-              freelancerJobsMap[freelancerUID] = { completed: [], active: [] };
+            if (isCompleted) 
+              {
+                category = 'completed';
+              } 
+            else 
+            {  
+              category = 'active';
             }
+
+            if (!freelancerJobsMap[freelancerUID]) 
+              {
+
+              freelancerJobsMap[freelancerUID] = { completed: [], active: [] };
+
+              }
 
             freelancerJobsMap[freelancerUID][category].push({
               jobId,
@@ -156,8 +174,10 @@ useEffect(() =>
 
       setClients(enrichedClients);
       setFreelancers(enrichedFreelancers);
-    } catch (error) {
-      console.log("Error fetching data");
+    } 
+    catch (error) 
+    {
+
     }
   };
 
