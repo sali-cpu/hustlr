@@ -8,10 +8,14 @@ import { db,applications_db } from '../firebaseConfig';
 const AdminJobs = () => {
   const [jobs, setJobs] = useState([]);
 
-  useEffect(() => {
+  useEffect(() => 
+  {
+
     const jobsRef = ref(db, 'jobs');
     get(jobsRef)
-      .then((snapshot) => {
+      .then((snapshot) => 
+        {
+
         if (snapshot.exists()) 
           {
           const jobsArray = Object.entries(snapshot.val()).map(([id, data]) => ({
@@ -25,30 +29,31 @@ const AdminJobs = () => {
           alert("No Jobs found.");
         }
       })
-      .catch((error) => {
+      .catch((error) => 
+        {
         alert(error.message);
       });
   }, []);
 
    const handleDelete = async (jobId) => {
-  try {
-    // References to all locations where the job might exist
+  try 
+  {
     const jobRef = ref(db, `jobs/${jobId}`);
     const applicationRef = ref(applications_db, `applications/${jobId}`);
     const acceptedAppRef = ref(applications_db, `accepted_applications/${jobId}`);
     const rejectedAppRef = ref(applications_db, `rejected_applications/${jobId}`);
 
-    // Delete from all relevant database paths
     await remove(jobRef);
     await remove(applicationRef);
     await remove(acceptedAppRef);
     await remove(rejectedAppRef);
 
-    // Remove from local state
     setJobs((prevJobs) => prevJobs.filter((job) => job.id !== jobId));
 
-    alert('Job and all associated applications deleted successfully.');
-  } catch (error) {
+    alert('Job deleted successfully.');
+  } 
+  catch (error)
+  {
     alert(`Error deleting job: ${error.message}`);
   }
 };
@@ -80,8 +85,6 @@ return (
             {
               return <p className="no-jobs-message">No jobs available.</p>;
             } 
-
-
           else 
           {
             return jobs.map((job) => (
