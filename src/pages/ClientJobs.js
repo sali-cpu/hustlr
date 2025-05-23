@@ -115,8 +115,6 @@ const ClientJobs = () => {
       const applicantRef = ref(applications_db, `applications/${jobId}/${applicantId}`);
       const acceptedRef = ref(applications_db, `accepted_applications/${jobId}/${applicantId}`);
       const jobApplicationsRef = ref(applications_db, `applications/${jobId}`);
-  
-      // Fetch the accepted freelancer data
       const applicantSnapshot = await get(applicantRef);
       if (!applicantSnapshot.exists()) 
         {
@@ -133,8 +131,7 @@ const ClientJobs = () => {
       
       await update(applicantRef, { status: "accepted" });
       await set(acceptedRef, acceptedData);
-  
-      // Reject all butt we might need to chamge this 
+
       const snapshot = await get(jobApplicationsRef);
       if (snapshot.exists()) 
         {
@@ -174,7 +171,7 @@ const ClientJobs = () => {
   const rejectedRef = ref(applications_db, `rejected_applications/${jobId}/${applicantId}`);
 
   try {
-    // Get the current application data
+    
     const snapshot = await get(applicationRef);
     if (!snapshot.exists()) {
       alert("Applicant not found.");
@@ -206,13 +203,13 @@ const ClientJobs = () => {
   if (!window.confirm('Are you sure you want to delete this job?')) return;
 
   try {
-    // References to delete
+  
     const jobRef = ref(db, `jobs/${jobIdToDelete}`);
     const applicationsRef = ref(applications_db, `applications/${jobIdToDelete}`);
     const acceptedRef = ref(applications_db, `accepted_applications/${jobIdToDelete}`);
     const rejectedRef = ref(applications_db, `rejected_applications/${jobIdToDelete}`);
 
-    // Perform deletion
+    
     await Promise.all([
       remove(jobRef),
       remove(applicationsRef),
@@ -249,9 +246,6 @@ const ClientJobs = () => {
           return;
         }
     }
-  
-    setError('');
-
     try {
       if (editingJobId) 
         {
@@ -271,15 +265,12 @@ const ClientJobs = () => {
           budget: parseFloat(formData.budget),
           clientUID: localStorage.getItem("userUID"),
         });
-        //alert(" Job added to Firebase");
       }
 
       setFormData(initialFormData);
       setEditingJobId(null);
 
     } catch (error) {
-      
-      setError("Error: " + error.message);
       alert("Failed to add job: " + error.message);
     }
   };
@@ -290,7 +281,8 @@ const ClientJobs = () => {
       const data = snapshot.val();
       const loadedJobs = [];
 
-      for (const id in data) {
+      for (const id in data) 
+      {
         if (data[id].clientUID === userUID) {
           loadedJobs.push({ id, ...data[id] });
         }
