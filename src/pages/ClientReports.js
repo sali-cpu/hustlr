@@ -5,57 +5,11 @@ import HeaderClient from '../components/HeaderClient';
 import FooterClient from '../components/FooterClient';
 import '../stylesheets/ClientReports.css';
 
-// Mock data (already structured correctly)
-const MOCK_DATA = {
-  financial_summary: {
-    total_spent: 18500,
-    currency: "USD",
-    by_category: [
-      { name: "Web Development", amount: 8500,  },
-      { name: "Graphic Design", amount: 4200,},
-      { name: "Content Writing", amount: 3800,  },
-      { name: "SEO", amount: 2000, }
-    ],
-    monthly_trends: [
-      { month: "2025-01", total: 4200,  },
-      { month: "2025-02", total: 5100,},
-      { month: "2025-03", total: 4800, },
-      { month: "2025-04", total: 4400, }
-    ]
-  },
-  jobs_analysis: {
-    by_status: [
-      { status: "Completed", count: 12, },
-      { status: "In Progress", count: 3, },
-      { status: "Pending", count: 1,  }
-    ],
-    completion_timelines: [
-      { job_id: 101, duration_days: 14, on_time: true },
-      { job_id: 102, duration_days: 21, on_time: false },
-      { job_id: 103, duration_days: 7, on_time: true }
-    ],
-    
-  },
-  freelancer_performance: {
-    completion_rates: [
-      { freelancer_id: 1, name: "Sarah Johnson", completed: 8, total: 8, rate: 100 },
-      { freelancer_id: 2, name: "Mike Chen", completed: 5, total: 6, rate: 83 },
-      { freelancer_id: 3, name: "Emma Wilson", completed: 3, total: 3, rate: 100 }
-    ],
-    delivery_stats: [
-      { freelancer_id: 1, on_time: 8, late: 0,  },
-      { freelancer_id: 2, on_time: 4, late: 1, },
-      { freelancer_id: 3, on_time: 3, late: 0, }
-    ]
-  }
-};
 
 const ClientReports = () => {
 
-   const [activeJobs, setActiveJobs] = useState([]);
-  const [previousJobs, setPreviousJobs] = useState([]);
-
-
+   const [setActiveJobs] = useState([]);
+  const [ setPreviousJobs] = useState([]);
 
 useEffect(() => {
   const unsub = onValue(ref(applications_db, 'accepted_applications'), snapshot => {
@@ -74,8 +28,16 @@ useEffect(() => {
         const milestones = appData.job_milestones || {};
         const milestoneList = Object.values(milestones);
 
-        const hasActiveMilestone = milestoneList.some(m => {
-          const status = m.status?.toLowerCase();
+        const hasActiveMilestone = milestoneList.some(m => 
+          {
+          let status;
+          if (m.status != null) {
+              status = m.status.toLowerCase();
+          } 
+          else 
+          {
+              status = undefined;
+            }
           return status === "pending" || status === "in-progress";
         });
 
@@ -104,7 +66,7 @@ useEffect(() => {
     setPreviousJobs(previous);
   });
 
-  return () => unsub(); // Cleanup on unmount
+  return () => unsub(); 
 }, []);
 
 
@@ -129,21 +91,22 @@ useEffect(() => {
 
     try {
       let data;
-
-      if (useMockData) {
-        data = formData.report_type === 'financial' ? MOCK_DATA.financial_summary :
-               formData.report_type === 'jobs' ? MOCK_DATA.jobs_analysis :
-               MOCK_DATA.freelancer_performance;
-
-        await new Promise(resolve => setTimeout(resolve, 800));
-      } else {
         const response = await fetch(`/api/reports?report_type=${formData.report_type}&start_date=${formData.start_date}&end_date=${formData.end_date}`);
         if (!response.ok) throw new Error('Failed to fetch report data');
         const raw = await response.json();
-        data = formData.report_type === 'financial' ? raw.financial_summary :
-               formData.report_type === 'jobs' ? raw.jobs_analysis :
-               raw.freelancer_performance;
-      }
+       if (formData.report_type === 'financial') 
+        {
+          data = raw.financial_summary;
+        } 
+        else if (formData.report_type === 'jobs') 
+          { 
+          data = raw.jobs_analysis;
+          } 
+          else 
+          {  
+          data = raw.freelancer_performance;
+          }
+      
 
       setReportData(data);
     } catch (error) {
