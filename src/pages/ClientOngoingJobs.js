@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ref, get /*, update */ } from "firebase/database";
+import { ref, get} from "firebase/database";
 import { applications_db } from '../firebaseConfig';
 import HeaderClient from '../components/HeaderClient';
 import '../stylesheets/ClientOngoingJobs.css';
@@ -14,7 +14,7 @@ const ClientOngoingJobs = () => {
       const userUID = localStorage.getItem("userUID");
       
       if (!userUID) {
-        console.error("User UID not found in localStorage.");
+        console.error("User UID not found");
         setOngoingJobs([]);
         return;
       }
@@ -44,7 +44,8 @@ const ClientOngoingJobs = () => {
               paidAmount: 0
             };
 
-            Object.values(data.job_milestones).forEach((milestone, index) => {
+            Object.values(data.job_milestones).forEach((milestone, index) =>
+               {
             const milestoneAmount = parseFloat(milestone.amount) || 0;
 
             jobsMap[jobKey].milestones.push({
@@ -57,7 +58,8 @@ const ClientOngoingJobs = () => {
 
           jobsMap[jobKey].totalAmount += milestoneAmount;
 
-          if (milestone.status === 'Paid') {
+          if (milestone.status === 'Paid')
+          {
             jobsMap[jobKey].paidAmount += milestoneAmount;
           }
       });
@@ -68,12 +70,14 @@ const ClientOngoingJobs = () => {
 
           const jobList = Object.values(jobsMap);
           setOngoingJobs(jobList);
-        } else {
-          console.log("No accepted jobs found for this user.");
+        } 
+        else 
+        {
           setOngoingJobs([]);
         }
-      } catch (error) {
-        console.error("Error fetching jobs:", error);
+      } 
+      catch (error) 
+      {
         setOngoingJobs([]);
       }
     };
