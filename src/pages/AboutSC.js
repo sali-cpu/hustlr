@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import '../stylesheets/AboutSC.css';
 import HeaderFreelancer from "../components/HeaderFreelancer";
 import FooterClient from "../components/FooterClient";
@@ -8,18 +8,21 @@ import icon2 from '../images/s2.png';
 import icon3 from '../images/s3.png';
 import icon4 from '../images/s4.png';
 import icon5 from '../images/s6.png';
+
 import { applications_db } from '../firebaseConfig'; 
 import { ref, set } from "firebase/database";
 import { Link } from 'react-router-dom';
 const profileIcons = [icon1, icon2, icon3, icon4, icon5];
 
-const AboutSC = () => {
+const AboutSC = () => 
+  {
   const [formData, setFormData] = useState({
     bio: '',
     profession: '',
     totalJobs: '',
     selectedIcon: icon1
   });
+
  const name_surname = localStorage.getItem("nameSur");
  const role_read = localStorage.getItem('role_passed');
   const [isSaved, setIsSaved] = useState(false);
@@ -37,8 +40,9 @@ const AboutSC = () => {
 
   const handleSave = () => {
     const uid = localStorage.getItem("userUID");
-    if (!uid) {
-      alert("User UID not found in local storage!");
+    if (!uid) 
+      {
+      alert("User UID not found!");
       return;
     }
   
@@ -54,9 +58,10 @@ const AboutSC = () => {
     set(infoRef, dataToSave)
       .then(() => {
         setIsSaved(true);
-        //alert("User info saved successfully!");
+        
       })
-      .catch((error) => {
+      .catch((error) => 
+        {
         alert("Error saving user info:", error.message);
       });
   };
@@ -76,7 +81,6 @@ const AboutSC = () => {
         )}
 
         <form className="settings-form">
-
 
           <label>
             Bio:
@@ -125,5 +129,4 @@ const AboutSC = () => {
     </>
   );
 };
-
 export default AboutSC;
