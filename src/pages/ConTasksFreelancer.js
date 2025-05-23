@@ -59,11 +59,19 @@ useEffect(() => {
     setPreviousJobs(previous);
   });
 
-  return () => unsub(); // Cleanup on unmount
+  return () => unsub(); 
 }, []);
 
   const toggleExpand = (jobId) => {
-    setExpandedJobId(expandedJobId === jobId ? null : jobId);
+        if (expandedJobId === jobId) 
+          {
+            setExpandedJobId(null);
+          } 
+          else 
+          {
+            setExpandedJobId(jobId);
+          }
+
   };
 
 
