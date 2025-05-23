@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import '../stylesheets/AboutSF.css';
 import HeaderFreelancer from "../components/HeaderFreelancer";
 import FooterClient from "../components/FooterClient";
-
 import icon1 from '../images/s1.png';
 import icon2 from '../images/s2.png';
 import icon3 from '../images/s3.png';
@@ -21,6 +20,7 @@ const AboutSF = () => {
     totalJobs: '',
     selectedIcon: icon1
   });
+  
  const name_surname = localStorage.getItem("nameSur");
 
   const [isSaved, setIsSaved] = useState(false);
@@ -36,11 +36,12 @@ const AboutSF = () => {
     setFormData(prev => ({ ...prev, selectedIcon: icon }));
   };
 
- const handleSave = () => {
+ const handleSave = () => 
+   {
   const uid = localStorage.getItem("userUID");
     const user_role = localStorage.getItem('role_passed');
   if (!uid) {
-    alert("User UID not found in local storage!");
+    alert("User UID not found");
     return;
   }
 
