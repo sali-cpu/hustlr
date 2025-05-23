@@ -8,7 +8,6 @@ import FooterClient from '../components/FooterClient';
 const FreelancerPayments = () => {
   const [payments, setPayments] = useState([]);
   const [wallet, setWallet] = useState(0);
-  // Filter states
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [startDate, setStartDate] = useState('');
@@ -51,7 +50,7 @@ const FreelancerPayments = () => {
           setPayments(jobList);
         }
       } catch (error) {
-        console.error("Error fetching jobs:", error);
+      
       }
     };
 
@@ -63,12 +62,10 @@ const FreelancerPayments = () => {
       const jobRef = ref(applications_db, `accepted_applications/${payment.parentKey}/${payment.jobKey}/job_milestones/${payment.milestoneIndex}`);
       await update(jobRef, { status: "Done" });
 
-      // Update UI state
       setPayments(prev =>
         prev.map(p => p.id === payment.id ? { ...p, status: "Done" } : p)
       );
     } catch (err) {
-      console.error("Failed to update milestone status:", err);
       alert("Failed to mark milestone as done.");
     }
   };
@@ -78,27 +75,17 @@ const FreelancerPayments = () => {
       const jobRef = ref(applications_db, `accepted_applications/${payment.parentKey}/${payment.jobKey}/job_milestones/${payment.milestoneIndex}`);
       await update(jobRef, { status: "In-Progress" });
 
-      // Update UI state
       setPayments(prev =>
         prev.map(p => p.id === payment.id ? { ...p, status: "In-Progress" } : p)
       );
     } catch (err) {
-      console.error("Failed to update milestone status:", err);
       alert("Failed to mark milestone as in-progress.");
     }
   };
 
-  // Toggle payment status
-  const togglePaymentStatus = (id) => {
-    setPayments(payments.map(payment => 
-      payment.id === id 
-        ? { ...payment, status: payment.status === 'Pending' ? 'Paid' : 'Pending' } 
-        : payment
-    ));
-  };
 
-  // Filter payments based on filters
-  const filteredPayments = payments.filter(payment => {
+  const filteredPayments = payments.filter(payment => 
+    {
     const matchesSearch = payment.jobTitle.toLowerCase().includes(searchTerm.toLowerCase()) || 
                          payment.client.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'All' || payment.status === statusFilter;
@@ -109,15 +96,11 @@ const FreelancerPayments = () => {
     return matchesSearch && matchesStatus && matchesDateRange;
   });
 
-  // Export to CSV function
   const exportToCSV = () => {
     const headers = ['Job Title', 'Milestone', 'Amount', 'Status', 'Due Date'];
     const csvRows = [];
-    
-    // Add headers
+  
     csvRows.push(headers.join(','));
-    
-    // Add data rows
     filteredPayments.forEach(payment => {
       const values = [
         `"${payment.jobTitle}"`,
@@ -129,7 +112,7 @@ const FreelancerPayments = () => {
       csvRows.push(values.join(','));
     });
 
-    // Create and download CSV file
+
     const csvContent = csvRows.join('\n');
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
