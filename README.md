@@ -93,11 +93,14 @@ This project was developed from scratch, applying **Scrum methodology** with ite
 
 1. Clone The Repository
 2. Install Dependencies
-3. Build
-4. Start the React App
+3. Start the React App (Visit [http://localhost:3000] in your browser to view the app.)
+4. Build so that it can Deploy on Azure
+
+
 ```node
 git clone https://github.com/sali-cpu/hustlr
 cd hustlr
 npm install
-npm run build
 npm start
+npm run build
+
