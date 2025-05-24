@@ -1,70 +1,103 @@
-# Getting Started with Create React App
+# Hustlr. — Full-Stack Client & Freelancer Web Application
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+> Built as part of the 2025 Software Design Project at the University of the Witwatersrand  
+> Developed using Agile Scrum methodology by sali-cpu, KhuseloDevQuest, Mareme27-tech, Dee4841, WakkyCodes, Sesihle-Goniwe
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## Live Deployment
 
-### `npm start`
+**Production App URL**:  
+[https://yellow-pond-0e617981e.6.azurestaticapps.net/](https://yellow-pond-0e617981e.6.azurestaticapps.net/)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+**Demo Video**:  
+(I'll add the link)
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+**GitHub Repository** 
+[https://github.com/sali-cpu/hustlr](https://github.com/sali-cpu/hustlr)
 
-### `npm test`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+---
 
-### `npm run build`
+## About the Project
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Hustlr is a full-featured web platform designed to connect clients and freelancers for digital project-based work. Clients can create job listings, set deliverable milestones, manage contracts, and review submissions. Freelancers can explore jobs, submit proposals, manage contracts, and mark work complete in phases.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+This project was developed from scratch, applying **Scrum methodology** with iterative planning, daily stand-ups, retrospectives, and regular sprint reviews.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Project Goals
 
-### `npm run eject`
+- Facilitate secure collaboration between clients and freelancers
+- Provide milestone-based task tracking
+- Enable a simplified contract management interface
+- Apply Agile Scrum methodology in a real-world software engineering context
+- Demonstrate competency in full-stack development using modern tooling
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+---
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Live Demo & Credentials
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+**Hosted Application**: [Visit App](https://yellow-pond-0e617981e.6.azurestaticapps.net/)  
+**Demo Test Accounts** *(optional if you want to include login credentials)*:
+- Client: `client@example.com` / `password123`
+- Freelancer: `freelancer@example.com` / `password123`
+- Admin: `admin@example.com` / `adminpass`
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+---
 
-## Learn More
+## Features
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### For Clients
+- Register/Login securely
+- Post job descriptions with budgets and deadlines
+- Add and manage deliverable milestones
+- Monitor job progress and approve submissions
+- View and manage all current and previous contracts
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### For Freelancers
+- Register/Login
+- Browse and filter available jobs
+- Apply to relevant jobs with application
+- View current contracts and complete milestones
+- Submit completed work for approval
 
-### Code Splitting
+### Admin Functionality
+- View all jobs posted
+- Delete spam/inappropriate jobs
+- Manage user accounts (basic moderation)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+---
 
-### Analyzing the Bundle Size
+## Technology Stack
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+| Area       | Tech Used                   |
+|------------|-----------------------------|
+| Frontend   | React                       |
+| Hosting    | Azure Static Web Apps       |
+| Auth       | Firebase Authentication     |
+| Database   | Firebase Firestore          |
+| GitHub CI  | GitHub Actions              |
 
-### Making a Progressive Web App
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
 
-### Advanced Configuration
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## Setup Instructions
 
-### Deployment
+### Requirements
+- Node.js v18+
+- npm or yarn
+- Firebase 
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+### Clone & Run Locally
 
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+1. Clone The Repository
+2. Install Dependencies
+3. Build
+4. Start the React App
+```node
+git clone https://github.com/sali-cpu/hustlr
+cd hustlr
+npm install
+npm run build
+npm start
