@@ -57,7 +57,6 @@ const AboutSF = () => {
   set(infoRef, dataToSave)
     .then(() => {
       setIsSaved(true);
-      alert("User info saved successfully!");
     })
     .catch((error) => {
       alert("Error saving user info:", error.message);
