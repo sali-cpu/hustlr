@@ -11,7 +11,8 @@
 [https://yellow-pond-0e617981e.6.azurestaticapps.net/](https://yellow-pond-0e617981e.6.azurestaticapps.net/)
 
 **Demo Video**:  
-(I'll add the link)
+
+[https://youtu.be/J1u4EXrLi-s]
 
 **GitHub Repository** 
 [https://github.com/sali-cpu/hustlr](https://github.com/sali-cpu/hustlr)
@@ -39,9 +40,9 @@ This project was developed from scratch, applying **Scrum methodology** with ite
 
 **Hosted Application**: [Visit App](https://yellow-pond-0e617981e.6.azurestaticapps.net/)  
 **Demo Test Accounts** *(optional if you want to include login credentials)*:
-- Client: `client@example.com` / `password123`
-- Freelancer: `freelancer@example.com` / `password123`
-- Admin: `admin@example.com` / `adminpass`
+- Client: Email : clienthustlr@gmail.com / Password :@Client12
+- Freelancer: Email : freelancerhustlr@gmail.com / Password : @Freelancer12
+- Admin  Email : ahustlr70@gmail.com / Password : @Admin1212
 
 ---
 
