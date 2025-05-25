@@ -1,7 +1,7 @@
 {
   "name": "reacthtml",
   "version": "0.1.0",
-  "homepage": "https://KhuseloDevQuest.github.io/",
+  "homepage": "https://sali-cpu.github.io/",
   "private": true,
   "dependencies": {
     "@azure/msal-browser": "^4.10.0",
