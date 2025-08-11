@@ -16,8 +16,6 @@
 
 **GitHub Repository** 
 [https://github.com/sali-cpu/hustlr](https://github.com/sali-cpu/hustlr)
-
-
 ---
 
 ## About the Project
