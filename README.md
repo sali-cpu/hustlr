@@ -16,8 +16,6 @@
 
 **GitHub Repository** 
 [https://github.com/sali-cpu/hustlr](https://github.com/sali-cpu/hustlr)
-
-
 ---
 
 ## About the Project
@@ -101,6 +99,7 @@ This project was developed from scratch, applying **Scrum methodology** with ite
 ```node
 git clone https://github.com/sali-cpu/hustlr
 cd hustlr
+npm install firebase
 npm install
 npm start
 npm run build
