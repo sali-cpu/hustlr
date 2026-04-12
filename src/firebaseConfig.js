@@ -3,50 +3,48 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getDatabase } from "firebase/database";
 
-// Config for Google
-const googleConfig = {
-  apiKey: "AIzaSyDPrCgc4hTSO8am7LFi6KasGo7vCISXV9U",
-  authDomain: "authenticate-13e26.firebaseapp.com",
-  projectId: "authenticate-13e26",
-  storageBucket: "authenticate-13e26.appspot.com",
-  messagingSenderId: "839678165187",
-  appId: "1:839678165187:web:962a4613e2ad62c81ea276",
+// Google Config
+export const googleConfig = {
+  apiKey: process.env.REACT_APP_GOOGLE_API_KEY,
+  authDomain: process.env.REACT_APP_GOOGLE_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_GOOGLE_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_GOOGLE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_GOOGLE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_GOOGLE_APP_ID,
 };
 
-// Config for Microsoft
-const microsoftConfig = {
-  apiKey: "AIzaSyD27cvVjz9oBqf6aysk4Tn8uBzZLxSJFU4",
-  authDomain: "freelancer-771b9.firebaseapp.com",
-  projectId: "freelancer-771b9",
-  storageBucket: "freelancer-771b9.appspot.com",
-  messagingSenderId: "246641148741",
-  appId: "1:246641148741:web:bfe70c74d8b6b684af742c",
-  measurementId: "G-0S2XLNZX08"
+// Microsoft Config
+export const microsoftConfig = {
+  apiKey: process.env.REACT_APP_MICROSOFT_API_KEY,
+  authDomain: process.env.REACT_APP_MICROSOFT_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_MICROSOFT_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_MICROSOFT_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_MICROSOFT_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_MICROSOFT_APP_ID,
+  measurementId: process.env.REACT_APP_MICROSOFT_MEASUREMENT_ID,
 };
 
-//Database config
-const dbConfig = {
-  apiKey: "AIzaSyAGwwANPLd68tL8NEMpYQidEaPWHAcEi3Y",
-  authDomain: "clientjobs-21ada.firebaseapp.com",
-  databaseURL: "https://clientjobs-21ada-default-rtdb.firebaseio.com", 
-  projectId: "clientjobs-21ada",
-  storageBucket: "clientjobs-21ada.appspot.com",
-  messagingSenderId: "128973874970",
-  appId: "1:128973874970:web:5e3a03ff3aae804b6c6ea3"
+// Database Config
+export const dbConfig = {
+  apiKey: process.env.REACT_APP_DB_API_KEY,
+  authDomain: process.env.REACT_APP_DB_AUTH_DOMAIN,
+  databaseURL: process.env.REACT_APP_DB_DATABASE_URL,
+  projectId: process.env.REACT_APP_DB_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_DB_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_DB_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_DB_APP_ID,
 };
 
-  // Your web app's Firebase configuration
-  const applicationsConfig = {
-    apiKey: "AIzaSyBx-MGrWqHDQer4MV7n9KLqh_Tjg86kzRk",
-    authDomain: "applications-65151.firebaseapp.com",
-    databaseURL: "https://applications-65151-default-rtdb.firebaseio.com",
-    projectId: "applications-65151",
-    storageBucket: "applications-65151.firebasestorage.app",
-    messagingSenderId: "505122559159",
-    appId: "1:505122559159:web:e02ec1484f09239b7c6932"
-
-  };
-
+// Applications Config
+export const applicationsConfig = {
+  apiKey: process.env.REACT_APP_APPS_API_KEY,
+  authDomain: process.env.REACT_APP_APPS_AUTH_DOMAIN,
+  databaseURL: process.env.REACT_APP_APPS_DATABASE_URL,
+  projectId: process.env.REACT_APP_APPS_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_APPS_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_APPS_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_APPS_APP_ID,
+};
 
   // Initialize Firebase
 
